@@ -28,9 +28,9 @@ async def reload(ctx, extension):
     for dir in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
-                print('we are here!')
                 client.unload_extension(f'cogs.{dir}.{extension}')
                 client.load_extension(f'cogs.{dir}.{extension}')
+                ctx.send(f'{extension} is reloaded!')
             else:
                 pass
 
