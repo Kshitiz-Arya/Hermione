@@ -11,6 +11,8 @@ async def load(ctx, extension):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
                 client.load_extension(f'cogs.{dir}.{extension}')
+                ctx.send(f'{extension} is loaded!')
+
             else:
                 pass
 
@@ -20,6 +22,8 @@ async def unload(ctx, extension):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
                 client.unload_extension(f'cogs.{dir}.{extension}')
+                ctx.send(f'{extension} is unloaded!')
+
             else:
                 pass
 
