@@ -1,11 +1,10 @@
-import discord
 from discord.ext import commands
 import os
 
 client = commands.Bot(command_prefix='.')
 
-@client.command()
 
+@client.command()
 async def load(ctx, extension):
     for dir in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{dir}'):
@@ -15,6 +14,7 @@ async def load(ctx, extension):
 
             else:
                 pass
+
 
 @client.command()
 async def unload(ctx, extension):
@@ -26,6 +26,7 @@ async def unload(ctx, extension):
 
             else:
                 pass
+
 
 @client.command()
 async def reload(ctx, extension):
@@ -43,6 +44,12 @@ for dir in os.listdir("./cogs"):
     for filename in os.listdir(f'./cogs/{dir}'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{dir}.{filename[:-3]}')
+
+
+@client.event
+async def on_ready():
+    print('Hermione is ready for a new adventure!!!')
+
 
 Token = 'NjQ5MjEwNjQ4Njg5MTE1MTQ5.Xd5eiA.g0w8je98YJKHl7-afYQtkFNnIhk'
 client.run(Token)
