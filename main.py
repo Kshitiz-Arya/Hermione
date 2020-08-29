@@ -4,6 +4,11 @@ import os
 client = commands.Bot(command_prefix='.')
 
 
+###############################################################################
+#                         AREA FOR COGS                                       #
+###############################################################################
+
+
 @client.command()
 async def load(ctx, extension):
     for dir in os.listdir('./cogs'):
@@ -44,6 +49,11 @@ for dir in os.listdir("./cogs"):
     for filename in os.listdir(f'./cogs/{dir}'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{dir}.{filename[:-3]}')
+
+
+###############################################################################
+#                         AREA FOR EVENTS                                     #
+###############################################################################
 
 
 @client.event
