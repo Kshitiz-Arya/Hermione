@@ -1,9 +1,13 @@
 from discord.ext import commands
+import sqlite3
+from sqlite3 import Error
+import os
 
 
 ###############################################################################
 #                         AREA FOR Functions                                  #
 ###############################################################################
+
 
 # This function takes chapter number and return Book number
 # from which the chapter belongs to.
@@ -44,6 +48,25 @@ def rank(org, chapter):
                 byte = i.find(org)
                 print('({}, {})'.format(count, byte))
 
+
+def create_connection(db_file):
+    """ create a database connection to a SQLite database """
+    conn = None
+    d = os.getcwd()
+    print(f'Connected to {db_file}')
+    db_file = f"{d}/database/{db_file}.db"
+    try:
+        conn = sqlite3.connect(db_file)
+        print(sqlite3.version)
+
+    except Error as e:
+        print(e)
+
+    finally:
+        if conn:
+            conn.close()
+
+
 ###############################################################################
 #                         AREA FOR COMMANDS                                   #
 ###############################################################################
@@ -56,7 +79,7 @@ class Basic(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         for i in range(5):
-            await ctx.send(f'Pong! {round(self.client.latencyclient.latency * 1000)} ms')
+            await ctx.send(f'{round(self.client.latencyclient.latency * 1000)} ms')
 
     @commands.command()
     async def edit(self, ctx, chapter, *, edit):
