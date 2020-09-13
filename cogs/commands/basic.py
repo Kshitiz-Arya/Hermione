@@ -28,9 +28,9 @@ def Book(chapter):
     return book         # return Book number
 
 
-def ranking(org, chapter):
+def ranking(guild, chapter, org):
     # This code Rank each sentence according to their position in text file.
-    str = open('./chapter/Chapter-{}.txt'.format(chapter), 'r')
+    str = open(f'./storage/{guild.name} - {guild.id}/Chapter/Chapter-{chapter}.txt', 'r')
     print('File has been opened')
     #   This is the phrase which we have to search.
     if '\n' in org:  # This is driver code
@@ -55,7 +55,7 @@ def create_connection(guild, db_file):
     conn = None
     dir = os.getcwd()
     print(f'Connected to {db_file}')
-    db_file = f"{dir}/database/{guild.name} - {guild.id}/{db_file}.db"
+    db_file = f"{dir}/Storage/{guild.name} - {guild.id}/database/{db_file}.db"
     try:
         conn = sqlite3.connect(db_file)
         return conn
@@ -109,6 +109,8 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                    Message_ID TEXT PRIMARY KEY,
                                    Author     TEXT,
                                    Author_ID  INT,
+                                   Book       INT,
+                                   Chapter    INT,
                                    Original   TEXT NOT NULL,
                                    Sugested   TEXT NOT NULL,
                                    Reason     TEXT,
@@ -126,7 +128,7 @@ def query(input, table=None, column=None):      # Concider removing this functio
 
 
 def insert(guild, database, table, column, values):
-    Connection = create_connection(database)
+    Connection = create_connection(guild, database)
     sql = f''' INSERT INTO {table}{column}
               VALUES({'?' + ',?'*(len(values)-1)}) '''
     cur = Connection.cursor()
@@ -134,6 +136,15 @@ def insert(guild, database, table, column, values):
     Connection.commit()
     return cur.lastrowid
 
+
+def getsql(guild, database, table, column):
+    Connection = create_connection(guild, database)
+    sql = f''' SELECT * FROM {table}
+               WHERE chapter = {column}'''
+    cur = Connection.cursor()
+    cur.execute(sql)
+    rows = cur.fetchall()
+    return rows
 
 ###############################################################################
 #                         AREA FOR COMMANDS                                   #
@@ -147,15 +158,19 @@ class Basic(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         print(f'Joined {guild.name}')
-        if 'database' in os.listdir():
-            os.chdir('database')
-            os.mkdir(f'{guild.name} - {guild.id}')
-            os.chdir('..')
-        else:
-            os.makedirs(f'database/{guild.name} {guild.id}')
-            os.chdir('..')
 
+        server_dir = f'{guild.name} - {guild.id}'
+        dir = ['chapter', 'database']
+        count = 0
+        for d in dir:
+            print(count)
+            os.makedirs(f'Storage/{server_dir}/{d}')
+            count += 1
+        os.chdir(f'Storage/{server_dir}/database')
+        os.chdir('../../..')
         create_table('editorial', guild)
+
+        print(os.getcwd())
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
@@ -180,15 +195,24 @@ class Basic(commands.Cog):
         mID = ctx.message.id
         aID = ctx.author.id
         author = ctx.author.nick
+        book   = Book(chapter)
         column = str(tuple(get_table(guild, 'editorial', 'edit'))).replace("'", '')
-        rank = ranking(org, chapter)
-        values = (mID, aID, author, org, sug, res, rank)
+        rank = ranking(guild, chapter, org)
+        values = (mID, aID, author, book, chapter, org, sug, res, rank)
         insert(guild, 'editorial', 'edit', column, values)
 
     @commands.command()
-    async def test(self, ctx, msg):
+    async def test(self, ctx):
         await ctx.send('This is msg 1')
+        await ctx.send(f'{os.getcwd()}')
 
+
+        print(os.getcwd())
+    @commands.command()
+    async def print(self, ctx, chapter):
+        guild = ctx.guild
+        _ = getsql(guild, editorial, edit, chapter)
+        print(_)
 
 ###############################################################################
 #                         AREA FOR SETUP                                      #
