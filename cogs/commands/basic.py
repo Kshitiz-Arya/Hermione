@@ -100,7 +100,8 @@ class Basic(commands.Cog):
             for file in attach:
                 path = os.getcwd() + f'/Storage/{guild.name} - {guild.id}/chapter/Chapter-{arg}.txt'
                 await file.save(path)
-                await ctx.send(file.size)
+                await ctx.send('Received the file.')
+                print(f"Saved a new file to {guild.name}'s folder of {file.size/1024} kb")
         else:
              await ctx.send('No file included!')
              await ctx.send('Please try again!')
