@@ -1,12 +1,18 @@
 from discord.ext import commands
 import os
-
+import sys
 client = commands.Bot(command_prefix='.')
 
 
 ###############################################################################
 #                         AREA FOR COGS                                       #
 ###############################################################################
+
+
+if __name__ == '__main__':
+    _root = os.getcwd()
+    sys.path.append(f'{_root}/packages')
+    print('Added packages folder to path')
 
 
 @client.command()
