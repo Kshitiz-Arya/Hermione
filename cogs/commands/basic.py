@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import os
-import sys
 import shutil
 import database as db
 import commands as cmd
@@ -22,7 +21,7 @@ class Basic(commands.Cog):
         print(f'Joined {guild.name}')
 
         server_dir = f'{guild.name} - {guild.id}'
-        dir = ['chapter', 'database']
+        dir = ['books', 'database']
         count = 0
         for d in dir:
             print(count)
@@ -51,8 +50,6 @@ class Basic(commands.Cog):
 
     @commands.command()
     async def edit(self, ctx, chapter, *, edit):
-        await ctx.send('Your edit has been accepted.')
-        await ctx.send(f'This chapter is from Book {cmd.Book(chapter)}')
 
         org, sug, res = edit.split('<<')    # splitting the edit request into definable parts
 
@@ -60,11 +57,13 @@ class Basic(commands.Cog):
         mID = ctx.message.id
         aID = ctx.author.id
         author = ctx.author.nick
-        book   = cmd.Book(chapter)
+        book   = cmd.Book(chapter, guild)
         column = str(tuple(db.get_table(guild, 'editorial', 'edit'))).replace("'", '')
         rank = cmd.ranking(guild, chapter, org)
         values = (mID, aID, author, book, chapter, org, sug, res, rank)
         db.insert(guild, 'editorial', 'edit', column, values)
+        await ctx.send('Your edit has been accepted.')
+        await ctx.send(f'This chapter is from Book {book}')
 
 
     @commands.command()
@@ -78,7 +77,7 @@ class Basic(commands.Cog):
     @commands.command()
     async def print(self, ctx, chapter):
         guild = ctx.guild
-        _ = db.getsql(guild, editorial, edit, chapter)
+        _ = db.getsql(guild, 'editorial', 'edit', chapter)
         print(_)
 
 
@@ -98,18 +97,14 @@ class Basic(commands.Cog):
 
         if attach:
             for file in attach:
-                path = os.getcwd() + f'/Storage/{guild.name} - {guild.id}/chapter/Chapter-{arg}.txt'
+                path = os.getcwd() + f'/Storage/{guild.name} - {guild.id}/books/Chapter-{arg}.txt'
                 await file.save(path)
                 await ctx.send('Received the file.')
-                print(f"Saved a new file to {guild.name}'s folder of {file.size/1024} kb")
+                print(f"Saved a new file of {file.size/1024} kb to the folder of {guild.name}")
         else:
-             await ctx.send('No file included!')
-             await ctx.send('Please try again!')
+            await ctx.send('No file included!')
+            await ctx.send('Please try again!')
 
-        # if file.size > 0:
-        #     ctx.send('Recived the file!')
-        # else:
-        #     ctx.send('No file included!')
 
 ###############################################################################
 #                         AREA FOR SETUP                                      #
