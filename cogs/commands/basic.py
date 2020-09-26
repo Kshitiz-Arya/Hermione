@@ -1,7 +1,5 @@
-import discord
 from discord.ext import commands
 import os
-import sys
 import shutil
 import database as db
 import commands as cmd
