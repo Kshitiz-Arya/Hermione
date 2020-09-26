@@ -1,6 +1,4 @@
-import discord
 from discord.ext import commands
-import json as js
 
 class Database(commands.Cog):
     def __init__(self, client):
