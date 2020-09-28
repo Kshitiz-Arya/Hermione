@@ -12,8 +12,8 @@ class Database(commands.Cog):
     async def add_book(self, ctx, number, chapter, end=None):
         guild = ctx.guild
         cwd = os.getcwd() + f'/Storage/{guild.name} - {guild.id}/books'
-        # for some reason the variable, chapter, is not evaluating in this command.
-        # This is just a work around.
+        # For some reason the variable, chapter, is not evaluating in else section.
+        # This is just a work around until root cause for this problem is found.
         _ = chapter
         print(_)
         with open(f'{cwd}/books.json', 'r') as file:

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import os
 import shutil
+import json
 import database as db
 import commands as cmd
 
@@ -27,8 +28,9 @@ class Basic(commands.Cog):
             print(count)
             os.makedirs(f'Storage/{server_dir}/{d}')
             count += 1
-        os.chdir(f'Storage/{server_dir}/database')
-        os.chdir('../../..')
+        with open('books.json', 'w') as file:
+            base = {}
+            json.dump(base, file)
         db.create_table('editorial', guild)
 
         print(os.getcwd())
@@ -68,7 +70,7 @@ class Basic(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await ctx.send('This is msg 1')
+        await ctx.send('Bot is working!')
         await ctx.send(f'{os.getcwd()}')
 
         print(os.getcwd())
