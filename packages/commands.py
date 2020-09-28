@@ -1,8 +1,9 @@
+import os
 # This function takes chapter number and return Book number
 # from which the chapter belongs to.
-def Book(chapter):
+def Book(chapter, guild):
     # Opening File where Book information is kept.
-    file = open(f'Chapter-{chapter}.txt', 'r')
+    file = open(f'Chapter.txt', 'r')
     # Each line in file represents a Book
     for book, line in enumerate(file, 1):
         start, end = line.split(' ')
@@ -18,7 +19,7 @@ def Book(chapter):
 
 def ranking(guild, chapter, org):
     # This code Rank each sentence according to their position in text file.
-    str = open(f'./Storage/{guild.name} - {guild.id}/chapter/Chapter-{chapter}.txt', 'r')
+    str = open(f'./Storage/{guild.name} - {guild.id}/books/Chapter-{chapter}.txt', 'r')
     print('File has been opened')
     #   This is the phrase which we have to search.
     if '\n' in org:  # This is driver code
