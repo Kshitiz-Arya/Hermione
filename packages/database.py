@@ -16,10 +16,10 @@ def create_connection(guild, db_file):
         print(e)
 
 
-def create_table(database, guild):
+def create_table(database, table, guild):
     try:
         connection = create_connection(guild, database).cursor()
-        connection.execute(query('edit'))
+        connection.execute(query(table))
     except Error as e:
         print(e)
     finally:
@@ -48,8 +48,9 @@ def execute(guild, database, query, values=None):
 
 def get_table(guild, database, table):
     table = execute(guild, database, query('get_table', table))
-    column = list(map(lambda x: x[0], table.description))
-    return column
+    if table:
+        column = list(map(lambda x: x[0], table.description))
+        return column
 
 
 def query(input, table=None, column=None):      # Concider removing this function
@@ -58,16 +59,25 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                  CREATE TABLE IF NOT EXISTS edit
                                  (
                                    Message_ID TEXT PRIMARY KEY,
-                                   Author     TEXT,
-                                   Author_ID  INT,
+                                   Author_ID  TEXT,
+                                   Author     INT,
                                    Book       INT,
                                    Chapter    INT,
                                    Original   TEXT NOT NULL,
                                    Sugested   TEXT NOT NULL,
                                    Reason     TEXT,
-                                   Rank       TEXT
+                                   Rank       TEXT,
+                                   Org_channel TEXT
                                  )
                               """,
+
+                'history':    """
+                                 Create table if not exists history
+                                 (
+                                   Old_ID TEXT PRIMARY KEY,
+                                   New_ID TEXT,
+                                   Org_channel TEXT
+                                 )""",
 
                 'get_table':  f"""
                               SELECT *
@@ -88,11 +98,20 @@ def insert(guild, database, table, column, values):
     return cur.lastrowid
 
 
-def getsql(guild, database, table, column):
+def getsql(guild, database, table, column, value):
     Connection = create_connection(guild, database)
     sql = f''' SELECT * FROM {table}
-               WHERE chapter = {column}'''
+               WHERE {column} = {value}'''
     cur = Connection.cursor()
     cur.execute(sql)
-    rows = cur.fetchall()
+    rows = cur.fetchone()
     return rows
+
+def update(guild, database, table, U_column, U_value, R_column, R_value): # U_column = Update Column, R column = Reference Column
+    Connection = create_connection(guild, database)
+    sql = f''' UPDATE {table}
+               SET {U_column} = {U_value}
+               WHERE {R_column} = {R_value}'''
+    cur = Connection.cursor()
+    cur.execute(sql, values)
+    return Connection.commit()

@@ -1,6 +1,9 @@
 from discord.ext import commands
 import os
 import sys
+
+from discord.ext import commands
+
 client = commands.Bot(command_prefix='.')
 
 
@@ -66,6 +69,11 @@ for dir in os.listdir("./cogs"):
 async def on_ready():
     print('Hermione is ready for a new adventure!!!')
 
+
+@client.event
+async def on_message(meg):
+    ctx = await client.get_context(meg)
+    await client.invoke(ctx)
 
 Token = 'NjQ5MjEwNjQ4Njg5MTE1MTQ5.Xd5eiA.g0w8je98YJKHl7-afYQtkFNnIhk'
 client.run(Token)
