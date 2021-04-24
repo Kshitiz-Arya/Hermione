@@ -6,7 +6,6 @@ def create_connection(guild, db_file):
     # create a database connection to a SQLite database #
     conn = None
     dir = os.getcwd()
-    print(f'Connected to {db_file}')
     db_file = f"{dir}/Storage/{guild.name} - {guild.id}/database/{db_file}.db"
     try:
         conn = sqlite3.connect(db_file)
@@ -34,11 +33,11 @@ def execute(guild, database, query, values=None):
         if values is None:
             commit = cursor.execute(query)
             connection.commit()
-            return commit
+            return commit.fetchall()
         else:
             commit = cursor.execute(query, values)
             connection.commit()
-            return commit
+            return commit.fetchall()
     except Error as e:
         print(e)
     finally:
@@ -47,10 +46,14 @@ def execute(guild, database, query, values=None):
 
 
 def get_table(guild, database, table):
-    table = execute(guild, database, query('get_table', table))
-    if table:
-        column = list(map(lambda x: x[0], table.description))
-        return column
+    sql = "SELECT name FROM PRAGMA_TABLE_INFO('%s');" % table
+    table = execute(guild, database, sql)
+
+    return    [element for tupl in table for element in tupl]
+    # table = execute(guild, database, query('get_table', table))
+    # if table:
+    #     column = list(map(lambda x: x[0], table.description))
+    #     return column
 
 
 def query(input, table=None, column=None):      # Concider removing this function
@@ -66,8 +69,12 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                    Original   TEXT NOT NULL,
                                    Sugested   TEXT NOT NULL,
                                    Reason     TEXT,
-                                   Rank       TEXT,
-                                   Org_channel TEXT
+                                   RankLine   TEXT,
+                                   RankChar   TEXT, 
+                                   Org_channel TEXT,
+                                   Accepted     Text,
+                                   Rejected     Text,
+                                   NotSure      Text
                                  )
                               """,
 
@@ -78,11 +85,12 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                    New_ID TEXT,
                                    Org_channel TEXT
                                  )""",
-
+                
                 'get_table':  f"""
                               SELECT *
                               FROM {table}
-                              """
+                              """,
+                
 
              }
     return query[input]
@@ -90,7 +98,7 @@ def query(input, table=None, column=None):      # Concider removing this functio
 
 def insert(guild, database, table, column, values):
     Connection = create_connection(guild, database)
-    sql = f''' INSERT INTO {table}{column}
+    sql = f''' INSERT INTO {table} {column}
               VALUES({'?' + ',?'*(len(values)-1)}) '''
     cur = Connection.cursor()
     cur.execute(sql, values)
@@ -104,8 +112,20 @@ def getsql(guild, database, table, column, value):
                WHERE {column} = {value}'''
     cur = Connection.cursor()
     cur.execute(sql)
-    rows = cur.fetchone()
+    rows = cur.fetchall()
     return rows
+
+def get_stats(guild, chapter='all'):
+    Connection = create_connection(guild, 'editorial')
+    if chapter == 'all':
+
+        sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), Book, COUNT(DISTINCT(Author)) FROM edit"""
+    else:
+        sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), Book, COUNT(DISTINCT(Author)) FROM edit
+                    WHERE chapter = {chapter}"""
+    cur = Connection.cursor()
+    cur.execute(sql)
+    return cur.fetchone()
 
 def update(guild, database, table, U_column, U_value, R_column, R_value): # U_column = Update Column, R column = Reference Column
     Connection = create_connection(guild, database)
@@ -113,5 +133,5 @@ def update(guild, database, table, U_column, U_value, R_column, R_value): # U_co
                SET {U_column} = {U_value}
                WHERE {R_column} = {R_value}'''
     cur = Connection.cursor()
-    cur.execute(sql, values)
+    cur.execute(sql)
     return Connection.commit()

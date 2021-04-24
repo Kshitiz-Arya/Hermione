@@ -8,7 +8,7 @@ def Book(chapter, guild):
     for book, line in enumerate(file, 1):
         start, end = line.split(' ')
 
-        if start <= chapter <= end:
+        if int(start) <= int(chapter) <= int(end):
             break
 
         if book >= 3:
@@ -29,11 +29,11 @@ def ranking(guild, chapter, org):
         for count, i in enumerate(str, 1):
             if org[0] in i:
                 byte = i.find(org[0])
-                return f'{count}: {byte}'
+                return [count, byte]
 
     else:
         print('This string have single line')
         for count, i in enumerate(str, 1):
             if org in i:
                 byte = i.find(org)
-                return f'{count}: {byte}'
+                return [count, byte]

@@ -24,7 +24,7 @@ async def load(ctx, extension):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
                 client.load_extension(f'cogs.{dir}.{extension}')
-                await ctx.send(f'{extension} is loaded!')
+                await ctx.send(f'{extension} is loaded!', delete_after=10)
 
             else:
                 pass
@@ -36,7 +36,7 @@ async def unload(ctx, extension):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
                 client.unload_extension(f'cogs.{dir}.{extension}')
-                await ctx.send(f'{extension} is unloaded!')
+                await ctx.send(f'{extension} is unloaded!', delete_after=10)
 
             else:
                 pass
@@ -49,7 +49,7 @@ async def reload(ctx, extension):
             if f'{extension}.py' in filename:
                 client.unload_extension(f'cogs.{dir}.{extension}')
                 client.load_extension(f'cogs.{dir}.{extension}')
-                await ctx.send(f'{extension} is reloaded!')
+                await ctx.send(f'{extension} is reloaded!', delete_after=10)
             else:
                 pass
 
