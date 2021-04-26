@@ -3,6 +3,7 @@ from discord.ext import commands
 import os
 import shutil
 import json
+from datetime import datetime
 import database as db
 import command as cmd
 
@@ -102,17 +103,18 @@ class Basic(commands.Cog):
 
         with open(f'Storage/{server_dir}/database/authors.json', 'r') as file:
             authors = json.load(file)
-        with open(f'Storage/{server_dir}/database/channels.json', 'r') as file:
-            channels = json.load(file)
+        with open(f'Storage/{guild.name} - {guild.id}/database/allowedEdits.json', 'r') as file:
+            allowedEdits = json.load(file)
         with open(f'Storage/{server_dir}/database/emojis.json', 'r') as file:
             emojis = json.load(file)
+
+        channels = [c[0] for c in list(allowedEdits.values())]
 
         if channel in channels:
             if emoji in emojis.values():
                 if user in authors:
                         # Look into making this a seperate function
-                        with open(f'Storage/{guild.name} - {guild.id}/database/allowedEdits.json', 'r') as file:
-                            allowedEdits = json.load(file)
+                        
                         row = db.getsql(guild, 'editorial', 'history', 'New_ID', New_ID)
                         Old_ID = int(row[0][0])
                         channel = int(row[0][2])
@@ -125,13 +127,18 @@ class Basic(commands.Cog):
                         channel = self.client.get_channel(channel)
                         msg = await channel.fetch_message(Old_ID)
                         embed_msg = await Editorial_Channel.fetch_message(New_ID)
+                        link = msg.jump_url
 
-                        embed = discord.Embed(color=0x00ff00)
-                        embed.add_field(name='Author', value=author, inline=False)
+                        colour = {'accepted': 0x46e334,
+                                  'rejected': 0xff550d, 'notsure': 0x00ffa6}
+
+                        embed = discord.Embed(color=colour[edit_status], description=f"[Message Link]({link})", timestamp=datetime.now())
+                        embed.set_author(name=author)
+                        embed.set_footer(text=f"Author's Vote - {edit_status.title() + ' ' + emoji}")
                         embed.add_field(name='Original Text', value=org, inline=False)
                         embed.add_field(name='Sugested Text', value=sug, inline=False)
                         embed.add_field(name='Reason', value=res, inline=False)
-                        embed.add_field(name='Authors Vote', value=edit_status, inline=True)
+                        # embed.add_field(name='Authors Vote', value=edit_status + " " + emoji, inline=True)
                         
                         await embed_msg.edit(embed=embed)
                         await update_stats(chapter, guild, Editorial_Channel, msg_stats)
@@ -159,117 +166,162 @@ class Basic(commands.Cog):
 
         with open(f'Storage/{server_dir}/database/authors.json', 'r') as file:
             authors = json.load(file)
-        with open(f'Storage/{server_dir}/database/channels.json', 'r') as file:
-            channels = json.load(file)
+        with open(f'Storage/{server_dir}/database/allowedEdits.json', 'r') as file:
+            allowedEdits = json.load(file)
         with open(f'Storage/{server_dir}/database/emojis.json', 'r') as file:
             emojis = json.load(file)
+        
+        channels = [c[0] for c in list(allowedEdits.values())]
 
         if channel in channels:
             if emoji in emojis.values():
                 if user in authors:
                     # Look into making this a seperate function
-                    with open(f'Storage/{guild.name} - {guild.id}/database/allowedEdits.json', 'r') as file:
-                            allowedEdits = json.load(file)
-                            row = db.getsql(guild, 'editorial',
-                                            'history', 'New_ID', New_ID)
-                            Old_ID = int(row[0][0])
-                            channel = int(row[0][2])
-                            edit_status = list(emojis.keys())[
-                                            list(emojis.values()).index(emoji)]
-                            Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, Editorial_Channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', Old_ID)[0]
+                    
+                    row = db.getsql(guild, 'editorial',
+                                    'history', 'New_ID', New_ID)
+                    Old_ID = int(row[0][0])
+                    channel = int(row[0][2])
+                    edit_status = list(emojis.keys())[
+                                    list(emojis.values()).index(emoji)]
+                    Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, Editorial_Channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', Old_ID)[0] # Editorial_Channel should not be here, convert this to channel
 
-                            Editorial_Channel, msg_stats = allowedEdits[str(chapter)]
-                            Editorial_Channel = self.client.get_channel(Editorial_Channel)
+                    Editorial_Channel, msg_stats = allowedEdits[str(chapter)]
+                    Editorial_Channel = self.client.get_channel(Editorial_Channel)
 
-                            db.update(guild, 'editorial', 'edit', edit_status, 'NULL', 'Message_ID', Old_ID)
-                            channel = self.client.get_channel(channel)
-                            msg = await channel.fetch_message(Old_ID)
-                            embed_msg = await Editorial_Channel.fetch_message(New_ID)
+                    db.update(guild, 'editorial', 'edit', edit_status, 'NULL', 'Message_ID', Old_ID)
+                    channel = self.client.get_channel(channel)
+                    msg = await channel.fetch_message(Old_ID)
+                    embed_msg = await Editorial_Channel.fetch_message(New_ID)
 
-                            embed = discord.Embed(color=0x00ff00)
-                            embed.add_field(name='Author', value=author, inline=False)
-                            embed.add_field(name='Original Text', value=org, inline=False)
-                            embed.add_field(name='Sugested Text', value=sug, inline=False)
-                            embed.add_field(name='Reason', value=res, inline=False)
-                            embed.add_field(name='Authors Vote', value='Not Voted Yet', inline=True)
-                            
-                            await embed_msg.edit(embed=embed)
 
-                            await update_stats(chapter, guild, Editorial_Channel, msg_stats)
-                            await msg.remove_reaction(emoji, member)
+                    link = msg.jump_url
 
-    @commands.command()
-    @in_channel()
-    async def editcheck(self, ctx, chapter, *, edit):
+                    embed = discord.Embed(
+                        color=0x8b60d1, description=f"[Message Link]({link})", timestamp=datetime.now())
+                    embed.set_author(name=author)
+                    embed.set_footer(text="Author's Vote - Not Voted Yet")
+                    embed.add_field(name='Original Text', value=org, inline=False)
+                    embed.add_field(name='Sugested Text', value=sug, inline=False)
+                    embed.add_field(name='Reason', value=res, inline=False)
+                    
+                    await embed_msg.edit(embed=embed)
+
+                    await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+                    await msg.remove_reaction(emoji, member)
+
+    @commands.Cog.listener()
+    async def on_raw_message_edit(self, payload):
+
+        channel = payload.channel_id
+        data = payload.data
+        guild_id = data['guild_id']
+        mID = data['id']
+        guild = self.client.get_guild(int(guild_id))
         try:
-            org, sug, res = edit.split('<<')    # splitting the edit request into definable parts
-        except ValueError:
-            org, sug = edit.split('<<')
-            res = "Not Provided!"
-        guild = ctx.guild
-        print(org, sug, res)
-        try:
-            rankRow, rankChar = cmd.ranking(guild, chapter, org)
+            bot = data['author']['bot']
         except:
-            rankRow, rankChar = None, None
+            bot = 0
+
+        sql = f"select New_ID from history where Old_id = {mID}"
+        results = db.execute(guild, 'editorial', sql)
+        if not bot and len(results) != 0:
+            newID = results[0][0]
+            sql2 = f"select author from edit where Message_ID = {mID}"
+            results = db.execute(guild, 'editorial', sql2)
+            if len(results) != 0:
+                author = results[0][0]
+
+            # Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', mID)[0]
+            msg = data['content']
+            server_dir = f'{guild.name} - {guild_id}'
+            with open(f'Storage/{server_dir}/database/allowedEdits.json', 'r') as file:
+                allowedEdits = json.load(file)
+
+
+
+            if msg[:6] == '.edit ':
+                chapter, edits = msg[6:].split(maxsplit=1)
+                try:
+                    # splitting the edit request into definable parts
+                    org, sug, res = edits.split('<<')
+                except ValueError:
+                    try:
+                        org, sug = edits.split('<<')
+                        res = "Not Provided!"
+                    except ValueError:
+                        return None
+
+            update_sql = f"""UPDATE edit
+                            SET Original = ?, Sugested = ?, Reason = ?
+                            WHERE Message_ID = {mID}
+                            """
+            Editorial_Channel, msg_stats = allowedEdits[chapter]
+            Editorial_Channel = guild.get_channel(Editorial_Channel)
+            msg = await Editorial_Channel.fetch_message(newID)
+
+            link = msg.jump_url
+
+            embed = discord.Embed(color=0x00ff00, description=f"[Message Link]({link})", timestamp=datetime.now())
+            embed.set_author(name=author)
+            embed.set_footer(text="Author's Vote - Not Voted Yet")
+            embed.add_field(name='Original Text', value=org, inline=False)
+            embed.add_field(name='Sugested Text', value=sug, inline=False)
+            embed.add_field(name='Reason', value=res, inline=False)
+
+            await msg.edit(embed=embed)
+            await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+            db.execute(guild, 'editorial', update_sql, (org, sug, res,))
         
-        with open(f'Storage/{guild.name} - {guild.id}/database/allowedEdits.json', 'r') as file:
-            allowedEdits = json.load(file)
 
-        if chapter in allowedEdits.keys():
-            if rankRow == None:
-                await ctx.send('This was not found in the chapter. It is possible that this has already been edited or you have entered the wrong line.', delete_after=10)
-            elif len(org) < 2 or len(sug) < 2:
-                print(org, sug)
-                await ctx.send('One or more columns are empty! Please submit requests with proper formatting.', delete_after=10)
-            elif chapter in allowedEdits.keys():
+    @commands.Cog.listener()
+    async def on_raw_message_delete(self, payload):
+        channel_id = payload.channel_id
+        mID = payload.message_id
+        guild_id = payload.guild_id
+        guild = self.client.get_guild(int(guild_id))
 
-                channel = ctx.channel.id
-                mID = ctx.message.id
-                aID = ctx.author.id
-                author = ctx.author.name if ctx.author.nick == None else ctx.author.nick
-                book = cmd.Book(chapter, guild)
-                column = str(tuple(db.get_table(guild, 'editorial', 'edit'))).replace("'", '')
-
-                Editorial_Channel, msg_stats = allowedEdits[chapter]
-                Editorial_Channel = self.client.get_channel(Editorial_Channel)
-                values = (mID, aID, author, book, chapter, org, sug, res, rankRow, rankChar, channel, None, None, None)  # Last three zeros are the Acceptence value, which is 0 by default
-                # values = (mID, aID, author, book, chapter, org, sug, res, rankRow, channel)
-                db.insert(guild, 'editorial', 'edit', column, values)
-
-                # Sending the embed to distineted channel
-                embed = discord.Embed(color=0x00ff00)
-                embed.add_field(name='Author', value=author, inline=False)
-                embed.add_field(name='Original Text', value=org, inline=False)
-                embed.add_field(name='Sugested Text', value=sug, inline=False)
-                embed.add_field(name='Reason', value=res, inline=False)
-                embed.add_field(name='Authors Vote', value='Not Voted Yet', inline=True)
-                msg_send = await Editorial_Channel.send(embed=embed)
+        sql = f"select New_ID from history where Old_id = {mID}"
+        results = db.execute(guild, 'editorial', sql)
+        if len(results) != 0:
+            newID = results[0][0]
 
 
-                column = "('Old_ID', 'New_ID', 'Org_channel')"
-                values = (mID, msg_send.id, channel)
-                db.insert(guild, 'editorial', 'history', column, values)
-                
-                await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+            sql2 = f"select chapter from edit where Message_ID = {mID}"
+            results = db.execute(guild, 'editorial', sql2)
+            if len(results) != 0:
+                chapter = results[0][0]
+                server_dir = f'{guild.name} - {guild_id}'
+                with open(f'Storage/{server_dir}/database/allowedEdits.json', 'r') as file:
+                    allowedEdits = json.load(file)
+            
+            Editorial_Channel, msg_stats = allowedEdits[str(chapter)]
+            delete_sql = f"delete from edit where Message_ID = {mID}"
+            delete_sql2 = f"delete from history where Old_ID = {mID}"
 
-                await ctx.send('Your edit has been accepted.', delete_after=10)
-                await ctx.send(f'This chapter is from Book {book}, Chapter {chapter}, Line {rankRow} and position {rankChar}', delete_after=10)
-        else:
-            await ctx.send('Editing is currently disabled for this chapter.', delete_after=10)
+            Editorial_Channel = self.client.get_channel(int(Editorial_Channel))
+            edit_msg = await Editorial_Channel.fetch_message(newID)
+            await edit_msg.delete()
+            db.execute(guild, 'editorial', delete_sql)
+            db.execute(guild, 'editorial', delete_sql2)
+            await update_stats(chapter, guild, Editorial_Channel, msg_stats)
 
 
     @commands.command()
     @in_channel()
-    async def edit(self, ctx, chapter, *, edit):
+    async def edit(self, ctx, chapter, *, edit, context=0):
         try:
             # splitting the edit request into definable parts
             org, sug, res = edit.split('<<')
         except ValueError:
-            org, sug = edit.split('<<')
-            res = "Not Provided!"
+            try:
+                org, sug = edit.split('<<')
+                res = "Not Provided!"
+            except ValueError:
+                await ctx.send("Your Edit is missing few thing. Please check and try again", delete_after=10)
+                return None
         guild = ctx.guild
-        print(org, sug, res)
+
         try:
             rankRow, rankChar = cmd.ranking(guild, chapter, org)
         except:
@@ -288,27 +340,34 @@ class Basic(commands.Cog):
             elif chapter in allowedEdits.keys():
 
                 channel = ctx.channel.id
-                mID = ctx.message.id
-                aID = ctx.author.id
-                author = ctx.author.name if ctx.author.nick == None else ctx.author.nick
+                if context == 0:
+                    mID = ctx.message.id
+                    aID = ctx.author.id
+                    author = ctx.author.name if ctx.author.nick == None else ctx.author.nick
+                else:
+                    mID = context.message.id
+                    aID = context.author.id
+                    author = context.author.name
+
                 book = cmd.Book(chapter, guild)
                 column = str(tuple(db.get_table(guild, 'editorial', 'edit'))).replace("'", '')
 
                 Editorial_Channel, msg_stats = allowedEdits[chapter]
                 Editorial_Channel = self.client.get_channel(Editorial_Channel)
                 # Last three zeros are the Acceptence value, which is 0 by default
-                values = (mID, aID, author, book, chapter, org, sug,
-                        res, rankRow, rankChar, channel, None, None, None)
+                values = (mID, aID, author, book, chapter, org, sug, res, rankRow, rankChar, channel, None, None, None)
                 # values = (mID, aID, author, book, chapter, org, sug, res, rankRow, channel)
                 db.insert(guild, 'editorial', 'edit', column, values)
 
                 # Sending the embed to distineted channel
-                embed = discord.Embed(color=0x00ff00)
-                embed.add_field(name='Author', value=author, inline=False)
+                link = ctx.message.jump_url
+
+                embed = discord.Embed(color=0x8b60d1, description=f"[Message Link]({link})", timestamp=datetime.now())
+                embed.set_author(name=author)
+                embed.set_footer(text="Author's Vote - Not Voted Yet")
                 embed.add_field(name='Original Text', value=org, inline=False)
                 embed.add_field(name='Sugested Text', value=sug, inline=False)
                 embed.add_field(name='Reason', value=res, inline=False)
-                embed.add_field(name='Authors Vote',value='Not Voted Yet', inline=True)
 
                 msg_send = await Editorial_Channel.send(embed=embed)
 
@@ -328,6 +387,8 @@ class Basic(commands.Cog):
             await ctx.send('Editing is currently disabled for this chapter.', delete_after=10)
 
 
+
+    
 
 
 #     The Author will create the channel now and embed will send in the realtime
@@ -409,15 +470,17 @@ class Basic(commands.Cog):
 async def update_stats(chapter, guild, channel, msg_stats):
 
     accepted, rejected, notsure, total, book, editors = db.get_stats(guild, chapter)
-    info = discord.Embed(color=0xff0000)
-    info.add_field(name="Book", value=book, inline=True)
-    info.add_field(name="Chapter", value=chapter, inline=True)
+    info = discord.Embed(color=0x815bc8, timestamp=datetime.now())
+
     info.add_field(name="Number of Editors", value=editors, inline=False)
     info.add_field(name="Accepted Edits", value=accepted, inline=True)
     info.add_field(name="Rejected Edits", value=rejected, inline=True)
     info.add_field(name="Not Sure", value=notsure, inline=True)
     info.add_field(name="Total Edits", value=total, inline=False)
-    
+    info.set_author(name="Dodging Prision & Stealing Witches")
+    info.set_thumbnail(url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
+    info.set_footer(text=f'Book {book}, Chapter {chapter} | Provided By Hermione')
+
     msg = await channel.fetch_message(msg_stats)
     await msg.edit(embed=info)
 

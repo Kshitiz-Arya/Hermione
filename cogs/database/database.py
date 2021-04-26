@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 import json
 import os
+from datetime import datetime, timedelta
+import pandas as pd
+from io import BytesIO
 import command as cmd
 import database as db
 
@@ -136,13 +139,15 @@ class Database(commands.Cog):
         channel = ctx.message.channel_mentions[0]
         book = cmd.Book(chapter, guild)
         
-        info = discord.Embed(color=0xff0000)
-        info.add_field(name="Book", value=book, inline=True)
-        info.add_field(name="Chapter", value=chapter, inline=True)
+        info = discord.Embed(color=0x815bc8, timestamp=datetime.now())
         info.add_field(name="Accepted Edits", value=0, inline=True)
         info.add_field(name="Rejected Edits", value=0, inline=True)
         info.add_field(name="Not Sure", value=0, inline=True)
         info.add_field(name="Total Edits", value=0, inline=False)
+        info.set_author(name="Dodging Prision & Stealing Witches", url='https://dpasw.com')
+        info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
+        info.set_footer(
+            text=f'Book {book}, Chapter {chapter} | Provided By Hermione')
 
         msg = await channel.send(embed=info)
         await msg.pin()
@@ -187,14 +192,15 @@ class Database(commands.Cog):
 
         accepted, rejected, notsure, total, book, editors = db.get_stats(guild, chapter)
 
-        info = discord.Embed(color=0xff0000)
-        info.add_field(name="Book", value=book, inline=True)
-        info.add_field(name="Chapter", value=chapter, inline=True)
+        info = discord.Embed(color=0x815bc8, timestamp=datetime.now())
+        info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
         info.add_field(name="Number of Editors", value=editors, inline=False)
         info.add_field(name="Accepted Edits", value=accepted, inline=False)
         info.add_field(name="Rejected Edits", value=rejected, inline=False)
         info.add_field(name="Not Sure", value=notsure, inline=False)
         info.add_field(name="Total Edits", value=total, inline=False)
+        info.set_author(name="Dodging Prision & Stealing Witches", url='https://dpasw.com')
+        info.set_footer(text=f'Book {book}, Chapter {chapter} | Provided By Hermione')
 
         await ctx.send(embed=info)
 
@@ -207,13 +213,15 @@ class Database(commands.Cog):
 
         accepted, rejected, notsure, total, book, editors = db.get_stats(guild)
 
-        info = discord.Embed(color=0xff0000)
-        info.add_field(name="Book", value=book, inline=True)
+        info = discord.Embed(color=0x815bc8, timestamp=datetime.now())
         info.add_field(name="Number of Editors", value=editors, inline=False)
         info.add_field(name="Accepted Edits", value=accepted, inline=False)
         info.add_field(name="Rejected Edits", value=rejected, inline=False)
         info.add_field(name="Not Sure", value=notsure, inline=False)
         info.add_field(name="Total Edits", value=total, inline=False)
+        info.set_author(name="Dodging Prision & Stealing Witches", url='https://dpasw.com')
+        info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
+        info.set_footer(text=f'Book - {book}| Provided By Hermione')
 
         await ctx.send(embed=info)
 
@@ -340,6 +348,63 @@ class Database(commands.Cog):
         with open(f'Storage/{guild.name} - {guild.id}/database/channels.json', 'w') as file:
             json.dump(channels, file)
 
+
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def checkEdits(self, ctx, number, chap=0):
+        guild = ctx.guild
+        channel = ctx.channel
+        date = datetime.now() - timedelta(days=int(number))
+
+        messages = await channel.history(after=date, oldest_first=False).flatten()
+
+        sql = f"select * from edit Order by Message_ID desc limit {len(messages)}"
+        result = db.execute(guild, 'editorial', sql)
+        Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, Editorial_Channel, Accepted, Rejected, NotSure = [
+            list(tup) for tup in zip(*result)]
+        counter = 0
+
+        for message in messages:
+                msg = message.content
+
+                if msg[:6] == '.edit ':
+                    if str(message.id) not in Message_ID:
+                        chapter, edits = msg[6:].split(maxsplit=1)
+                        print(type(chapter), type(chap), chapter == str(chap))
+                        if chapter == str(chap) or chap == 0:
+                            context = await self.client.get_context(message)
+
+                            await ctx.invoke(self.client.get_command('edit'), chapter=chapter, edit=edits, context=context)
+                            Message_ID.append(message.id)
+                            counter += 1
+        await ctx.send(f"Total Messages Recovered :- {counter}", delete_after=100)
+
+
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def export(self, ctx, chapter):
+        guild = ctx.guild
+        conn = db.create_connection(guild, 'editorial')
+        bio = BytesIO()
+
+        script = f"SELECT * FROM edit WHERE chapter = {chapter}"
+        df = pd.read_sql_query(script, conn)
+        writer = pd.ExcelWriter(bio, engine="openpyxl")
+
+        df.to_excel(writer, sheet_name=f"Edits - Chapter {chapter}")
+        writer.save()
+        bio.seek(0)
+        # excel_file = bio.read()
+        # print(excel_file.__sizeof__())
+        await ctx.send(f"Here is all the edits in chapter {chapter}", file=discord.File(bio, f"Chapter-{chapter}.xlsx"))
+        if conn:
+            conn.close()
+
+###############################################################################
+#                         AREA FOR SETUP                                      #
+###############################################################################
 
 def setup(client):
     client.add_cog(Database(client))
