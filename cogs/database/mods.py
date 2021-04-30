@@ -7,7 +7,13 @@ import pandas as pd
 from io import BytesIO
 import command as cmd
 import database as db
+import logging
 
+logger = logging.getLogger('discord')
+logger.setLevel(10)
+handler = logging.FileHandler(filename='discord-database.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 def is_author():
         def predicate(ctx):
@@ -29,7 +35,7 @@ def in_channel():
             return ctx.channel.id in channels
         return commands.check(predicate)
 
-class Database(commands.Cog):
+class Mods(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -407,4 +413,4 @@ class Database(commands.Cog):
 ###############################################################################
 
 def setup(client):
-    client.add_cog(Database(client))
+    client.add_cog(Mods(client))

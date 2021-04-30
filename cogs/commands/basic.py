@@ -6,7 +6,13 @@ import json
 from datetime import datetime
 import database as db
 import command as cmd
+import logging
 
+logger = logging.getLogger('discord')
+logger.setLevel(10)
+handler = logging.FileHandler(filename='discord-basic.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 ###############################################################################
 #                         AREA FOR COMMANDS                                   #
@@ -95,7 +101,7 @@ class Basic(commands.Cog):
         guild = self.client.get_guild(guild)
         channel = payload.channel_id
         # msg = db.get_table(guild, 'editorial', 'history')
-        user = payload.user_id
+        user_id = payload.user_id
         emoji = str(payload.emoji)
         New_ID = payload.message_id
         server_dir = f'{guild.name} - {guild.id}'
@@ -112,37 +118,46 @@ class Basic(commands.Cog):
 
         if channel in channels:
             if emoji in emojis.values():
-                if user in authors:
+                if user_id in authors:
                         # Look into making this a seperate function
                         
                         row = db.getsql(guild, 'editorial', 'history', 'New_ID', New_ID)
                         Old_ID = int(row[0][0])
                         channel = int(row[0][2])
                         edit_status = list(emojis.keys())[list(emojis.values()).index(emoji)]
-                        Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, Editorial_Channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', Old_ID)[0]
+                        Message_ID, author_ID, author_name, Book, chapter, org, sug, res, RankCol, RankChar, Editorial_Channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', Old_ID)[0]
                         Editorial_Channel, msg_stats = allowedEdits[str(chapter)]
                         Editorial_Channel = self.client.get_channel(Editorial_Channel)
+                        author = await self.client.fetch_user(author_ID)
+
 
                         db.update(guild, 'editorial', 'edit', edit_status, '1', 'Message_ID', Old_ID)
                         channel = self.client.get_channel(channel)
                         msg = await channel.fetch_message(Old_ID)
                         embed_msg = await Editorial_Channel.fetch_message(New_ID)
                         link = msg.jump_url
-
+                        if bool(author.avatar_url):
+                            avatar = str(author.avatar_url)
                         colour = {'accepted': 0x46e334,
                                   'rejected': 0xff550d, 'notsure': 0x00ffa6}
 
-                        embed = discord.Embed(color=colour[edit_status], description=f"[Message Link]({link})", timestamp=datetime.now())
-                        embed.set_author(name=author)
-                        embed.set_footer(text=f"Author's Vote - {edit_status.title() + ' ' + emoji}")
-                        embed.add_field(name='Original Text', value=org, inline=False)
-                        embed.add_field(name='Sugested Text', value=sug, inline=False)
-                        embed.add_field(name='Reason', value=res, inline=False)
+
+                        updated_embed = embed_msg.embeds[0].to_dict()
+                        updated_embed['color'] = int(colour[edit_status])
+                        updated_embed['footer']['text'] = f"Author's Vote - {edit_status.title()} {emoji}"
+                        updated_embed = discord.Embed.from_dict(updated_embed)
+                        # embed = discord.Embed(color=colour[edit_status], description=f"[Message Link]({link})", timestamp=datetime.now())
+                        # embed.set_author(name=author_name, icon_url=avatar)
+                        # embed.set_footer(text=f"Author's Vote - {edit_status.title() + ' ' + emoji}")
+                        # embed.add_field(name='Original Text', value=org, inline=False)
+                        # embed.add_field(name='Sugested Text', value=sug, inline=False)
+                        # embed.add_field(name='Reason', value=res, inline=False)
                         # embed.add_field(name='Authors Vote', value=edit_status + " " + emoji, inline=True)
                         
-                        await embed_msg.edit(embed=embed)
-                        await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+                        await embed_msg.edit(embed=updated_embed)
+                        await update_stats(self.client.user, chapter, guild, Editorial_Channel, msg_stats)
                         await msg.add_reaction(emoji)
+                        print(updated_embed.to_dict())
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -207,7 +222,7 @@ class Basic(commands.Cog):
                     
                     await embed_msg.edit(embed=embed)
 
-                    await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+                    await update_stats(self.client.user,chapter, guild, Editorial_Channel, msg_stats)
                     await msg.remove_reaction(emoji, member)
 
     @commands.Cog.listener()
@@ -270,7 +285,7 @@ class Basic(commands.Cog):
             embed.add_field(name='Reason', value=res, inline=False)
 
             await msg.edit(embed=embed)
-            await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+            await update_stats(self.client.user, chapter, guild, Editorial_Channel, msg_stats)
             db.execute(guild, 'editorial', update_sql, (org, sug, res,))
         
 
@@ -304,7 +319,7 @@ class Basic(commands.Cog):
             await edit_msg.delete()
             db.execute(guild, 'editorial', delete_sql)
             db.execute(guild, 'editorial', delete_sql2)
-            await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+            await update_stats(self.client.user,chapter, guild, Editorial_Channel, msg_stats)
 
 
     @commands.command()
@@ -375,7 +390,7 @@ class Basic(commands.Cog):
                 values = (mID, msg_send.id, channel)
                 db.insert(guild, 'editorial', 'history', column, values)
 
-                await update_stats(chapter, guild, Editorial_Channel, msg_stats)
+                await update_stats(self.client.user, chapter, guild, Editorial_Channel, msg_stats)
 
                 for emoji in emojis.values():
                         await msg_send.add_reaction(emoji)
@@ -387,8 +402,31 @@ class Basic(commands.Cog):
             await ctx.send('Editing is currently disabled for this chapter.', delete_after=10)
 
 
+    @in_channel()
+    @commands.command()
+    async def suggest(self, ctx, chapter, *,suggestion):
+        guild = ctx.guild
+        channel = ctx.channel
+        author = ctx.author
+        author_name = author.name if author.nick is None else author.nick
+        msg = ctx.message
+        link = msg.jump_url
+        bot = self.client.user
+        bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0
+        if bool(author.avatar_url):
+            avatar = str(author.avatar_url)
+        
+        with open(f"Storage/{guild.name} - {guild.id}/database/emojis.json", 'r') as file:
+            emojis = json.load(file)
 
-    
+        sug = discord.Embed(color=0x8b60d1, description=f"[Message Link]({link})", timestamp=datetime.now())
+        sug.set_author(name=author_name, icon_url=avatar)
+        sug.add_field(name='Suggestion', value=suggestion, inline=False)
+        sug.set_footer(text="Author's Vote - Not Voted Yet | Provided by Hermione", icon_url=bot_avatar)
+
+        msg_send = await ctx.send(embed=sug)    
+        for emoji in emojis.values():
+            await msg_send.add_reaction(emoji)
 
 
 #     The Author will create the channel now and embed will send in the realtime
@@ -467,10 +505,12 @@ class Basic(commands.Cog):
 #                         AREA FOR SETUP                                      #
 ###############################################################################
 
-async def update_stats(chapter, guild, channel, msg_stats):
+async def update_stats(bot, chapter, guild, channel, msg_stats):
 
     accepted, rejected, notsure, total, book, editors = db.get_stats(guild, chapter)
     info = discord.Embed(color=0x815bc8, timestamp=datetime.now())
+
+    bot_avatar = (bot.avatar_url) if bool(bot.avatar_url) else 0
 
     info.add_field(name="Number of Editors", value=editors, inline=False)
     info.add_field(name="Accepted Edits", value=accepted, inline=True)
@@ -479,7 +519,7 @@ async def update_stats(chapter, guild, channel, msg_stats):
     info.add_field(name="Total Edits", value=total, inline=False)
     info.set_author(name="Dodging Prision & Stealing Witches")
     info.set_thumbnail(url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
-    info.set_footer(text=f'Book {book}, Chapter {chapter} | Provided By Hermione')
+    info.set_footer(text=f'Book {book}, Chapter {chapter} | Provided By Hermione', icon_url=bot_avatar)
 
     msg = await channel.fetch_message(msg_stats)
     await msg.edit(embed=info)
