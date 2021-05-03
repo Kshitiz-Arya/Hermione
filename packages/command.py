@@ -19,21 +19,24 @@ def Book(chapter, guild):
 
 def ranking(guild, chapter, org):
     # This code Rank each sentence according to their position in text file.
-    str = open(f'./Storage/{guild.name} - {guild.id}/books/Chapter-{chapter}.txt', 'r')
-    print('File has been opened')
-    #   This is the phrase which we have to search.
-    if '\n' in org:  # This is driver code
-        print('This string have multiple lines')
-        org = org.splitlines()
+    try:
+        str = open(f'./Storage/{guild.name} - {guild.id}/books/Chapter-{chapter}.txt', 'r')
+        print('File has been opened')
+        #   This is the phrase which we have to search.
+        if '\n' in org:  # This is driver code
+            print('This string have multiple lines')
+            org = org.splitlines()
 
-        for count, i in enumerate(str, 1):
-            if org[0] in i:
-                byte = i.find(org[0])
-                return [count, byte]
+            for count, i in enumerate(str, 1):
+                if org[0] in i:
+                    byte = i.find(org[0])
+                    return [count, byte]
 
-    else:
-        print('This string have single line')
-        for count, i in enumerate(str, 1):
-            if org in i:
-                byte = i.find(org)
-                return [count, byte]
+        else:
+            print('This string have single line')
+            for count, i in enumerate(str, 1):
+                if org in i:
+                    byte = i.find(org)
+                    return [count, byte]
+    except FileNotFoundError as Error:
+        return Error

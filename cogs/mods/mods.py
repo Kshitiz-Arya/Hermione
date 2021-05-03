@@ -5,9 +5,16 @@ import os
 from datetime import datetime, timedelta
 import pandas as pd
 from io import BytesIO
-import command as cmd
+from command import Book, ranking
 import database as db
+import logging
+import time
 
+logger = logging.getLogger('discord')
+logger.setLevel(10)
+handler = logging.FileHandler(filename='discord-database.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 def is_author():
         def predicate(ctx):
@@ -29,7 +36,15 @@ def in_channel():
             return ctx.channel.id in channels
         return commands.check(predicate)
 
-class Database(commands.Cog):
+def read_json(file, guild):
+    with open(f'Storage/{guild.name} - {guild.id}/database/{file}.json', "r") as f:
+        return json.load(f)
+
+def dump_json(data, file, guild):
+    with open(f'Storage/{guild.name} - {guild.id}/database/{file}.json', "w") as f:
+        json.dump(data, f, indent=4)
+
+class Mods(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -137,25 +152,32 @@ class Database(commands.Cog):
     async def allowEdit(self, ctx, chapter):
         guild = ctx.guild
         channel = ctx.message.channel_mentions[0]
-        book = cmd.Book(chapter, guild)
+        
+        if chapter == 'suggestion':
+            Etype = chapter
+            footer_text = ''
+
+        else:
+            Etype = 'edits'
+            footer_text = f'Book {Book(chapter, guild)}, Chapter {chapter} |'
+
+        # book = cmd.Book(chapter, guild)
         
         info = discord.Embed(color=0x815bc8, timestamp=datetime.now())
-        info.add_field(name="Accepted Edits", value=0, inline=True)
-        info.add_field(name="Rejected Edits", value=0, inline=True)
+        info.add_field(name=f"Accepted {Etype}", value=0, inline=True)
+        info.add_field(name=f"Rejected {Etype}", value=0, inline=True)
         info.add_field(name="Not Sure", value=0, inline=True)
-        info.add_field(name="Total Edits", value=0, inline=False)
+        info.add_field(name=f"Total {Etype}", value=0, inline=False)
         info.set_author(name="Dodging Prision & Stealing Witches", url='https://dpasw.com')
         info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
         info.set_footer(
-            text=f'Book {book}, Chapter {chapter} | Provided By Hermione')
+            text=f'{footer_text} Provided By Hermione', icon_url=self.client.user.avatar_url)
 
         msg = await channel.send(embed=info)
         await msg.pin()
         print(msg.id)
-        with open(f'Storage/{guild.name} - {guild.id}/database/allowedEdits.json', 'r') as file:
-            aEdit = json.load(file)
-        with open(f'Storage/{guild.name} - {guild.id}/database/channels.json', 'r') as file:
-            channels = json.load(file)
+        aEdit = read_json('allowedEdits', guild)
+        channels = read_json('channels', guild)
 
         aEdit[chapter] = [channel.id, msg.id]
         channels.append(channel.id)
@@ -389,7 +411,7 @@ class Database(commands.Cog):
         conn = db.create_connection(guild, 'editorial')
         bio = BytesIO()
 
-        script = f"SELECT * FROM edit WHERE chapter = {chapter}"
+        script = f"SELECT * FROM edit WHERE chapter = {chapter} Order By rankLine, rankChar"
         df = pd.read_sql_query(script, conn)
         writer = pd.ExcelWriter(bio, engine="openpyxl")
 
@@ -402,9 +424,32 @@ class Database(commands.Cog):
         if conn:
             conn.close()
 
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def changeColour(self, ctx, *, values):
+        values = values.split()
+        if len(values) != 4:
+            print(values, len(values))
+            await ctx.send('This command needs 4 values for Accepted, Rejected, Not Sure and No Vote respectively', delete_after=30)
+        else:  
+            guild = ctx.guild
+            x = time.time()
+            config = read_json('config', guild)
+            print(time.time()-x) 
+            try:
+                accepted, rejected, notsure, noVote = [int(f'0x{x}', 16) for x in values]
+            except ValueError:
+                await ctx.send('The colours should be in hexadecimal!', delete_after=10)
+                return
+            config['mods']['colour'] = {'accepted': accepted, 'rejected': rejected, 'notsure': notsure, 'noVote': noVote}
+            dump_json(config, 'config', guild)
+            await ctx.send('Changed the embed colours!', delete_after=10)
+
+
 ###############################################################################
 #                         AREA FOR SETUP                                      #
 ###############################################################################
 
 def setup(client):
-    client.add_cog(Database(client))
+    client.add_cog(Mods(client))

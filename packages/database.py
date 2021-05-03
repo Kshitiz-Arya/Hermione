@@ -67,7 +67,7 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                    Book       INT,
                                    Chapter    INT,
                                    Original   TEXT NOT NULL,
-                                   Sugested   TEXT NOT NULL,
+                                   Sugested   TEXT,
                                    Reason     TEXT,
                                    RankLine   TEXT,
                                    RankChar   TEXT, 
@@ -77,7 +77,18 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                    NotSure      Text
                                  )
                               """,
-
+                'suggestion':   """
+                                    CREATE TABLE IF NOT EXISTS edit
+                                    (
+                                    Message_ID TEXT PRIMARY KEY,
+                                    Author_ID  TEXT,
+                                    Author     INT,
+                                    Sugested   TEXT NOT NULL,
+                                    Org_channel TEXT,
+                                    Accepted     Text,
+                                    Rejected     Text,
+                                    NotSure      Text
+                                """,
                 'history':    """
                                  Create table if not exists history
                                  (

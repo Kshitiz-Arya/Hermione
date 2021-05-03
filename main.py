@@ -3,7 +3,13 @@ import os
 import sys
 
 from discord.ext import commands
+import logging
 
+logger = logging.getLogger('discord')
+logger.setLevel(10)
+handler = logging.FileHandler(filename='discord-main.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 client = commands.Bot(command_prefix='.')
 
 
@@ -24,7 +30,7 @@ async def load(ctx, extension):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
                 client.load_extension(f'cogs.{dir}.{extension}')
-                await ctx.send(f'{extension} is loaded!', delete_after=10)
+                await ctx.send(f'{extension} is loaded!', delete_after=20)
 
             else:
                 pass
@@ -36,7 +42,7 @@ async def unload(ctx, extension):
         for filename in os.listdir(f'./cogs/{dir}'):
             if f'{extension}.py' in filename:
                 client.unload_extension(f'cogs.{dir}.{extension}')
-                await ctx.send(f'{extension} is unloaded!', delete_after=10)
+                await ctx.send(f'{extension} is unloaded!', delete_after=20)
 
             else:
                 pass
@@ -49,7 +55,7 @@ async def reload(ctx, extension):
             if f'{extension}.py' in filename:
                 client.unload_extension(f'cogs.{dir}.{extension}')
                 client.load_extension(f'cogs.{dir}.{extension}')
-                await ctx.send(f'{extension} is reloaded!', delete_after=10)
+                await ctx.send(f'{extension} is reloaded!', delete_after=20)
             else:
                 pass
 
