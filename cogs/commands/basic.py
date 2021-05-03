@@ -163,6 +163,7 @@ class Basic(commands.Cog):
                         await embed_msg.edit(embed=updated_embed)
                         await update_stats(self.client.user, chapter, guild, Editorial_Channel, msg_stats)
                         await msg.add_reaction(emoji)
+                        print(updated_embed.to_dict())
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -517,7 +518,7 @@ class Basic(commands.Cog):
         bot_invite.set_author(name='Invite the bot to your server using this link!', icon_url=self.client.user.avatar_url)
         await ctx.send(embed=bot_invite)
 
-        
+
 #     The Author will create the channel now and embed will send in the realtime
 #     @commands.command()
 #     async def get(self, ctx, chapter):
