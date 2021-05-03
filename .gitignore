@@ -2,3 +2,4 @@
 cogs/database/__pycache__/database.cpython-38.pyc
 .ropeproject/config.py
 Storage/
+*.log
