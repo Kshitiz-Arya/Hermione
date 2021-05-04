@@ -378,7 +378,9 @@ class Basic(commands.Cog):
                 org, sug = edit.split('<<')
                 res = "Not Provided!"
             except ValueError:
-                await ctx.send("Your Edit is missing few thing. Please check and try again", delete_after=10)
+                if not ctx.command.name == 'checkEdits':
+                    await ctx.send("Your Edit is missing few thing. Please check and try again", delete_after=10)
+                
                 return None
         guild = ctx.guild
 
@@ -458,6 +460,7 @@ class Basic(commands.Cog):
 
             await ctx.send('Your edit has been accepted.', delete_after=10)
             await ctx.send(f'This chapter is from Book {book}, Chapter {chapter}, Line {rankRow} and position {rankChar}', delete_after=10)
+            return True
         else:
             await ctx.send('Editing is currently disabled for this chapter.', delete_after=10)
 

@@ -278,7 +278,13 @@ class Mods(commands.Cog):
     @is_author()
     async def addAuthor(self, ctx):
         guild = ctx.guild
-        author = ctx.message.mentions[0]
+
+        try:
+            author = ctx.message.mentions[0]
+        except IndexError:
+            await ctx.send('You need to mention the author to add them to the list!', delete_after=30)
+            return
+
         author_id = author.id
         author_name = author.name if author.nick == None else author.nick
 
@@ -392,14 +398,19 @@ class Mods(commands.Cog):
 
                 if msg[:6] == '.edit ':
                     if str(message.id) not in Message_ID:
-                        chapter, edits = msg[6:].split(maxsplit=1)
+                        try:
+                            chapter, edits = msg[6:].split(maxsplit=1)
+                        except ValueError:
+                            pass
                         print(type(chapter), type(chap), chapter == str(chap))
                         if chapter == str(chap) or chap == 0:
                             context = await self.client.get_context(message)
 
-                            await ctx.invoke(self.client.get_command('edit'), chapter=chapter, edit=edits, context=context)
-                            Message_ID.append(message.id)
-                            counter += 1
+                            result = await ctx.invoke(self.client.get_command('edit'), chapter=chapter, edit=edits, context=context)
+                            print(result)
+                            if result is True:
+                                Message_ID.append(message.id)
+                                counter += 1
         await ctx.send(f"Total Messages Recovered :- {counter}", delete_after=100)
 
 

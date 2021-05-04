@@ -1,0 +1,376 @@
+[
+    {
+        "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": {
+            "stats": [
+                "('chapter is a required argument that is missing.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 697, in _parse_arguments\n    transformed = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 542, in transform\n    raise MissingRequiredArgument(param)\n",
+                    "discord.ext.commands.errors.MissingRequiredArgument: chapter is a required argument that is missing.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": {
+            "editors": [
+                "('chapter is a required argument that is missing.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 697, in _parse_arguments\n    transformed = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 542, in transform\n    raise MissingRequiredArgument(param)\n",
+                    "discord.ext.commands.errors.MissingRequiredArgument: chapter is a required argument that is missing.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CheckFailure'>": {
+            "editors": [
+                "('The check functions for command editors failed.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 778, in prepare\n    raise CheckFailure('The check functions for command {0.qualified_name} failed.'.format(self))\n",
+                    "discord.ext.commands.errors.CheckFailure: The check functions for command editors failed.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CheckFailure'>": {
+            "edit": [
+                "('The check functions for command edit failed.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 778, in prepare\n    raise CheckFailure('The check functions for command {0.qualified_name} failed.'.format(self))\n",
+                    "discord.ext.commands.errors.CheckFailure: The check functions for command edit failed.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CheckFailure'>": {
+            "edit": [
+                "('The check functions for command edit failed.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 778, in prepare\n    raise CheckFailure('The check functions for command {0.qualified_name} failed.'.format(self))\n",
+                    "discord.ext.commands.errors.CheckFailure: The check functions for command edit failed.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CheckFailure'>": {
+            "edit": [
+                "('The check functions for command edit failed.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 778, in prepare\n    raise CheckFailure('The check functions for command {0.qualified_name} failed.'.format(self))\n",
+                    "discord.ext.commands.errors.CheckFailure: The check functions for command edit failed.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": {
+            "editors": [
+                "('chapter is a required argument that is missing.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 697, in _parse_arguments\n    transformed = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 542, in transform\n    raise MissingRequiredArgument(param)\n",
+                    "discord.ext.commands.errors.MissingRequiredArgument: chapter is a required argument that is missing.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "edit": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\\nIn embed.fields.2.value: This field is required',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 447, in edit\n    msg_send = await Editorial_Channel.send(embed=embed)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/abc.py\", line 1064, in send\n    data = await state.http.send_message(channel.id, content, tts=tts, embed=embed,\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.2.value: This field is required\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.2.value: This field is required\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": {
+            "suggest": [
+                "('suggestion is a required argument that is missing.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 706, in _parse_arguments\n    kwargs[name] = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 542, in transform\n    raise MissingRequiredArgument(param)\n",
+                    "discord.ext.commands.errors.MissingRequiredArgument: suggestion is a required argument that is missing.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": {
+            "edit": [
+                "('edit is a required argument that is missing.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 706, in _parse_arguments\n    kwargs[name] = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 542, in transform\n    raise MissingRequiredArgument(param)\n",
+                    "discord.ext.commands.errors.MissingRequiredArgument: edit is a required argument that is missing.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "edit": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 10014): Unknown Emoji',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 456, in edit\n    await msg_send.add_reaction(emoji)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/message.py\", line 1220, in add_reaction\n    await self._state.http.add_reaction(self.channel.id, self.id, emoji)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 10014): Unknown Emoji\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 10014): Unknown Emoji\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "edit": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 10014): Unknown Emoji',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 456, in edit\n    await msg_send.add_reaction(emoji)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/message.py\", line 1220, in add_reaction\n    await self._state.http.add_reaction(self.channel.id, self.id, emoji)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 10014): Unknown Emoji\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 10014): Unknown Emoji\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CheckFailure'>": {
+            "editors": [
+                "('The check functions for command editors failed.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 778, in prepare\n    raise CheckFailure('The check functions for command {0.qualified_name} failed.'.format(self))\n",
+                    "discord.ext.commands.errors.CheckFailure: The check functions for command editors failed.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CheckFailure'>": {
+            "editors": [
+                "('The check functions for command editors failed.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 778, in prepare\n    raise CheckFailure('The check functions for command {0.qualified_name} failed.'.format(self))\n",
+                    "discord.ext.commands.errors.CheckFailure: The check functions for command editors failed.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "addAuthor": [
+                "('Command raised an exception: IndexError: list index out of range',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/mods/mods.py\", line 281, in addAuthor\n    author = ctx.message.mentions[0]\n",
+                    "IndexError: list index out of range\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: IndexError: list index out of range\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "checkEdits": [
+                "('Command raised an exception: ValueError: not enough values to unpack (expected 2, got 1)',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/mods/mods.py\", line 401, in checkEdits\n    chapter, edits = msg[6:].split(maxsplit=1)\n",
+                    "ValueError: not enough values to unpack (expected 2, got 1)\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: ValueError: not enough values to unpack (expected 2, got 1)\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "checkEdits": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\\nIn embed.fields.2.value: This field is required',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/mods/mods.py\", line 409, in checkEdits\n    await ctx.invoke(self.client.get_command('edit'), chapter=chapter, edit=edits, context=context)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/context.py\", line 144, in invoke\n    ret = await command.callback(*arguments, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 447, in edit\n    msg_send = await Editorial_Channel.send(embed=embed)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/abc.py\", line 1064, in send\n    data = await state.http.send_message(channel.id, content, tts=tts, embed=embed,\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.2.value: This field is required\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.2.value: This field is required\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "checkEdits": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\\nIn embed.fields.1.value: This field is required',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/mods/mods.py\", line 409, in checkEdits\n    result = await ctx.invoke(self.client.get_command('edit'), chapter=chapter, edit=edits, context=context)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/context.py\", line 144, in invoke\n    ret = await command.callback(*arguments, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 449, in edit\n    msg_send = await Editorial_Channel.send(embed=embed)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/abc.py\", line 1064, in send\n    data = await state.http.send_message(channel.id, content, tts=tts, embed=embed,\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "edit": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\\nIn embed.fields.1.value: This field is required',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 449, in edit\n    msg_send = await Editorial_Channel.send(embed=embed)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/abc.py\", line 1064, in send\n    data = await state.http.send_message(channel.id, content, tts=tts, embed=embed,\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "edit": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\\nIn embed.fields.1.value: This field is required',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 449, in edit\n    msg_send = await Editorial_Channel.send(embed=embed)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/abc.py\", line 1064, in send\n    data = await state.http.send_message(channel.id, content, tts=tts, embed=embed,\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "edit": [
+                "('Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\\nIn embed.fields.1.value: This field is required',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/commands/basic.py\", line 449, in edit\n    msg_send = await Editorial_Channel.send(embed=embed)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/abc.py\", line 1064, in send\n    data = await state.http.send_message(channel.id, content, tts=tts, embed=embed,\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/http.py\", line 254, in request\n    raise HTTPException(r, data)\n",
+                    "discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body\nIn embed.fields.1.value: This field is required\n"
+                ]
+            ]
+        }
+    }
+]
