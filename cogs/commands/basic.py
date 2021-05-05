@@ -46,6 +46,7 @@ class Basic(commands.Cog):
         self.client = client
 
 
+
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         print(f'Joined {guild.name}')
@@ -63,7 +64,7 @@ class Basic(commands.Cog):
 
         server_dir = f'{guild.name} - {guild.id}'
         dir = ['books', 'database']
-        files = ['books', 'allowedEdits', 'emojis']
+        files = ['books', 'allowedEdits', 'emojis', 'config']
         count = 0
         for d in dir:
             print(count)
@@ -71,16 +72,17 @@ class Basic(commands.Cog):
             count += 1
         
         for f in files:
-            with open(f'Storage/{server_dir}/database/{f}.json', 'w') as file:
-                base = {}
-                json.dump(base, file)
-        with open(f'Storage/{server_dir}/database/authors.json', 'w') as file:
-            base = [bot_adder, guild_owner]
-            json.dump(base, file)
+            base = {}
+            dump_json(base, f, guild)
+
+        base = [bot_adder, guild_owner]
+        dump_json(base, 'authors', guild)
         
-        with open(f'Storage/{server_dir}/database/channels.json', 'w') as file:
-            base = []
-            json.dump(base, file)
+        base = []
+        dump_json(base, 'channels', guild)
+
+        config = {'prefix': '.'}
+        dump_json(config, 'config', guild)
 
         db.create_table('editorial', 'edit', guild)
         db.create_table('editorial','history', guild)

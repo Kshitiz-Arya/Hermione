@@ -9,6 +9,8 @@ from command import Book, ranking
 import database as db
 import logging
 import time
+from emoji import UNICODE_EMOJI as unicode_emojis
+import re
 
 logger = logging.getLogger('discord')
 logger.setLevel(10)
@@ -47,6 +49,8 @@ def dump_json(data, file, guild):
 class Mods(commands.Cog):
     def __init__(self, client):
         self.client = client
+
+
 
     @commands.command()
     @in_channel()
@@ -327,6 +331,10 @@ class Mods(commands.Cog):
         guild = ctx.guild
 
         emojis = [accepted, rejected, not_sure]
+
+        for e in emojis:
+            await ctx.message.add_reaction(e)
+
         eTypes = ['accepted', 'rejected', 'notsure']
         emojis_dict = dict(zip(eTypes, emojis))
 
@@ -456,6 +464,25 @@ class Mods(commands.Cog):
             config['mods']['colour'] = {'accepted': accepted, 'rejected': rejected, 'notsure': notsure, 'noVote': noVote}
             dump_json(config, 'config', guild)
             await ctx.send('Changed the embed colours!', delete_after=10)
+
+
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def setPrefix(self, ctx, prefix):
+        guild = ctx.guild
+
+        config = read_json('config', guild)
+        config['prefix'] = prefix
+        dump_json(config, 'config', guild)
+        
+        await ctx.send(f"Changed the prefix to {prefix}", delete_after=30)
+
+    @commands.command()
+    async def isEmoji(self, ctx, emoji):
+        emojis = list(unicode_emojis['en'].keys())
+        await ctx.message.add_reaction(emoji)
+        await ctx.send(str(emojis[200:500]))
 
 
 ###############################################################################

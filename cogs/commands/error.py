@@ -19,7 +19,8 @@ class Error_control(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        command = ctx.command
+        print('Ignoring exception in command {}:'.format(str(command)), file=sys.stderr)
         trace = traceback.format_exception(type(error), error, error.__traceback__)
 
         err = read('error-log')
@@ -36,8 +37,11 @@ class Error_control(commands.Cog):
         if isinstance(error, commands.CommandInvokeError):
             err = error.__cause__
             if isinstance(err, discord.HTTPException):
-                print('Passing')
-                pass
+                code = err.code
+                if code == 10014 and str(command) == 'setEmojis':
+                    await ctx.send('Please enter valid emojis!', delete_after=30)
+                elif code == 50035:
+                    pass
             
 def setup(client):
     client.add_cog(Error_control(client))

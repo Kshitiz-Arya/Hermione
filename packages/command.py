@@ -1,3 +1,4 @@
+import json
 import os
 # This function takes chapter number and return Book number
 # from which the chapter belongs to.
@@ -40,3 +41,16 @@ def ranking(guild, chapter, org):
                     return [count, byte]
     except FileNotFoundError as Error:
         return Error
+
+def read(file, guild):
+    with open(f'Storage/{guild.name} - {guild.id}/database/{file}.json', "r") as f:
+        return json.load(f)
+
+def save(data, file, guild):
+    with open(f'Storage/{guild.name} - {guild.id}/database/{file}.json', "w") as f:
+        json.dump(data, f, indent=4)
+
+
+def get_prefix(guild):
+
+    return read('config', guild)['prefix']
