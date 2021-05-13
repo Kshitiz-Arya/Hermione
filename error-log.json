@@ -1184,5 +1184,421 @@
                 ]
             ]
         }
+    },
+    {
+        "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": {
+            "export": [
+                "('chapter is a required argument that is missing.',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 697, in _parse_arguments\n    transformed = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 542, in transform\n    raise MissingRequiredArgument(param)\n",
+                    "discord.ext.commands.errors.MissingRequiredArgument: chapter is a required argument that is missing.\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "delAuthor": [
+                "('Command raised an exception: IndexError: list index out of range',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/mods/mods.py\", line 310, in delAuthor\n    author = ctx.message.mentions[0]\n",
+                    "IndexError: list index out of range\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: IndexError: list index out of range\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandInvokeError'>": {
+            "delAuthor": [
+                "('Command raised an exception: IndexError: list index out of range',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 85, in wrapped\n    ret = await coro(*args, **kwargs)\n",
+                    "  File \"/home/ishu/GitHub/Hermione/cogs/mods/mods.py\", line 310, in delAuthor\n    author = ctx.message.mentions[0]\n",
+                    "IndexError: list index out of range\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 863, in invoke\n    await injected(*ctx.args, **ctx.kwargs)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 94, in wrapped\n    raise CommandInvokeError(exc) from exc\n",
+                    "discord.ext.commands.errors.CommandInvokeError: Command raised an exception: IndexError: list index out of range\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.BadArgument'>": {
+            "upload": [
+                "('Converting to \"int\" failed for parameter \"arg\".',)",
+                [
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 467, in _actual_conversion\n    return converter(argument)\n",
+                    "ValueError: invalid literal for int() with base 10: 'a'\n",
+                    "\nThe above exception was the direct cause of the following exception:\n\n",
+                    "Traceback (most recent call last):\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/bot.py\", line 939, in invoke\n    await ctx.command.invoke(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 855, in invoke\n    await self.prepare(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 789, in prepare\n    await self._parse_arguments(ctx)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 697, in _parse_arguments\n    transformed = await self.transform(ctx, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 552, in transform\n    return await self.do_conversion(ctx, converter, argument, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 505, in do_conversion\n    return await self._actual_conversion(ctx, converter, argument, param)\n",
+                    "  File \"/usr/lib/python3.9/site-packages/discord/ext/commands/core.py\", line 476, in _actual_conversion\n    raise BadArgument('Converting to \"{}\" failed for parameter \"{}\".'.format(name, param.name)) from exc\n",
+                    "discord.ext.commands.errors.BadArgument: Converting to \"int\" failed for parameter \"arg\".\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"relaod\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"relaod\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"addChannels\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"addChannels\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"removez_book\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"removez_book\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"alloweditors\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"alloweditors\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"alleditors\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"alleditors\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"helo\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"helo\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"suggestion\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"suggestion\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"a\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"a\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"test_command\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"test_command\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"relaod\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"relaod\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"alleditors\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"alleditors\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"allStats\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"allStats\" is not found\n"
+                ]
+            ]
+        }
+    },
+    {
+        "<class 'discord.ext.commands.errors.CommandNotFound'>": {
+            "None": [
+                "('Command \"editers\" is not found',)",
+                [
+                    "discord.ext.commands.errors.CommandNotFound: Command \"editers\" is not found\n"
+                ]
+            ]
+        }
     }
 ]

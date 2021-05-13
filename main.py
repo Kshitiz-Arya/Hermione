@@ -1,18 +1,18 @@
-from discord.ext import commands
+import json
+import logging
 import os
 import sys
-import json
+
 from discord.ext import commands
-import logging
 
 logger = logging.getLogger('discord')
-logger.setLevel(10)
-handler = logging.FileHandler(filename='discord-main.log', encoding='utf-8', mode='w')
+logger.setLevel(20)
+handler = logging.FileHandler(filename='logs/discord-main.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
 def read(file, guild):
-    with open(f'Storage/{guild.name} - {guild.id}/database/{file}.json', "r") as f:
+    with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
         return json.load(f)
 
 
@@ -87,8 +87,11 @@ async def on_ready():
 
 @client.event
 async def on_message(meg):
-    ctx = await client.get_context(meg)
-    await client.invoke(ctx)
+    if meg.guild:
+        ctx = await client.get_context(meg) 
+        await client.invoke(ctx)
+    else:
+        pass
 
 with open('token.json', 'r') as file:
     Token = json.load(file)['token']

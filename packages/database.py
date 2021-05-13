@@ -6,7 +6,7 @@ def create_connection(guild, db_file):
     # create a database connection to a SQLite database #
     conn = None
     dir = os.getcwd()
-    db_file = f"{dir}/Storage/{guild.name} - {guild.id}/database/{db_file}.db"
+    db_file = f"{dir}/Storage/{guild.id}/database/{db_file}.db"
     try:
         conn = sqlite3.connect(db_file)
         return conn
@@ -61,12 +61,12 @@ def query(input, table=None, column=None):      # Concider removing this functio
                 'edit':      """
                                  CREATE TABLE IF NOT EXISTS edit
                                  (
-                                   Message_ID TEXT PRIMARY KEY,
+                                   Message_ID TEXT,
                                    Author_ID  TEXT,
                                    Author     INT,
                                    Book       INT,
                                    Chapter    INT,
-                                   Original   TEXT NOT NULL,
+                                   Original   TEXT,
                                    Sugested   TEXT,
                                    Reason     TEXT,
                                    RankLine   TEXT,
@@ -80,10 +80,10 @@ def query(input, table=None, column=None):      # Concider removing this functio
                 'suggestion':   """
                                     CREATE TABLE IF NOT EXISTS edit
                                     (
-                                    Message_ID TEXT PRIMARY KEY,
+                                    Message_ID TEXT,
                                     Author_ID  TEXT,
                                     Author     INT,
-                                    Sugested   TEXT NOT NULL,
+                                    Sugested   TEXT,
                                     Org_channel TEXT,
                                     Accepted     Text,
                                     Rejected     Text,
