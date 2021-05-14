@@ -5,3 +5,4 @@ Storage/
 *.log
 workspace.code-workspace
 token.json
+*.json
