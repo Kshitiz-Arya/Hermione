@@ -9,13 +9,14 @@ import database as db
 import discord
 import magic
 import pandas as pd
-from command import Book, in_channel, is_author, ranking, read, save, update_stats
+from command import Book, in_channel, is_author, ranking, read, save, update_stats, EditConverter
 from discord.ext import commands
 from discord.ext.commands.converter import (
     ColorConverter,
     MemberConverter,
     TextChannelConverter,
 )
+
 
 
 class Mods(commands.Cog):
@@ -246,9 +247,12 @@ class Mods(commands.Cog):
     @commands.command()
     @in_channel()
     @is_author()
-    async def disableEdit(self, ctx, chapter: int):
+    async def disableEdit(self, ctx, chapter: str):
         guild = ctx.guild
         config = read("config", guild)
+
+        channel = config["mods"]["allowedEdits"][chapter][0]
+        config['mods']['channels'].remove(channel)
 
         config["mods"]["allowedEdits"].pop(chapter, None)
         save(config, "config", guild)
@@ -444,10 +448,13 @@ class Mods(commands.Cog):
     @commands.command()
     @in_channel()
     @is_author()
-    async def checkEdits(self, ctx, number, chap=0):
+    async def checkEdits(self, ctx, number:int, chap=0):
+        #! It is not picking up edits as expected
+        #! Look after Line 480 
         guild = ctx.guild
         channel = ctx.channel
-        date = datetime.now() - timedelta(days=int(number))
+        date = datetime.now() - timedelta(days=number)
+        prefix = read('config', guild)['prefix']
 
         messages = await channel.history(after=date, oldest_first=False).flatten()
 
@@ -473,24 +480,24 @@ class Mods(commands.Cog):
 
         for message in messages:
             msg = message.content
-
-            if msg[:6] == ">edit ":
+            if f"{prefix}edit " in msg:
                 if str(message.id) not in Message_ID:
                     try:
                         chapter, edits = msg[6:].split(maxsplit=1)
+                        edits = await EditConverter.convert(self, ctx, edits)
                     except ValueError:
+                        print('NO')
                         pass
-                    print(type(chapter), type(chap), chapter == str(chap))
+
                     if chapter == str(chap) or chap == 0:
                         context = await self.client.get_context(message)
-
                         result = await ctx.invoke(
                             self.client.get_command("edit"),
                             chapter=chapter,
                             edit=edits,
                             context=context,
                         )
-                        print(result)
+
                         if result is True:
                             Message_ID.append(message.id)
                             counter += 1
@@ -546,7 +553,7 @@ class Mods(commands.Cog):
         save(config, "config", guild)
         draw(guild, (accepted.value, rejected.value, notsure.value, noVote.value), 50)
 
-        colour_img = discord.File(f'Storage/{guild.id}/image/colour.png', filename='colour.png')
+        colour_img = discord.File(f'Storage/{guild.id}/images/colour.png', filename='colour.png')
         await ctx.send("Changed the embed colours to ",file=colour_img, delete_after=20)
 
     @commands.command()
@@ -582,10 +589,11 @@ class Mods(commands.Cog):
 
     @commands.command()
     @in_channel()
+    @is_author()
     async def populate(self, ctx:commands.Context, chapter:int, channel: TextChannelConverter):
         guild = ctx.guild
         bot = self.client.user
-
+        count = 0
         msg = await ctx.send(f"Do you want {channel.name} to be new home for all the edits from chapter {chapter}?", delete_after=40)
 
         choise = await confirm(ctx, msg, lock=True)
@@ -652,7 +660,7 @@ class Mods(commands.Cog):
 
             embed.set_author(name=aName, icon_url=avatar)
             embed.set_footer(text=f"Author's Vote - {vote.title() }", icon_url=str(self.client.user.avatar_url))
-            print(org, type(org), org is None)
+
             try:
                 if org is not None:
                     embed.add_field(name="Original Text", value=org or '⠀', inline=False)
@@ -663,6 +671,7 @@ class Mods(commands.Cog):
                     embed.add_field(name='Suggestion', value=sug)
 
                 msg_send = await channel.send(embed=embed)
+                count += 1
             except:
                 print(org, sug, res)
                 print(type(org))
@@ -675,6 +684,8 @@ class Mods(commands.Cog):
 
             for emoji in emojis.values():
                 await msg_send.add_reaction(emoji)
+        
+        await ctx.send(f'Total Edits populated :- {count}', delete_after=30)
 
 
     @commands.command()
@@ -687,16 +698,34 @@ class Mods(commands.Cog):
 
         config = read('config', guild)
         author_list = config['mods']['authors']
-        channels = config['mods']['channels']
+        channels_list = config['mods']['channels']
         emojis = "   ".join(list(config['mods']['emojis'].values()))
-        colour = tuple(config['mods']['colour'].values())
         prefix = config['prefix']
         books = config['books']
         books_count = len(books.keys())
-        editing_chapter =f'Chpater {" ,".join(tuple(config["mods"]["allowedEdits"].keys()))}'
-        chapter = books[str(books_count)]['end']
 
-        colour_img = discord.File(f'Storage/{guild.id}/image/colour.png', filename='colour.png')
+        editing_chapter = tuple(config["mods"]["allowedEdits"].keys())
+        editing_channels = [c[0] for c in config['mods']['allowedEdits'].values()]
+        editing_chapter_str = f'Chpater {" ,".join(editing_chapter)}' if len(editing_chapter) > 0 else '**No Active Chapters**'
+        chapter = books[str(books_count)]['end'] if len(books) > 0 else 0
+
+        colour_img = discord.File(f'Storage/{guild.id}/images/colour.png', filename='colour.png')
+        
+        author_names = set()
+        channel_names = set()
+
+        interactive_channels = set(channels_list) - set(editing_channels) # List of channel except channels where edits are posted!
+
+        for author_id in author_list:
+            _ = await guild.fetch_member(author_id)
+            author_names.update({_.name})
+
+        for channel_id in interactive_channels:
+            _ = guild.get_channel(channel_id)
+            channel_names.update({_.name})
+
+        authors_name = ", ".join(author_names)
+        channels_name = ", ".join(channel_names)
 
         info=discord.Embed(title="Dodging Prison & Stealing Witches", color=0x7b68d9)
         info.set_author(name="LeadVonE", icon_url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
@@ -706,10 +735,10 @@ class Mods(commands.Cog):
         info.add_field(name=":bookmark_tabs: Words", value='646k'.center(7, '⠀'))
         info.add_field(name=":cowboy: Emojis", value=emojis.center(5, '⠀'), inline=True)
         info.add_field(name=":point_right: Prefix", value=f"**{prefix.center(7, '⠀')}**", inline=True)
-        info.add_field(name=":man_farmer: Authors", value="LeadVonE, sfu, Kshitiz", inline=True)
-        info.add_field(name=":writing_hand: Enabled Edits".center(5, '⠀'), value=editing_chapter.center(15, '⠀'), inline=True)
+        info.add_field(name=":man_farmer: Authors", value=f"**{authors_name}**", inline=True)
+        info.add_field(name=":writing_hand: Enabled Edits".center(5, '⠀'), value=editing_chapter_str.center(15, '⠀'), inline=True)
         info.add_field(name='⠀', value='⠀', inline=True)
-        info.add_field(name=":house_with_garden: Channel", value="dpasw-edit, mods".center(10, '⠀'), inline=True)
+        info.add_field(name=":house_with_garden: Channel", value=f"**{channels_name}**".center(10, '⠀'), inline=True)
 
         for b in range(1, books_count+1):
             start, end = books[str(b)].values()
@@ -731,7 +760,7 @@ def draw(guild, colours, size:int=50):
         img2.rectangle([pos, 0, 50+pos, 50+pos], fill=f"#{hex}")
         pos += 50
 
-    img.save(f'Storage/{guild.id}/image/colour.png', 'PNG', dpi=(300,300))
+    img.save(f'Storage/{guild.id}/images/colour.png', 'PNG', dpi=(300,300))
     return 1
 ###############################################################################
 #                         AREA FOR SETUP                                      #

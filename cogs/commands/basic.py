@@ -41,7 +41,7 @@ class Basic(commands.Cog):
             check
         )
 
-        dir = ["books", "database", "image"]
+        dir = ["books", "database", "images"]
 
         for d in dir:
             os.makedirs(f"Storage/{guild.id}/{d}")
@@ -518,8 +518,7 @@ class Basic(commands.Cog):
         """
         Format :- .edit chapter Original Line>>Suggested Line>>Reason (Optional)
         """
-
-        print(edit)
+        
         org, sug, res = edit
 
         if edit[0] is None:
@@ -561,12 +560,15 @@ class Basic(commands.Cog):
                 author_name = (
                     ctx.author.name if ctx.author.nick == None else ctx.author.nick
                 )
+                avatar = str(ctx.author.avatar_url) if bool(ctx.author.avatar_url) else 0
+
             else:
                 mID = context.message.id
                 aID = context.author.id
                 author_name = context.author.name
+                avatar = str(context.author.avatar_url) if bool(context.author.avatar_url) else 0
 
-            avatar = str(ctx.author.avatar_url) if bool(ctx.author.avatar_url) else 0
+
             # if bool(self.client.user.avatar_url):
             #     bot_avatar = str(self.client.user.avatar_url)
 
