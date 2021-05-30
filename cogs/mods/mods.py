@@ -427,7 +427,7 @@ class Mods(commands.Cog):
         guild = ctx.guild
         sql = """SELECT Author, COUNT(*) as num FROM edit WHERE chapter=(?) GROUP BY author_id ORDER BY Author"""
 
-        editors = db.execute(guild, "editorial", sql, str(chapter)) or list()
+        editors = db.execute(guild, "editorial", sql, str(chapter)) or []
 
         if not editors:
             await ctx.send('**No Editors Found**', delete_after=30)
@@ -467,7 +467,7 @@ class Mods(commands.Cog):
         guild = ctx.guild
         sql = """SELECT Author, COUNT(*) as num FROM edit GROUP BY author_id ORDER BY Author"""
 
-        editors = db.execute(guild, "editorial", sql) or list()
+        editors = db.execute(guild, "editorial", sql) or []
 
         if not editors:
             await ctx.send('**No Editors Found**', delete_after=30)
