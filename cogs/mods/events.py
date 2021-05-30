@@ -162,7 +162,7 @@ class Events(commands.Cog):
                     row = db.getsql(guild, "editorial", "history", "New_ID",
                                     New_ID)
 
-                    if not len(row):
+                    if not row:
                         return
 
                     old_id = row[0][0]
@@ -247,7 +247,7 @@ class Events(commands.Cog):
                     row = db.getsql(guild, "editorial", "history", "New_ID",
                                     New_ID)
 
-                    if not len(row):
+                    if not row:
                         return
 
                     old_id = str(row[0][0])

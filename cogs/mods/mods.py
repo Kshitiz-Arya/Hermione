@@ -429,7 +429,7 @@ class Mods(commands.Cog):
 
         editors = db.execute(guild, "editorial", sql, str(chapter)) or list()
 
-        if not len(editors):
+        if not editors:
             await ctx.send('**No Editors Found**', delete_after=30)
             return
 
@@ -469,7 +469,7 @@ class Mods(commands.Cog):
 
         editors = db.execute(guild, "editorial", sql) or list()
 
-        if not len(editors):
+        if not editors:
             await ctx.send('**No Editors Found**', delete_after=30)
             return
 
