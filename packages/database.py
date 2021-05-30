@@ -5,8 +5,8 @@ from sqlite3 import Error
 def create_connection(guild, db_file):
     # create a database connection to a SQLite database #
     conn = None
-    dir = os.getcwd()
-    db_file = f"{dir}/Storage/{guild.id}/database/{db_file}.db"
+    directory = os.getcwd()
+    db_file = f"{directory}/Storage/{guild.id}/database/{db_file}.db"
     try:
         conn = sqlite3.connect(db_file)
         return conn
@@ -34,10 +34,11 @@ def execute(guild, database, query, values=None):
             commit = cursor.execute(query)
             connection.commit()
             return commit.fetchall()
-        else:
-            commit = cursor.execute(query, values)
-            connection.commit()
-            return commit.fetchall()
+
+        commit = cursor.execute(query, values)
+        connection.commit()
+        return commit.fetchall()
+
     except Error as e:
         print(e)
     finally:
@@ -56,7 +57,7 @@ def get_table(guild, database, table):
     #     return column
 
 
-def query(input, table=None):      # Concider removing this function
+def query(sql_query, table=None):      # Concider removing this function
     query = {
                 'edit':      """
                                  CREATE TABLE IF NOT EXISTS edit
@@ -104,7 +105,7 @@ def query(input, table=None):      # Concider removing this function
                 
 
              }
-    return query[input]
+    return query[sql_query]
 
 
 def insert(guild, database, table, column, values):

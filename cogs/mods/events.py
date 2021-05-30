@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import os
 import shutil
-from secrets import token_hex
 from cogs.mods.mods import draw
 from packages.command import ranking, read, save, update_stats
 import packages.database as db
@@ -31,9 +30,9 @@ class Events(commands.Cog):
         bot_entry = await guild.audit_logs(
             action=discord.AuditLogAction.bot_add).find(check)
 
-        dir = ["books", "database", "images"]
+        directory = ["books", "database", "images"]
 
-        for d in dir:
+        for d in directory:
             os.makedirs(f"Storage/{guild.id}/{d}")
 
         config = {
@@ -176,7 +175,7 @@ class Events(commands.Cog):
                     embed_msg = await Editorial_Channel.fetch_message(New_ID)
 
                     main_avatar = str(
-                        mainAuthor.avatar_url) or discord.EmptyEmbed
+                        mainAuthor.avatar_url) or discord.embeds.EmptyEmbed
 
                     colour = read("config", guild)["mods"]["colour"]
 
@@ -301,14 +300,9 @@ class Events(commands.Cog):
         guild = self.client.get_guild(int(guild_id))
         colour = read("config", guild)["mods"]["colour"]
 
-        try:
-            bot = data["author"]["bot"]
-        except:
-            bot = 0
-
         sql = f"select New_ID from history where Old_id = {mID}"
         results = db.execute(guild, "editorial", sql)
-        if not bot and len(results) != 0:
+        if 'bot' not in data['author'] and len(results) != 0:
             newID = results[0][0]
             config = read("config", guild)
             allowedEdits = config["mods"]["allowedEdits"]

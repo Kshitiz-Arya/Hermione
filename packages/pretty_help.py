@@ -10,7 +10,7 @@ from discord.ext.commands.help import HelpCommand
 
 from .menu import DefaultMenu
 
-def command_help(self, docstring:str):
+def command_help(docstring:str):
 
     # docstring = "\n".join([line for line in docstring.split('\n') if line.strip()])
     # docstring = "\n".join([s for s in docstring.splitlines() if s])
@@ -150,7 +150,7 @@ class Paginator:
             info = "None"
         return info
 
-    def add_command(self, command: commands.Command, signature: str):
+    def add_command(self, command: commands.Command):
         """
         Add a command help page
 
@@ -159,7 +159,7 @@ class Paginator:
             signature (str): The command signature/usage string
         """
         desc = f"{command.description}\n\n" if command.description else ""
-        desc, args, form, example = command_help(self, self.__command_info(command))
+        desc, args, form, example = command_help(self.__command_info(command))
 
         page = self._new_page(
             command.qualified_name,
@@ -324,8 +324,8 @@ class PrettyHelp(HelpCommand):
         ctx = self.context
         if self.dm_help is True:
             return ctx.author
-        else:
-            return ctx.channel
+        
+        return ctx.channel
 
     async def send_bot_help(self, mapping: dict):
         bot = self.context.bot
@@ -366,7 +366,7 @@ class PrettyHelp(HelpCommand):
             if not filtered:
                 raise commands.MissingPermissions(['You are not an Author!'])
                 
-        self.paginator.add_command(command, self.get_command_signature(command))
+        self.paginator.add_command(command)
         await self.send_pages()
 
     async def send_group_help(self, group: commands.Group):

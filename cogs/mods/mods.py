@@ -410,7 +410,7 @@ class Mods(commands.Cog):
     @commands.command()
     @in_channel()
     @is_author()
-    async def editors(self, ctx:commands.Context, chapter:int, type:str=None):
+    async def editors(self, ctx:commands.Context, chapter:int, return_type:str=None):
         """This command is used to get the list of each editors who has worked on a given chapter.
 
         Args:
@@ -433,7 +433,7 @@ class Mods(commands.Cog):
             await ctx.send('**No Editors Found**', delete_after=30)
             return
 
-        if type is not None and type.lower() == 'list':
+        if return_type is not None and return_type.lower() == 'list':
             names = ", ".join(editor[0] for editor in editors)
             file = StringIO(names)
             file.seek(0)
@@ -451,7 +451,7 @@ class Mods(commands.Cog):
     @commands.command()
     @in_channel()
     @is_author()
-    async def allEditors(self, ctx, type:str=None):
+    async def allEditors(self, ctx, return_type:str=None):
         """This command is used to get list of every editors
 
         Args:
@@ -473,7 +473,7 @@ class Mods(commands.Cog):
             await ctx.send('**No Editors Found**', delete_after=30)
             return
 
-        if type is not None and type.lower() == 'list':
+        if return_type is not None and return_type.lower() == 'list':
             names = ", ".join(editor[0] for editor in editors)
             file = BytesIO(bytes(names, encoding='utf-8'))
             file.seek(0)
@@ -960,7 +960,10 @@ class Mods(commands.Cog):
             colour = config["mods"]["colour"]
             emojis = config['mods']['emojis']
 
-            vote = next((vote for vote, val in votes.items() if val == "1"), 'noVote')
+            try:
+                vote = next((vote for vote, val in votes.items() if val == "1"), 'noVote')
+            except StopIteration:
+                continue
 
             embed = discord.Embed(
                 color=colour[vote],
@@ -1075,7 +1078,7 @@ class Mods(commands.Cog):
 
 
 
-def draw(guild:discord.Guild, colours:tuple, size:int=50):
+def draw(guild:discord.Guild, colours:tuple):
     """Generate a palette image with all the colours passed as tuple
 
     Args:
@@ -1091,8 +1094,8 @@ def draw(guild:discord.Guild, colours:tuple, size:int=50):
     img2 = ImageDraw.Draw(img)
     pos = 0
     for c in colours:
-        hex="%06x" % c
-        img2.rectangle([pos, 0, 50+pos, 50+pos], fill=f"#{hex}")
+        colour_hex="%06x" % c
+        img2.rectangle([pos, 0, 50+pos, 50+pos], fill=f"#{colour_hex}")
         pos += 50
 
     img.save(f'Storage/{guild.id}/images/colour.png', 'PNG', dpi=(300,300))

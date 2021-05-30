@@ -85,7 +85,7 @@ class Basic(commands.Cog):
                 mID = ctx.message.id
                 aID = ctx.author.id
                 author_name = (ctx.author.name
-                               if ctx.author.nick == None else ctx.author.nick)
+                               if ctx.author.nick is None else ctx.author.nick)
                 avatar = str(ctx.author.avatar_url) if bool(
                     ctx.author.avatar_url) else 0
 

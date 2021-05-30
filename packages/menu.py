@@ -35,8 +35,8 @@ class DefaultMenu(PrettyMenu):
     Using a custom emoji:
         - Discord emoji id:: ":custom_emoji:8675309"
 
-    Use `\` to get the discord representation:
-        Example: '\\\:custom_emoji:' in discord
+    Use `\\` to get the discord representation:
+        Example: '\\:custom_emoji:' in discord
 
     Args:
         active_time: :class: `int`
@@ -70,14 +70,13 @@ class DefaultMenu(PrettyMenu):
     def get(self, emoji):
         if isinstance(emoji, str):
             return self._dict.get(emoji)
-        else:
-            return self._dict.get(self.custom(emoji))
+        
+        return self._dict.get(self.custom(emoji))
 
     def __contains__(self, emoji):
         if isinstance(emoji, str):
             return emoji in self._dict
-        else:
-            return self.custom(emoji) in self._dict
+        return self.custom(emoji) in self._dict
 
     @staticmethod
     def __match(emoji: str):
@@ -137,11 +136,10 @@ class DefaultMenu(PrettyMenu):
 
                             navigating = False
                             return await message.delete()
-                        else:
-                            index += nav
-                            embed: discord.Embed = pages[index % total]
+                        index += nav
+                        embed: discord.Embed = pages[index % total]
 
-                            await message.edit(embed=embed)
+                        await message.edit(embed=embed)
 
                     try:
                         await message.remove_reaction(

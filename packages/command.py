@@ -1,19 +1,14 @@
 import json
 from datetime import datetime
-from sqlite3.dbapi2 import Timestamp
 from packages.menu import DefaultMenu
-from typing import Optional, Union
+from typing import Optional
 
 import discord
 from discord.embeds import EmptyEmbed
 from discord.ext import commands
-from discord.ext.commands.converter import (MessageConverter,
-                                            TextChannelConverter)
+from discord.ext.commands.converter import TextChannelConverter
 
 import packages.database as db
-from packages.menu import DefaultMenu
-# This function takes chapter number and return Book number
-# from which the chapter belongs to.
 
 class EditConverter(commands.Converter):
     async def convert(self, ctx, argument):
@@ -89,7 +84,7 @@ class EmbedList:
         )
         return check
 
-    def _new_page(self, title=EmptyEmbed, description= EmptyEmbed):
+    def _new_page(self):
         """
         Create a new page
 
@@ -115,8 +110,8 @@ class EmbedList:
     def _chunks(self, tuple_list):
         """ Yield successive num-sized chunks from dicts.
         """
-        size = self.size
-        if size < 1:
+        num = self.size
+        if num < 1:
             raise ValueError("Number of Embed fields can't be zero")
 
         for i in range(0, len(tuple_list), num):
@@ -124,7 +119,7 @@ class EmbedList:
     
     def add_embed(self, dicts):
         for d in self._chunks(dicts):
-            embed = self._new_page(self.title, self.description)
+            embed = self._new_page()
 
             for tup in d:
                 name, count = tup
@@ -178,18 +173,18 @@ def Book(chapter:int, guild:discord.Guild) -> Optional[int]:
 def ranking(guild:discord.Guild, chapter:int, org):
     # This code Rank each sentence according to their position in text file.
     try:
-        str = open(f'./Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r')
+        chapter_file = open(f'./Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r')
         #   This is the phrase which we have to search.
         if '\n' in org:  # This is driver code
             org = org.splitlines()
 
-            for count, i in enumerate(str, 1):
+            for count, i in enumerate(chapter_file, 1):
                 if org[0] in i:
                     byte = i.find(org[0])
                     return [count, byte]
 
         else:
-            for count, i in enumerate(str, 1):
+            for count, i in enumerate(chapter_file, 1):
                 if org in i:
                     byte = i.find(org)
                     return [count, byte]
@@ -218,8 +213,8 @@ def in_channel():
             channels = read('config', guild)['mods']['channels']
             if ctx.channel.id in channels:
                 return True  
-            else:
-                raise commands.MissingPermissions(['Bot is not active in this channel!'])
+            
+            raise commands.MissingPermissions(['Bot is not active in this channel!'])
         return commands.check(predicate)
 
 
@@ -232,10 +227,11 @@ def is_author():
             if len(authors) > 0:
                 if ctx.message.author.id in authors:
                     return True
-                else:
-                    raise commands.MissingPermissions(['You are not an Author!'])
-            else:
-                return True
+                
+                raise commands.MissingPermissions(['You are not an Author!'])
+            
+            return True
+
         return commands.check(predicate)
 
 
@@ -261,7 +257,9 @@ async def update_stats(bot:discord.User, chapter:int, guild:discord.Guild, chann
     if not isinstance(msg_stats, int) or msg_stats is None:
         msg = await channel.send(embed=info)
         return msg
-    elif isinstance(msg_stats, discord.Message):
+
+    if isinstance(msg_stats, discord.Message):
         await msg_stats.edit(embed=info)
+
     msg_stats = channel.get_partial_message(msg_stats)
     await msg_stats.edit(embed=info)

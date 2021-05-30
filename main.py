@@ -52,10 +52,10 @@ async def restart(ctx):
 @client.command()
 @is_owner()
 async def load(ctx, extension):
-    for dir in os.listdir('./cogs'):
-        for filename in os.listdir(f'./cogs/{dir}'):
+    for directory in os.listdir('./cogs'):
+        for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
-                client.load_extension(f'cogs.{dir}.{extension}')
+                client.load_extension(f'cogs.{directory}.{extension}')
                 await ctx.send(f'{extension} is loaded!', delete_after=20)
 
             else:
@@ -65,10 +65,10 @@ async def load(ctx, extension):
 @client.command()
 @is_owner()
 async def unload(ctx, extension):
-    for dir in os.listdir('./cogs'):
-        for filename in os.listdir(f'./cogs/{dir}'):
+    for directory in os.listdir('./cogs'):
+        for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
-                client.unload_extension(f'cogs.{dir}.{extension}')
+                client.unload_extension(f'cogs.{directory}.{extension}')
                 await ctx.send(f'{extension} is unloaded!', delete_after=20)
 
             else:
@@ -78,20 +78,20 @@ async def unload(ctx, extension):
 @client.command()
 @is_owner()
 async def reload(ctx, extension):
-    for dir in os.listdir('./cogs'):
-        for filename in os.listdir(f'./cogs/{dir}'):
+    for directory in os.listdir('./cogs'):
+        for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
-                client.unload_extension(f'cogs.{dir}.{extension}')
-                client.load_extension(f'cogs.{dir}.{extension}')
+                client.unload_extension(f'cogs.{directory}.{extension}')
+                client.load_extension(f'cogs.{directory}.{extension}')
                 await ctx.send(f'{extension} is reloaded!', delete_after=20)
             else:
                 pass
 
 
-for dir in os.listdir("./cogs"):
-    for filename in os.listdir(f'./cogs/{dir}'):
+for directory in os.listdir("./cogs"):
+    for filename in os.listdir(f'./cogs/{directory}'):
         if filename.endswith('.py'):
-            client.load_extension(f'cogs.{dir}.{filename[:-3]}')
+            client.load_extension(f'cogs.{directory}.{filename[:-3]}')
 
 
 ###############################################################################
