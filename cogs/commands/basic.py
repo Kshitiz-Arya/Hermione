@@ -156,9 +156,8 @@ class Basic(commands.Cog):
             if not context:
                 await ctx.reply("Your edit has been accepted.", delete_after=10, mention_author=False)
             return True
-        else:
-            if not context:
-                await ctx.reply("Editing is currently disabled for this chapter.", delete_after=10)
+        if not context:
+            await ctx.reply("Editing is currently disabled for this chapter.", delete_after=10)
 
     @in_channel()
     @commands.command()

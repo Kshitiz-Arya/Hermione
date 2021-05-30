@@ -824,7 +824,7 @@ class Mods(commands.Cog):
         }
 
         save(config, "config", guild)
-        draw(guild, (accepted.value, rejected.value, notsure.value, noVote.value), 50)
+        draw(guild, (accepted.value, rejected.value, notsure.value, noVote.value))
 
         colour_img = discord.File(f'Storage/{guild.id}/images/colour.png', filename='colour.png')
         await ctx.send("Changed the embed colours to ",file=colour_img, delete_after=20)
