@@ -56,14 +56,14 @@ def get_table(guild, database, table):
     #     return column
 
 
-def query(input, table=None, column=None):      # Concider removing this function
+def query(input, table=None):      # Concider removing this function
     query = {
                 'edit':      """
                                  CREATE TABLE IF NOT EXISTS edit
                                  (
                                    Message_ID TEXT,
                                    Author_ID  TEXT,
-                                   Author     INT,
+                                   Author     TEXT,
                                    Book       INT,
                                    Chapter    INT,
                                    Original   TEXT,
@@ -82,7 +82,7 @@ def query(input, table=None, column=None):      # Concider removing this functio
                                     (
                                     Message_ID TEXT,
                                     Author_ID  TEXT,
-                                    Author     INT,
+                                    Author     TEXT,
                                     Sugested   TEXT,
                                     Org_channel TEXT,
                                     Accepted     Text,
@@ -130,7 +130,7 @@ def get_stats(guild, chapter='all'):
     Connection = create_connection(guild, 'editorial')
     if chapter == 'all':
 
-        sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), Book, COUNT(DISTINCT(Author)) FROM edit"""
+        sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), COUNT(DISTINCT(Book)), COUNT(DISTINCT(Author)) FROM edit"""
     else:
         sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), Book, COUNT(DISTINCT(Author)) FROM edit
                     WHERE chapter = {chapter}"""

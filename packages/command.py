@@ -1,41 +1,169 @@
 import json
-import os
-import discord
-from discord.ext import commands
 from datetime import datetime
-import database as db
+from sqlite3.dbapi2 import Timestamp
+from packages.menu import DefaultMenu
+from typing import Optional, Union
 
-from discord.ext.commands.converter import MessageConverter, TextChannelConverter
+import discord
+from discord.embeds import EmptyEmbed
+from discord.ext import commands
+from discord.ext.commands.converter import (MessageConverter,
+                                            TextChannelConverter)
 
+import packages.database as db
+from packages.menu import DefaultMenu
 # This function takes chapter number and return Book number
 # from which the chapter belongs to.
 
 class EditConverter(commands.Converter):
     async def convert(self, ctx, argument):
+        delimiter = '>>'
         try:
             # splitting the edit request into definable parts
-            org, sug, res = argument.split(">>")
+            org, sug, res = argument.split(delimiter)
         except ValueError:
             try:
-                org, sug = argument.split(">>")
+                org, sug = argument.split(delimiter)
                 res = "Not Provided!"
 
             except ValueError:
                 if not ctx.command.name == "checkEdits":
-                    await ctx.send(
-                        "Your Edit is missing few thing. Please check and try again",
-                        delete_after=10,
-                    )
+                    await ctx.reply("Your Edit is missing few thing. Please check and try again", delete_after=10)
 
                 return (None, None, None)
-
 
         return (org, sug, res)
         
 
+class EmbedList:
+    
+    """A class that creates pages for Discord messages.
+
+    Attributes
+    -----------
+    prefix: Optional[:class:`str`]
+        The prefix inserted to every page. e.g. three backticks.
+    suffix: Optional[:class:`str`]
+        The suffix appended at the end of every page. e.g. three backticks.
+    max_size: :class:`int`
+        The maximum amount of codepoints allowed in a page.
+    color: Optional[:class:`discord.Color`, :class: `int`]
+        The color of the disord embed. Default is a random color for every invoke
+    ending_note: Optional[:class:`str`]
+        The footer in of the help embed
+    """
+
+    def __init__(self, ctx, **options):
+        self.ctx = ctx
+        self.colour = options.pop('colour', 0)
+        self.tup_list = options.pop('tup_list')
+        self.title = options.pop('title', '')
+        self.description = options.pop('description', '')
+        self.footer = options.pop("footer", False)
+        self.author = options.pop('author', '')
+        
+        self.size = 24
+        self.field_limit = 25
+        self.char_limit = 6000
+        self.menu = DefaultMenu()
+        self.clear()
+        self.add_embed(self.tup_list)
+
+    def clear(self):
+        """Clears the paginator to have no pages."""
+        self._pages = []
+
+    def _check_embed(self, embed: discord.Embed, *chars: str):
+        """
+        Check if the emebed is too big to be sent on discord
+
+        Args:
+            embed (discord.Embed): The embed to check
+
+        Returns:
+            bool: Will return True if the emebed isn't too large
+        """
+        check = (
+            len(embed) + sum(len(char) for char in chars if char) < self.char_limit
+            and len(embed.fields) < self.field_limit
+        )
+        return check
+
+    def _new_page(self, title=EmptyEmbed, description= EmptyEmbed):
+        """
+        Create a new page
+
+        Args:
+            title (str): The title of the new page
+
+        Returns:
+            discord.Emebed: Returns an embed with the title and color set
+        """
+        return discord.Embed(title=self.title, description=self.description, timestamp=datetime.now(), color=self.colour)
+
+    def _add_page(self, page: discord.Embed):
+        """
+        Add a page to the paginator
+
+        Args:
+            page (discord.Embed): The page to add
+        """
+        page.set_footer(text=self.footer)
+        page.set_author(name=self.author)
+        self._pages.append(page)
+
+    def _chunks(self, tuple_list):
+        """ Yield successive num-sized chunks from dicts.
+        """
+        size = self.size
+        if size < 1:
+            raise ValueError("Number of Embed fields can't be zero")
+
+        for i in range(0, len(tuple_list), num):
+            yield tuple_list[i:i+num]
+    
+    def add_embed(self, dicts):
+        for d in self._chunks(dicts):
+            embed = self._new_page(self.title, self.description)
+
+            for tup in d:
+                name, count = tup
+                embed.add_field(name=name, value=count, inline=True)
+
+            self._add_page(embed)
+
+    @property
+    def pages(self):
+        """Returns the rendered list of pages."""
+        if len(self._pages) == 1:
+            return self._pages
+        lst = []
+        for page_no, page in enumerate(self._pages, start=1):
+            page: discord.Embed
+            page.description = (
+                f"`Page: {page_no}/{len(self._pages)}`\n{page.description}"
+            )
+            lst.append(page)
+        return lst
+
+    async def send_embeds(self):
+        pages = self.pages
+        destination = self.ctx
+        await self.menu.send_pages(self.ctx, destination, pages)
 
 
-def Book(chapter, guild):
+
+
+def Book(chapter:int, guild:discord.Guild) -> Optional[int]:
+    """Takes chapter number and returns the book number
+
+    Args:
+        chapter (int): Chapter in the book
+        guild (discord.Guild): Represents a Discord Guild
+
+    Returns:
+        int or None: Returns book number if found else None
+    """    
     # Opening File where Book information is kept.
     config = read('config', guild)
     books = config['books']
@@ -44,11 +172,10 @@ def Book(chapter, guild):
         if books[b]['start'] <= int(chapter) <= books[b]['end']:
             return b
         
-    return 0
+    return
 
 
-
-def ranking(guild, chapter, org):
+def ranking(guild:discord.Guild, chapter:int, org):
     # This code Rank each sentence according to their position in text file.
     try:
         str = open(f'./Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r')
@@ -69,25 +196,32 @@ def ranking(guild, chapter, org):
     except FileNotFoundError as Error:
         return Error
 
-def read(file, guild):
+
+def read(file, guild:discord.Guild):
     with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
         return json.load(f)
 
-def save(data, file, guild):
+
+def save(data, file, guild:discord.Guild) -> None:
     with open(f'Storage/{guild.id}/database/{file}.json', "w") as f:
         json.dump(data, f, indent=4)
 
 
-def get_prefix(guild):
+def get_prefix(guild:discord.Guild):
 
     return read('config', guild)['prefix']
+
 
 def in_channel():
         def predicate(ctx):
             guild = ctx.guild
             channels = read('config', guild)['mods']['channels']
-            return ctx.channel.id in channels
+            if ctx.channel.id in channels:
+                return True  
+            else:
+                raise commands.MissingPermissions(['Bot is not active in this channel!'])
         return commands.check(predicate)
+
 
 def is_author():
         def predicate(ctx):
@@ -96,12 +230,16 @@ def is_author():
             authors = read('config', guild)['mods']['authors']
 
             if len(authors) > 0:
-                return ctx.message.author.id in authors
+                if ctx.message.author.id in authors:
+                    return True
+                else:
+                    raise commands.MissingPermissions(['You are not an Author!'])
             else:
                 return True
         return commands.check(predicate)
 
-async def update_stats(bot, chapter, guild, channel:TextChannelConverter, msg_stats=None):
+
+async def update_stats(bot:discord.User, chapter:int, guild:discord.Guild, channel:TextChannelConverter, msg_stats=None) -> None:
 
     accepted, rejected, notsure, total, book, editors = db.get_stats(guild, chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())

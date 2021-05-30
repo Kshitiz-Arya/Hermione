@@ -4,6 +4,5 @@ cogs/database/__pycache__/database.cpython-38.pyc
 Storage/
 *.log
 workspace.code-workspace
-token.json
 *.json
-token.json
+.env

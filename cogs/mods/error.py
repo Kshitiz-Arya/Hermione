@@ -1,10 +1,15 @@
 import discord
+from discord import client
+from discord.errors import Forbidden
 from discord.ext import commands
 import json
 import traceback
 import sys
 from datetime import datetime
 import logging
+
+from discord.ext.commands.errors import MemberNotFound
+
 
 logger = logging.getLogger('discord')
 logger.setLevel(20)
@@ -51,50 +56,85 @@ class Error_control(commands.Cog):
     async def on_command_error(self, ctx, error):
         command = ctx.command
         
-        if isinstance(error, commands.UserInputError):
-            if isinstance(error, commands.MissingRequiredArgument):
-                await ctx.send('You need to provide proper arguments for command to work.', delete_after=30)
+        if isinstance(error, commands.CommandError):
 
-            elif isinstance(error, commands.BadArgument):
-                await ctx.send('Invalid Argument Type!')
-            else:
-                send(self, ctx, error)
-            
-        elif isinstance(error, commands.CheckFailure):
-                await ctx.send("You don't have the permission to use this command!", delete_after=30)
+            if isinstance(error, commands.BotMissingPermissions):
+                reason = error.args[0] or error.missing_perms[0]
+                await ctx.send(f'Bot is missing some Permission to complete this request! **{reason}**', delete_after=30)
+            if isinstance(error, commands.UserInputError):
+                if isinstance(error, commands.MissingRequiredArgument):
+                    await ctx.send('You need to provide proper arguments for command to work.', delete_after=30)
 
-        elif isinstance(error, commands.CommandInvokeError):
-                err = error.__cause__
-                if isinstance(err, discord.HTTPException):
-                    code = err.code
-                    if code == 10014 and str(command) == 'setEmojis':
-                        await ctx.send('Please enter valid emojis!', delete_after=30)
-                    elif code == 50035:
-                        pass
-                    elif code == 50006:
-                        if command.name in ('editors', 'allEditors'):
-                            await ctx.send('No Editors found')
-                        else:
-                            send(self, ctx, err)
+                elif isinstance(error, commands.BadArgument):
+                    if isinstance(error, commands.ChannelNotFound):
+                        await ctx.send('Please provide a valid channel name/id!', delete_after=30)
+                    elif isinstance(error, MemberNotFound):
+                        member = error.argument
+                        await ctx.reply(f'There is no user named **{member}**. Please try again!', delete_after=30, mention_author=False)
                     else:
-                        await send(self, ctx, error)
-                
-                elif isinstance(err, IndexError):
-
-                    if command.name in ('delAuthor', 'addAuthor') :
-                        await ctx.send("You need to mention the Authors name for this command to work!", delete_after=20)
-                    else:
-                        await send(self, ctx, error)
-                
-                elif isinstance(err, TypeError):
-                    print('Type Error')
+                        await ctx.send('Invalid Argument Type!')
                 else:
                     await send(self, ctx, error)
+                
+            elif isinstance(error, commands.CheckFailure):
+                    reason = error.missing_perms[0]
+                    await ctx.send(f"You don't have the permission to use this command!\nReason - {reason}", delete_after=30)
 
-        elif isinstance(error, commands.CommandNotFound):
-            logger.error('Command was not found!')
-            pass
-        
+            elif isinstance(error, commands.CommandInvokeError):
+                    err = error.__cause__
+
+                    if isinstance(err, Forbidden):
+                            reason = err.text
+                            await ctx.send(f'Bot is missing some Permission to complete this request! **{reason}**', delete_after=30)
+                            
+                    elif isinstance(err, discord.HTTPException):                        
+
+                        code = err.code
+                        if code == 10014 and str(command) == 'setEmojis':
+                            await ctx.send('Please enter valid emojis!', delete_after=30)
+                        elif code == 50035:
+                            if command.name == 'edit':
+                                await ctx.reply('**Please use correct formatting for edit command**', delete_after=40)
+                                breakpoint()
+                        elif code == 50006:
+                            if command.name in ('editors', 'allEditors'):
+                                await ctx.send('**No Editors found**')
+                            else:
+                                await send(self, ctx, err)
+                        else:
+                            await send(self, ctx, error)
+                    
+                    elif isinstance(err, IndexError):
+
+                        if command.name in ('delAuthor', 'addAuthor') :
+                            await ctx.send("You need to mention the Authors name for this command to work!", delete_after=20)
+                        if command.name == 'help':
+                            await ctx.reply('**No Command or Cog found!**', delete_after=30, mention_author=False)
+                        else:
+                            await send(self, ctx, error)
+                    
+                    elif isinstance(err, TypeError):
+                        await send(self, ctx, err)
+
+                    elif isinstance(err, commands.ExtensionError):
+                            if isinstance(err, commands.ExtensionAlreadyLoaded):
+                                await ctx.send('Cog is already loaded', delete_after=30)
+                            elif isinstance(err, commands.ExtensionNotLoaded):
+                                await ctx.send('Cog is not loaded', delete_after=30)
+                            elif isinstance(err, commands.ExtensionError):
+                                await ctx.send('Failed to load the Cog', delete_after=30)
+                            elif isinstance(err, commands.ExtensionNotFound):
+                                await ctx.send('Cog was not found!', delete_after=30)
+                            else:
+                                await send(self, ctx, err)
+                   
+                    else:
+                        await send(self, ctx, error)
+
+            elif isinstance(error, commands.CommandNotFound):
+                logger.error('Command was not found!')
+                pass
+
         else:  
             print('Ignoring exception in command {}:'.format(str(command)), file=sys.stderr)
             trace = traceback.format_exception(type(error), error, error.__traceback__)
@@ -104,9 +144,11 @@ class Error_control(commands.Cog):
             save(err, 'error-log')
 
             await send(self, ctx, error)
+    
+    # @on_command_error.error
+    # async def error_handler(self, ctx, error):
+    #     print(error)
 
-
-           
 
 def setup(client):
     client.add_cog(Error_control(client))
