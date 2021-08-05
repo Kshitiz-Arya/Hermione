@@ -135,7 +135,7 @@ class Basic(commands.Cog):
                 timestamp=datetime.now(),
             )
             embed.set_author(name=author_name, icon_url=avatar)
-            embed.set_footer(text=f"Author's Vote - Not Voted Yet")
+            embed.set_footer(text="Author's Vote - Not Voted Yet")
             embed.add_field(name="Original Text", value=org, inline=False)
             embed.add_field(name="Sugested Text", value=sug, inline=False)
             embed.add_field(name="Reason", value=res, inline=False)
@@ -260,7 +260,7 @@ class Basic(commands.Cog):
         bot_invite = discord.Embed(
             colour=0x5C00AD,
             description=
-            f"[Invite Link](https://discord.com/api/oauth2/authorize?client_id=649210648689115149&permissions=388288&scope=bot)",
+            "[Invite Link](https://discord.com/api/oauth2/authorize?client_id=649210648689115149&permissions=388288&scope=bot)",
             timestamp=datetime.now(),
         )
         bot_invite.set_author(

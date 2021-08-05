@@ -477,7 +477,7 @@ class Mods(commands.Cog):
             names = ", ".join(editor[0] for editor in editors)
             file = BytesIO(bytes(names, encoding='utf-8'))
             file.seek(0)
-            await ctx.send(file=discord.File(file, filename=f'Editors List.txt'))
+            await ctx.send(file=discord.File(file, filename='Editors List.txt'))
 
         else:
 
@@ -1072,7 +1072,7 @@ class Mods(commands.Cog):
                 info.add_field(name=f":notebook_with_decorative_cover: Book {b}", value=f"{start} - {end}".center(10, '⠀'), inline=True)
 
             info.add_field(name='⠀', value='**:rainbow_flag: Colour**', inline=False)
-            info.set_image(url=f'attachment://colour.png')
+            info.set_image(url='attachment://colour.png')
             info.set_footer(text="Provided to you by Hermione")
             await ctx.send(embed=info, file=colour_img)
 

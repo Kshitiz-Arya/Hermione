@@ -131,7 +131,7 @@ def get_stats(guild, chapter='all'):
     Connection = create_connection(guild, 'editorial')
     if chapter == 'all':
 
-        sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), COUNT(DISTINCT(Book)), COUNT(DISTINCT(Author)) FROM edit"""
+        sql = """ SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), COUNT(DISTINCT(Book)), COUNT(DISTINCT(Author)) FROM edit"""
     else:
         sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), Book, COUNT(DISTINCT(Author)) FROM edit
                     WHERE chapter = {chapter}"""
