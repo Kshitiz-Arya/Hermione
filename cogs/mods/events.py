@@ -265,7 +265,7 @@ class Events(commands.Cog):
                     updated_embed = embed_msg.embeds[0].to_dict()
                     updated_embed["color"] = colour["noVote"]
                     updated_embed["footer"][
-                        "text"] = f"Author's Vote - Not Voted Yet"
+                        "text"] = "Author's Vote - Not Voted Yet"
                     updated_embed["footer"]["icon_url"] = None
                     updated_embed = discord.Embed.from_dict(updated_embed)
 
