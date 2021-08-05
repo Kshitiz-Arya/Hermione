@@ -331,7 +331,7 @@ class PrettyHelp(HelpCommand):
         bot = self.context.bot
         channel = self.get_destination()
         async with channel.typing():
-            mapping = dict((name, []) for name in mapping)
+            mapping = {name: [] for name in mapping}
             help_filtered = (
                 filter(lambda c: c.name != "help", bot.commands)
                 if len(bot.commands) > 1
