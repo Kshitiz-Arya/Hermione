@@ -90,19 +90,16 @@ class Events(commands.Cog):
         )
         information_dm.add_field(
             name="Step 4",
-            value=
-            "Use .setEmojis to set the emojis corresponding to Accepted, Rejected and Not Sure respectively",
+            value="Use .setEmojis to set the emojis corresponding to Accepted, Rejected and Not Sure respectively",
             inline=False,
         )
         information_dm.add_field(
             name="Step 5",
-            value=
-            "Use .changeColour to set colours for embeds to change to. This command need 4 colours in hex form for Accepted, Rejected, Not Sure and Not Voted Yet.",
+            value="Use .changeColour to set colours for embeds to change to. This command need 4 colours in hex form for Accepted, Rejected, Not Sure and Not Voted Yet.",
         )
         information_dm.add_field(
             name="Step 6",
-            value=
-            "Use .add_book command to store the information about which chapters are in which book. The general format is .add_book book-no start-chapter end-chapter",
+            value="Use .add_book command to store the information about which chapters are in which book. The general format is .add_book book-no start-chapter end-chapter",
             inline=False,
         )
         information_dm.add_field(

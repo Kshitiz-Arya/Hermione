@@ -193,3 +193,4 @@ class Error_control(commands.Cog):
 
 def setup(client):
     client.add_cog(Error_control(client))
+    
