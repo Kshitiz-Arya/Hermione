@@ -208,31 +208,31 @@ def get_prefix(guild:discord.Guild):
 
 
 def in_channel():
-        def predicate(ctx):
-            guild = ctx.guild
-            channels = read('config', guild)['mods']['channels']
-            if ctx.channel.id in channels:
-                return True  
-            
-            raise commands.MissingPermissions(['Bot is not active in this channel!'])
-        return commands.check(predicate)
+    def predicate(ctx):
+        guild = ctx.guild
+        channels = read('config', guild)['mods']['channels']
+        if ctx.channel.id in channels:
+            return True  
+        
+        raise commands.MissingPermissions(['Bot is not active in this channel!'])
+    return commands.check(predicate)
 
 
 def is_author():
-        def predicate(ctx):
-            guild = ctx.guild
-            
-            authors = read('config', guild)['mods']['authors']
+    def predicate(ctx):
+        guild = ctx.guild
+        
+        authors = read('config', guild)['mods']['authors']
 
-            if len(authors) > 0:
-                if ctx.message.author.id in authors:
-                    return True
-                
-                raise commands.MissingPermissions(['You are not an Author!'])
+        if len(authors) > 0:
+            if ctx.message.author.id in authors:
+                return True
             
-            return True
+            raise commands.MissingPermissions(['You are not an Author!'])
+        
+        return True
 
-        return commands.check(predicate)
+    return commands.check(predicate)
 
 
 async def update_stats(bot:discord.User, chapter:int, guild:discord.Guild, channel:TextChannelConverter, msg_stats=None) -> None:
