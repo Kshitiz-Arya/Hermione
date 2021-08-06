@@ -963,7 +963,6 @@ class Mods(commands.Cog):
             except:
                 print(org, sug, res)
                 print(type(org))
-                breakpoint()
 
             # column = "('Old_ID', 'New_ID', 'Org_channel')"  #! Update history if message is found
             # values = (mID, msg_send.id, channel_id)
