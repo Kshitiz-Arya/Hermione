@@ -42,7 +42,6 @@ class Mods(commands.Cog):
             >add_book 2 15 36 :- In this example, the book only has one chapter, therefore only first chapter is provided
             >add_book 3 37 :- In this example, the book has more then one chapter, therefore first chapter and last chapter are provided.
         """        
-
         #! Check For Negative Number
         guild = ctx.guild
         config = read("config", guild)
@@ -113,7 +112,6 @@ class Mods(commands.Cog):
         Example:
             >upload 1 (Attach the Chapter Document):- Uploading chapter 2
         """
-
         msg = ctx.message
         attach = msg.attachments
         guild = ctx.guild
@@ -793,7 +791,6 @@ class Mods(commands.Cog):
             >changeColour #0f0 #f00 #ff0 #0ff :- Changing dufault embed colour to #0f0 for accepted-edit, #f00 for rejected-edit, #ff0 for when author is not sure about the edit and #0ff for when edit is yet to be voted
             >changeColour #00ff00 #ff0000 #ffff00 #00ffff :- Changing dufault embed colour to #00ff00 for accepted-edit, #ff0000 for rejected-edit, #ffff00 for when author is not sure about the edit and #00ffff for when edit is yet to be voted
         """        
-
         guild = ctx.guild
         config = read("config", guild)
 
@@ -848,7 +845,6 @@ class Mods(commands.Cog):
         Example:
             >latency  :- Displaing latency is ms
         """        
-
         ping = await ctx.send("Checking latency...")
         latency_ms = round(
             (ping.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000, 1
@@ -1066,7 +1062,6 @@ def draw(guild:discord.Guild, colours:tuple):
     Returns:
         [None]
     """    
-
     img = Image.new("RGB", (200, 50), color=None)
     img2 = ImageDraw.Draw(img)
     pos = 0

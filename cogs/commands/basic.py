@@ -47,7 +47,6 @@ class Basic(commands.Cog):
 
             >edit 1 His name is Leadvone>>His name is LeadVonE :- In this example, editors has not provided the reason
         """
-
         org, sug, res = edit
 
         if edit[0] is None:
@@ -174,7 +173,6 @@ class Basic(commands.Cog):
         Example:
             >suggest 1 Hermione is best :- She really is
         """
-
         guild = ctx.guild
         edit_channels = read("config", guild)["mods"]["allowedEdits"]
 
@@ -254,7 +252,6 @@ class Basic(commands.Cog):
         Example:
             >invite [description] :- [description]
         """
-
         bot_invite = discord.Embed(
             colour=0x5C00AD,
             description=
@@ -280,7 +277,6 @@ class Basic(commands.Cog):
         Example:
             >dm [description] :- [description]
         """
-
         user = ctx.message.author
         bot = self.client.user
         bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0
