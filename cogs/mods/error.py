@@ -95,7 +95,6 @@ class Error_control(commands.Cog):
                         elif code == 50035:
                             if command.name == 'edit':
                                 await ctx.reply('**Please use correct formatting for edit command**', delete_after=40)
-                                breakpoint()
                         elif code == 50006:
                             if command.name in ('editors', 'allEditors'):
                                 await ctx.send('**No Editors found**')
