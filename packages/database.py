@@ -26,16 +26,16 @@ def create_table(database, table, guild):
             connection.close()
 
 
-def execute(guild, database, query, values=None):
+def execute(guild, database, sql_query, values=None):
     try:
         connection = create_connection(guild, database)
         cursor = connection.cursor()
         if values is None:
-            commit = cursor.execute(query)
+            commit = cursor.execute(sql_query)
             connection.commit()
             return commit.fetchall()
 
-        commit = cursor.execute(query, values)
+        commit = cursor.execute(sql_query, values)
         connection.commit()
         return commit.fetchall()
 
@@ -57,8 +57,8 @@ def get_table(guild, database, table):
     #     return column
 
 
-def query(sql_query, table=None):      # Concider removing this function
-    query = {
+def query(query_name, table=None):      # Concider removing this function
+    sql_query = {
                 'edit':      """
                                  CREATE TABLE IF NOT EXISTS edit
                                  (
@@ -105,7 +105,7 @@ def query(sql_query, table=None):      # Concider removing this function
                 
 
              }
-    return query[sql_query]
+    return sql_query[query_name]
 
 
 def insert(guild, database, table, column, values):

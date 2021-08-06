@@ -88,10 +88,10 @@ async def reload(ctx, extension):
                 pass
 
 
-for directory in os.listdir("./cogs"):
-    for filename in os.listdir(f'./cogs/{directory}'):
-        if filename.endswith('.py'):
-            client.load_extension(f'cogs.{directory}.{filename[:-3]}')
+for direct in os.listdir("./cogs"):
+    for file_name in os.listdir(f'./cogs/{direct}'):
+        if file_name.endswith('.py'):
+            client.load_extension(f'cogs.{direct}.{file_name[:-3]}')
 
 
 ###############################################################################

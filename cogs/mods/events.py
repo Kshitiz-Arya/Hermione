@@ -198,7 +198,7 @@ class Events(commands.Cog):
                 old_id,
             )
 
-            await update_stats(  # todo Making bot slow. Average Responce time :- 2.70 s
+            await update_stats(  # todo Making bot slow. Average Response time :- 2.70 s
                 self.client.user, chapter, guild, Editorial_Channel,
                 stats_msg)
 

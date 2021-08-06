@@ -6,3 +6,5 @@ Storage/
 workspace.code-workspace
 *.json
 .env
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/objectdb
