@@ -22,7 +22,6 @@ class PrettyMenu(metaclass=ABCMeta):
         pages: List[discord.Embed],
     ):
         """The function called by :class:`PrettyHelp` that will send pages"""
-        pass
 
 
 class DefaultMenu(PrettyMenu):

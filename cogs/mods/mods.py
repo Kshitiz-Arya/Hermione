@@ -714,7 +714,6 @@ class Mods(commands.Cog):
                         edits = await EditConverter.convert(self, ctx, edits)
                     except ValueError:
                         print('NO')
-                        pass
 
                     if chapter == str(chap) or chap == 0:
                         context = await self.client.get_context(message)
