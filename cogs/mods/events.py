@@ -132,7 +132,6 @@ class Events(commands.Cog):
         This is picking up reaction from outside the intended channel and reaction from bot itself
         Rectify this as soon as possible
         """
-
         guild = payload.guild_id
         guild = self.client.get_guild(guild)
         channel = payload.channel_id
@@ -217,7 +216,6 @@ class Events(commands.Cog):
         Rectify this as soon as possible
 
         """
-
         guild = payload.guild_id
         guild = self.client.get_guild(guild)
         user = payload.user_id
