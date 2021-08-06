@@ -12,7 +12,7 @@ def create_connection(guild, db_file):
         return conn
 
     except Error as e:
-        print(e)
+        raise e
 
 
 def create_table(database, table, guild):

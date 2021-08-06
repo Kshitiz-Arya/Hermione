@@ -7,6 +7,7 @@ from typing import List
 
 import discord
 from discord.ext import commands
+from discord.ext.commands.errors import BotMissingPermissions
 
 
 class PrettyMenu(metaclass=ABCMeta):
@@ -153,5 +154,5 @@ class DefaultMenu(PrettyMenu):
                     for emoji in self:
                         try:
                             await message.remove_reaction(emoji, bot.user)
-                        except Exception:
+                        except BotMissingPermissions:
                             pass

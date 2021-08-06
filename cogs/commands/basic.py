@@ -185,10 +185,8 @@ class Basic(commands.Cog):
 
             msg = ctx.message
             link = msg.jump_url
-            bot = self.client.user
-            bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0
-            if bool(author.avatar_url):
-                avatar = str(author.avatar_url)
+
+            avatar = str(author.avatar_url) if bool(author.avatar_url) else discord.embeds.EmptyEmbed
 
             Editorial_Channel, msg_stats = edit_channels[chapter]
             Editorial_Channel = self.client.get_channel(Editorial_Channel)

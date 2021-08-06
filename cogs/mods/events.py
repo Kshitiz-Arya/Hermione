@@ -310,8 +310,7 @@ class Events(commands.Cog):
 
             sql2 = f"select author from edit where Message_ID = {mID}"
             results = db.execute(guild, "editorial", sql2)
-            if len(results) != 0:
-                author = results[0][0]
+
 
             # Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', mID)[0]
             msg = data["content"]
@@ -348,15 +347,15 @@ class Events(commands.Cog):
                         return None
 
                 try:
-                    rankRow, rankChar = ranking(guild, chapter, org)
+                    rankRow, _ = ranking(guild, chapter, org)
                     change_status = f"**Proposed change was found in the chapter at line {rankRow}!**"
 
                 except TypeError:
-                    rankRow, rankChar = None, None
+                    rankRow, _ = None, None
                     change_status = "**Proposed change was not found in the chapter!**"
 
                 except FileNotFoundError:
-                    rankRow, rankChar = None, None
+                    rankRow, _ = None, None
                     change_status = "**Chapter has not yet been uploaded!**"
 
                 updated_embed_dict["fields"][0]["value"] = org
@@ -408,7 +407,6 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
-        channel_id = payload.channel_id
         mID = payload.message_id
         guild_id = payload.guild_id
         guild = self.client.get_guild(int(guild_id))

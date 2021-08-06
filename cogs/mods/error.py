@@ -1,5 +1,4 @@
 import discord
-from discord import client
 from discord.errors import Forbidden
 from discord.ext import commands
 import json
@@ -20,6 +19,7 @@ logger.addHandler(handler)
 def read(file):
     with open(f'{file}.json', 'r') as f:
         return json.load(f)
+    
 
 def save(data, file):
     with open(f'{file}.json', 'w') as f:

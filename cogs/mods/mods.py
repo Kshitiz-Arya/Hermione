@@ -1,3 +1,4 @@
+from itertools import chain
 import os
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
@@ -235,8 +236,6 @@ class Mods(commands.Cog):
             >remove_chapter 3 :- Removing one chapter from the Book 3
         """        
         guild = ctx.guild
-        cwd = os.getcwd() + f"/Storage/{guild.id}/books"
-
         config = read("config", guild)
         books = config["books"]
 
@@ -698,24 +697,9 @@ class Mods(commands.Cog):
 
         messages = await channel.history(after=date, oldest_first=False).flatten()
 
-        sql = f"select * from edit Order by Message_ID desc limit {len(messages)}"
-        result = db.execute(guild, "editorial", sql)
-        (
-            Message_ID,
-            Author_ID,
-            author,
-            Book,
-            chapter,
-            org,
-            sug,
-            res,
-            RankCol,
-            RankChar,
-            Editorial_Channel,
-            Accepted,
-            Rejected,
-            NotSure,
-        ) = [list(tup) for tup in zip(*result)]
+        sql = f"select Message_ID from edit Order by Message_ID desc limit {len(messages)}"
+        msg_ids = chain(db.execute(guild, "editorial", sql))
+
         counter = 0
         for message in messages:
             msg = message.content
@@ -723,7 +707,7 @@ class Mods(commands.Cog):
             command = f'{prefix}edit '
             if command in msg:  # Replace with startwith
 
-                if str(message.id) not in Message_ID:                                                                                                                                       
+                if str(message.id) not in msg_ids:                                                                                                                                       
                     try:
                         size = len(command)
                         chapter, edits = msg[size:].split(maxsplit=1)
@@ -741,9 +725,6 @@ class Mods(commands.Cog):
                             context=context,
                         )
 
-                        if result is True:
-                            Message_ID.append(message.id)
-                            counter += 1
             else:
                 print(msg, f'{prefix}edit' in msg)
         await ctx.send(f"Total Messages Recovered :- {counter}", delete_after=100)
@@ -867,10 +848,7 @@ class Mods(commands.Cog):
         Example:
             >latency  :- Displaing latency is ms
         """        
-        """
-        Command to disply latency in ms.
-        Latency is displayed on plain embed in the description field
-        """
+
         ping = await ctx.send("Checking latency...")
         latency_ms = round(
             (ping.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000, 1
@@ -1021,7 +999,6 @@ class Mods(commands.Cog):
         async with ctx.typing():
 
             guild = ctx.guild
-            bot = self.client
 
             config = read('config', guild)
             author_list = config['mods']['authors']

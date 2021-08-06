@@ -117,6 +117,5 @@ async def on_error(event, *args, **kwargs):
     #! Implement Error Handling here
     ctx, error = args
     raise error
-    pass
     
 client.run(token)
