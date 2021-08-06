@@ -261,8 +261,7 @@ class Basic(commands.Cog):
         """
         bot_invite = discord.Embed(
             colour=0x5C00AD,
-            description=
-            "[Invite Link](https://discord.com/api/oauth2/authorize?client_id=649210648689115149&permissions=388288&scope=bot)",
+            description="[Invite Link](https://discord.com/api/oauth2/authorize?client_id=649210648689115149&permissions=388288&scope=bot)",
             timestamp=datetime.now(),
         )
         bot_invite.set_author(
@@ -305,43 +304,36 @@ class Basic(commands.Cog):
         )
         information_dm.add_field(
             name="Step 2",
-            value=
-            "Use .addChannel command to restict the bot to certain channels, where bot can interact with mods and users.",
+            value="Use .addChannel command to restict the bot to certain channels, where bot can interact with mods and users.",
             inline=False,
         )
         information_dm.add_field(
             name="Step 3",
-            value=
-            "Use .addAuthor command to add users to Author/Mod list. If users are not in the author list then they won't be able to use any mods commands.",
+            value="Use .addAuthor command to add users to Author/Mod list. If users are not in the author list then they won't be able to use any mods commands.",
             inline=False,
         )
         information_dm.add_field(
             name="Step 4",
-            value=
-            "Use .setEmojis to set the emojis corresponding to Accepted, Rejected and Not Sure respectively",
+            value="Use .setEmojis to set the emojis corresponding to Accepted, Rejected and Not Sure respectively",
             inline=False,
         )
         information_dm.add_field(
             name="Step 5",
-            value=
-            "Use .changeColour to set colours for embeds to change to. This command need 4 colours in hex form for Accepted, Rejected, Not Sure and Not Voted Yet.",
+            value="Use .changeColour to set colours for embeds to change to. This command need 4 colours in hex form for Accepted, Rejected, Not Sure and Not Voted Yet.",
         )
         information_dm.add_field(
             name="Step 6",
-            value=
-            "Use .add_book command to store the information about which chapters are in which book. The general format is .add_book book-no start-chapter end-chapter",
+            value="Use .add_book command to store the information about which chapters are in which book. The general format is .add_book book-no start-chapter end-chapter",
             inline=False,
         )
         information_dm.add_field(
             name="Step 7",
-            value=
-            "Use .allowEdits command to enable editing for certain chapters. The general format is .allowEdits #channel-name. (You need to mention the channel for this command to work)",
+            value="Use .allowEdits command to enable editing for certain chapters. The general format is .allowEdits #channel-name. (You need to mention the channel for this command to work)",
             inline=False,
         )
         information_dm.add_field(
             name="Step 8",
-            value=
-            "You can use .setPrefix command to change the default prefix to access the bot.",
+            value="You can use .setPrefix command to change the default prefix to access the bot.",
         )
         await user.send(embed=information_dm)
 

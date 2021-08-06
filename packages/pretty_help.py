@@ -133,8 +133,7 @@ class Paginator:
 
             embed.add_field(
                 name=command.name,
-                value=
-                f'{self.prefix}{command.short_doc or "No Description"}{self.suffix}',
+                value=f'{self.prefix}{command.short_doc or "No Description"}{self.suffix}',
                 inline=False,
             )
         self._add_page(embed)
@@ -217,8 +216,7 @@ class Paginator:
             for page_no, page in enumerate(self._pages, 1):
                 index.add_field(
                     name=f"{page_no}) {page.title}",
-                    value=
-                    f'{self.prefix}{page.description or "No Description"}{self.suffix}',
+                    value=f'{self.prefix}{page.description or "No Description"}{self.suffix}',
                     inline=False,
                 )
             index.set_footer(text=self.ending_note)

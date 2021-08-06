@@ -80,14 +80,12 @@ class Events(commands.Cog):
         )
         information_dm.add_field(
             name="Step 2",
-            value=
-            "Use .addChannel command to restict the bot to certain channels, where bot can interact with mods and users.",
+            value="Use .addChannel command to restict the bot to certain channels, where bot can interact with mods and users.",
             inline=False,
         )
         information_dm.add_field(
             name="Step 3",
-            value=
-            "Use .addAuthor command to add users to Author/Mod list. If users are not in the author list then they won't be able to use any mods commands.",
+            value="Use .addAuthor command to add users to Author/Mod list. If users are not in the author list then they won't be able to use any mods commands.",
             inline=False,
         )
         information_dm.add_field(
@@ -109,8 +107,7 @@ class Events(commands.Cog):
         )
         information_dm.add_field(
             name="Step 7",
-            value=
-            "Use .allowEdits command to enable editing for certain chapters. The general format is .allowEdits #channel-name. (You need to mention the channel for this command to work)",
+            value="Use .allowEdits command to enable editing for certain chapters. The general format is .allowEdits #channel-name. (You need to mention the channel for this command to work)",
             inline=False,
         )
 

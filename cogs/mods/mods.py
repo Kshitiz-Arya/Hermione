@@ -859,8 +859,7 @@ class Mods(commands.Cog):
         await ping.edit(
             content="",
             embed=discord.Embed(
-                description=
-                f"Latency: `{latency_ms}ms`\nHeartbeat: `{heartbeat_ms}ms`"),
+                description=f"Latency: `{latency_ms}ms`\nHeartbeat: `{heartbeat_ms}ms`"),
         )
 
     @commands.command()

@@ -46,8 +46,7 @@ async def send(self, ctx, error):
                           value=f"{''.join(error.args)}",
                           inline=False)
     error_embed.set_footer(
-        text=
-        f'Command - {str(ctx.command)} | Guild - {ctx.guild.name}, Channel - {ctx.channel.name}'
+        text=f'Command - {str(ctx.command)} | Guild - {ctx.guild.name}, Channel - {ctx.channel.name}'
     )
     if length < 1000:
         error_embed.add_field(name='Traceback',
