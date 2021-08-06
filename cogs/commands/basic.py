@@ -76,7 +76,10 @@ class Basic(commands.Cog):
 
         if chapter in allowedEdits.keys():
             if len(org) < 2 or len(sug) < 2:
-                await ctx.reply("One or more columns are empty! Please submit requests with proper formatting.", delete_after=10,)
+                await ctx.reply(
+                    "One or more columns are empty! Please submit requests with proper formatting.",
+                    delete_after=10,
+                )
                 return
 
             channel_id = ctx.channel.id
@@ -153,10 +156,13 @@ class Basic(commands.Cog):
                 await msg_send.add_reaction(emoji)
 
             if not context:
-                await ctx.reply("Your edit has been accepted.", delete_after=10, mention_author=False)
+                await ctx.reply("Your edit has been accepted.",
+                                delete_after=10,
+                                mention_author=False)
             return True
         if not context:
-            await ctx.reply("Editing is currently disabled for this chapter.", delete_after=10)
+            await ctx.reply("Editing is currently disabled for this chapter.",
+                            delete_after=10)
 
     @in_channel()
     @commands.command()
@@ -184,7 +190,8 @@ class Basic(commands.Cog):
             msg = ctx.message
             link = msg.jump_url
 
-            avatar = str(author.avatar_url) if bool(author.avatar_url) else discord.embeds.EmptyEmbed
+            avatar = str(author.avatar_url) if bool(
+                author.avatar_url) else discord.embeds.EmptyEmbed
 
             Editorial_Channel, msg_stats = edit_channels[chapter]
             Editorial_Channel = self.client.get_channel(Editorial_Channel)

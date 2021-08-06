@@ -14,20 +14,21 @@ from dpytools.menus import confirm
 from PIL import Image, ImageDraw
 
 
-
 class Mods(commands.Cog):
-    
     """
     This cog has all the Mod commands to manage Hermione - the bot.
     """
     def __init__(self, client):
         self.client = client
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def add_book(self, ctx, book: int, first_chapter: int, last_chapter: int = None):
+    async def add_book(self,
+                       ctx,
+                       book: int,
+                       first_chapter: int,
+                       last_chapter: int = None):
         """ This command is used to add a new book.
 
         Args:
@@ -41,14 +42,17 @@ class Mods(commands.Cog):
         Example:
             >add_book 2 15 36 :- In this example, the book only has one chapter, therefore only first chapter is provided
             >add_book 3 37 :- In this example, the book has more then one chapter, therefore first chapter and last chapter are provided.
-        """        
+        """
         #! Check For Negative Number
         guild = ctx.guild
         config = read("config", guild)
         books = config["books"]
 
-        if not all(num is not None and num > 0 for num in (book, first_chapter, last_chapter)):
-            await ctx.reply('Please make sure that all the numbers are positive!', delete_after=30)
+        if not all(num is not None and num > 0
+                   for num in (book, first_chapter, last_chapter)):
+            await ctx.reply(
+                'Please make sure that all the numbers are positive!',
+                delete_after=30)
             return
 
         if last_chapter:
@@ -61,11 +65,10 @@ class Mods(commands.Cog):
 
         await ctx.send("New Book has been added!")
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def add_chapter(self, ctx:commands.Context, book):
+    async def add_chapter(self, ctx: commands.Context, book):
         """This commands is used to add a chapter to a book
 
         Args:
@@ -76,7 +79,7 @@ class Mods(commands.Cog):
 
         Example:
             >add_chapter 3 :- Adding chapter to book no. 3
-        """              
+        """
         guild = ctx.guild
         config = read("config", guild)
         books = config["books"]
@@ -95,11 +98,10 @@ class Mods(commands.Cog):
 
         await ctx.send("New chapter has been added!")
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def upload(self, ctx:commands.Context, chapter: int):
+    async def upload(self, ctx: commands.Context, chapter: int):
         """This command is used to upload a chapter to the server. User need to attatch the text document of the chapter with the message
         Documnet should be in .txt format
 
@@ -121,18 +123,19 @@ class Mods(commands.Cog):
                 print(file.content_type)
                 if file.content_type != "text/plain; charset=utf-8":
                     await ctx.send(
-                        "Please upload the chapter in txt format only!", delete_after=20
-                    )
+                        "Please upload the chapter in txt format only!",
+                        delete_after=20)
                     # raise BadArgument
                     return
-                path = os.getcwd() + f"/Storage/{guild.id}/books/Chapter-{chapter}.txt"
+                path = os.getcwd(
+                ) + f"/Storage/{guild.id}/books/Chapter-{chapter}.txt"
                 await file.save(path)
                 await ctx.send("Received the file.", delete_after=20)
 
                 try:
-                    editChannel_id = read("config", guild)["mods"]["allowedEdits"][
-                        str(chapter)
-                    ][0]
+                    editChannel_id = read(
+                        "config",
+                        guild)["mods"]["allowedEdits"][str(chapter)][0]
                 except KeyError:
                     return
 
@@ -172,8 +175,10 @@ class Mods(commands.Cog):
                         if reason_name != 'Reason':
                             continue
 
-                        updated_embed_dict["fields"][3]["value"] = change_status
-                        updated_embed = discord.Embed.from_dict(updated_embed_dict)
+                        updated_embed_dict["fields"][3][
+                            "value"] = change_status
+                        updated_embed = discord.Embed.from_dict(
+                            updated_embed_dict)
 
                     except IndexError:
                         # ! This can be remove once we exit the current guild. This is here mostly for backward compatiblity
@@ -191,11 +196,10 @@ class Mods(commands.Cog):
             await ctx.send("No file included!")
             await ctx.send("Please try again!")
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def remove_book(self, ctx:commands.Context, number):
+    async def remove_book(self, ctx: commands.Context, number):
         """This command is used to remove a book from the bot
 
         Args:
@@ -206,7 +210,7 @@ class Mods(commands.Cog):
 
         Example:
             >remove_book 1 :- Removing the Book 1
-        """        
+        """
         guild = ctx.guild
         config = read("config", guild)
         books = config["books"]
@@ -217,11 +221,10 @@ class Mods(commands.Cog):
         save(config, "config", guild)
         await ctx.send(f"Book {number} has been removed!")
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def remove_chapter(self, ctx:commands.Context, book_n):
+    async def remove_chapter(self, ctx: commands.Context, book_n):
         """This command is used to remove one chapter from a book
 
         Args:
@@ -232,7 +235,7 @@ class Mods(commands.Cog):
 
         Example:
             >remove_chapter 3 :- Removing one chapter from the Book 3
-        """        
+        """
         guild = ctx.guild
         config = read("config", guild)
         books = config["books"]
@@ -243,11 +246,11 @@ class Mods(commands.Cog):
         save(config, "config", guild)
         await ctx.send("Chapter has been removed!")
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def allowEdit(self, ctx:commands.Context, chapter:int, channel: TextChannelConverter):
+    async def allowEdit(self, ctx: commands.Context, chapter: int,
+                        channel: TextChannelConverter):
         """This command is used to enable editing for a given chapter
 
         Args:
@@ -264,7 +267,7 @@ class Mods(commands.Cog):
 
             >allowEdit 4 839217799695171543 :- Enabling edits for chapter 4 and posting all edits to channel with provided ID. Here Used has provided the channel id.
 
-        """        
+        """
         guild = ctx.guild
 
         if Book(chapter, guild):
@@ -279,10 +282,10 @@ class Mods(commands.Cog):
             info.add_field(name=f"Rejected {Etype}", value=0, inline=True)
             info.add_field(name="Not Sure", value=0, inline=True)
             info.add_field(name=f"Total {Etype}", value=0, inline=False)
-            info.set_author(
-                name="Dodging Prision & Stealing Witches", url="https://dpasw.com"
-            )
-            info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
+            info.set_author(name="Dodging Prision & Stealing Witches",
+                            url="https://dpasw.com")
+            info.set_thumbnail(
+                url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
             info.set_footer(
                 text=f"{footer_text} Provided By Hermione",
                 icon_url=self.client.user.avatar_url,
@@ -298,20 +301,18 @@ class Mods(commands.Cog):
             config["mods"]["channels"] = channels
 
             save(config, "config", guild)
-            await ctx.send(
-                f"Editing Request enabled for chapter {chapter}", delete_after=10
-            )
+            await ctx.send(f"Editing Request enabled for chapter {chapter}",
+                           delete_after=10)
         else:
             await ctx.send(
                 "You need to add this chapter using **.add_chapter** command first!",
                 delete_after=20,
             )
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def disableEdit(self, ctx:commands.Context, chapter: str):
+    async def disableEdit(self, ctx: commands.Context, chapter: str):
         """This command is used to disable edit for a given chapter
 
         Args:
@@ -322,7 +323,7 @@ class Mods(commands.Cog):
 
         Example:
             >disableEdit 3 :- Disabling edit for chapter number 3
-        """        
+        """
         guild = ctx.guild
         config = read("config", guild)
 
@@ -332,15 +333,13 @@ class Mods(commands.Cog):
         config["mods"]["allowedEdits"].pop(chapter, None)
         save(config, "config", guild)
 
-        await ctx.send(
-            f"Editing Request disabled for chapter {chapter}", delete_after=10
-        )
-
+        await ctx.send(f"Editing Request disabled for chapter {chapter}",
+                       delete_after=10)
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def stats(self, ctx:commands.Context, chapter: int):
+    async def stats(self, ctx: commands.Context, chapter: int):
         """This command is used to get various statistics about a certain chapter. These stats include total edits, count of Accepted and Rejected edit and word count.
 
         Args:
@@ -351,10 +350,11 @@ class Mods(commands.Cog):
 
         Example:
             >stats 2 :- Requesting Statistics about chapter 3
-        """        
+        """
         guild = ctx.guild
 
-        accepted, rejected, notsure, total, book, editors = db.get_stats(guild, chapter)
+        accepted, rejected, notsure, total, book, editors = db.get_stats(
+            guild, chapter)
 
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
         info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
@@ -363,13 +363,12 @@ class Mods(commands.Cog):
         info.add_field(name="Rejected Edits", value=rejected, inline=False)
         info.add_field(name="Not Sure", value=notsure, inline=False)
         info.add_field(name="Total Edits", value=total, inline=False)
-        info.set_author(
-            name="Dodging Prision & Stealing Witches", url="https://dpasw.com"
-        )
-        info.set_footer(text=f"Book {book}, Chapter {chapter} | Provided By Hermione")
+        info.set_author(name="Dodging Prision & Stealing Witches",
+                        url="https://dpasw.com")
+        info.set_footer(
+            text=f"Book {book}, Chapter {chapter} | Provided By Hermione")
 
         await ctx.send(embed=info)
-
 
     @commands.command()
     @in_channel()
@@ -384,7 +383,7 @@ class Mods(commands.Cog):
 
         Example:
             >allstats :- Getting stats about every books and their edits.
-        """        
+        """
         guild = ctx.guild
 
         accepted, rejected, notsure, total, book, editors = db.get_stats(guild)
@@ -395,19 +394,20 @@ class Mods(commands.Cog):
         info.add_field(name="Rejected Edits", value=rejected, inline=False)
         info.add_field(name="Not Sure", value=notsure, inline=False)
         info.add_field(name="Total Edits", value=total, inline=False)
-        info.set_author(
-            name="Dodging Prision & Stealing Witches", url="https://dpasw.com"
-        )
+        info.set_author(name="Dodging Prision & Stealing Witches",
+                        url="https://dpasw.com")
         info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
         info.set_footer(text=f"Total Book - {book}| Provided By Hermione")
 
         await ctx.send(embed=info)
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def editors(self, ctx:commands.Context, chapter:int, return_type:str=None):
+    async def editors(self,
+                      ctx: commands.Context,
+                      chapter: int,
+                      return_type: str = None):
         """This command is used to get the list of each editors who has worked on a given chapter.
 
         Args:
@@ -420,7 +420,7 @@ class Mods(commands.Cog):
         Example:
             >editors 4 :- Get the embed with editor's name and number of edits they have submitted for chapter 4
             >editors 1 list :- Getting list of editors who has worked on chapter 1
-        """        
+        """
         guild = ctx.guild
         sql = """SELECT Author, COUNT(*) as num FROM edit WHERE chapter=(?) GROUP BY author_id ORDER BY Author"""
 
@@ -434,21 +434,26 @@ class Mods(commands.Cog):
             names = ", ".join(editor[0] for editor in editors)
             file = StringIO(names)
             file.seek(0)
-            await ctx.send(file=discord.File(file, filename=f'Editors List - Chap {chapter}.txt'))
+            await ctx.send(file=discord.File(
+                file, filename=f'Editors List - Chap {chapter}.txt'))
 
         else:
             title = f'Editors - Chapter {chapter}'
             author = 'Dodging Prision & Stealing Witches'
             footer = f'Total Editors - {len(editors)}'
 
-            embeds = EmbedList(ctx, tup_list=editors, title=title, author=author, footer=footer, colour=0x858393)
+            embeds = EmbedList(ctx,
+                               tup_list=editors,
+                               title=title,
+                               author=author,
+                               footer=footer,
+                               colour=0x858393)
             await embeds.send_embeds()
-
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def allEditors(self, ctx, return_type:str=None):
+    async def allEditors(self, ctx, return_type: str = None):
         """This command is used to get list of every editors
 
         Args:
@@ -460,7 +465,7 @@ class Mods(commands.Cog):
         Example:
             >allEditors  :- Get the embed with editor's name and number of edits they have submitted.
             >allEditors list :- Getting list of every editors
-        """        
+        """
         guild = ctx.guild
         sql = """SELECT Author, COUNT(*) as num FROM edit GROUP BY author_id ORDER BY Author"""
 
@@ -474,20 +479,25 @@ class Mods(commands.Cog):
             names = ", ".join(editor[0] for editor in editors)
             file = BytesIO(bytes(names, encoding='utf-8'))
             file.seek(0)
-            await ctx.send(file=discord.File(file, filename='Editors List.txt'))
+            await ctx.send(file=discord.File(file, filename='Editors List.txt')
+                           )
 
         else:
 
             author = 'Dodging Prision & Stealing Witches'
             footer = f'Total Editors - {len(editors)}'
 
-            embeds = EmbedList(ctx, tup_list=editors, author=author, footer=footer, colour=0x858393)
+            embeds = EmbedList(ctx,
+                               tup_list=editors,
+                               author=author,
+                               footer=footer,
+                               colour=0x858393)
             await embeds.send_embeds()
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def addAuthor(self, ctx:commands.Context, author: MemberConverter):
+    async def addAuthor(self, ctx: commands.Context, author: MemberConverter):
         """Adding members to Author list. These authors has permission to change the bot settings.
 
         Args:
@@ -500,7 +510,7 @@ class Mods(commands.Cog):
             >addAuthor #Kshitiz :- Adding Kshitiz to Authors list. Here Kshitiz has been mentioned
             >addAuthor Kshitiz :- Adding Kshitiz to Authors list. Here Kshitiz's name has been provided
             >addAuthor 843478299246329432 :- Adding Kshitiz to Authors list. Here Kshitiz's id has been provided
-        """        
+        """
         guild = ctx.guild
         author_id = author.id
         author_name = author.name or author.nick
@@ -515,13 +525,13 @@ class Mods(commands.Cog):
             config["mods"]["authors"] = authors
             save(config, "config", guild)
 
-            await ctx.send(f"Added {author_name} to the Author's list", delete_after=10)
-
+            await ctx.send(f"Added {author_name} to the Author's list",
+                           delete_after=10)
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def delAuthor(self, ctx:commands.Context, author: MemberConverter):
+    async def delAuthor(self, ctx: commands.Context, author: MemberConverter):
         """This command is used to remove a member from Authors list
 
         Args:
@@ -534,7 +544,7 @@ class Mods(commands.Cog):
             >delAuthor #Kshitiz :- Removing Kshitiz from the Authors list. Here Kshitiz has been mentioned.
             >delAuthor Kshitiz :- Removing Kshitiz from the Authors list. Here Kshitiz's name has been provided
             >delAuthor 843478299246329432 :- Removing Kshitiz from the Authors list. Here Kshitiz's id has been provided
-        """        
+        """
         guild = ctx.guild
         author_id = author.id
         author_name = author.name or author.nick
@@ -547,18 +557,17 @@ class Mods(commands.Cog):
             config["mods"]["authors"] = authors
             save(config, "config", guild)
 
-            await ctx.send(
-                f"Removed {author_name} from the Author's list", delete_after=10
-            )
+            await ctx.send(f"Removed {author_name} from the Author's list",
+                           delete_after=10)
 
         else:
             await ctx.send("Author is not in the list!", delete_after=10)
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def setEmojis(self, ctx:commands.Context, accepted, rejected, not_sure):
+    async def setEmojis(self, ctx: commands.Context, accepted, rejected,
+                        not_sure):
         """This program is used to change the default emojis for voting perpose. 
 
         Args:
@@ -571,7 +580,7 @@ class Mods(commands.Cog):
 
         Example:
             >setEmojis ✔️ ❌ 😐 :- Changing the emojis used for accepting, rejecting and when author is not sure to ✔️ ❌ and 😐 respectively
-        """        
+        """
         guild = ctx.guild
 
         emojis = [accepted, rejected, not_sure]
@@ -588,10 +597,10 @@ class Mods(commands.Cog):
 
         await ctx.send("Emoji list has been updeted!", delete_after=10)
 
-
     @commands.command()
     @is_author()
-    async def addChannel(self, ctx:commands.Context, channel: TextChannelConverter):
+    async def addChannel(self, ctx: commands.Context,
+                         channel: TextChannelConverter):
         """This command is used to allow bot to add a channel to the allowed-channel list.  Bot won't respond to any command outside of allowed-channel list
 
         Args:
@@ -604,15 +613,16 @@ class Mods(commands.Cog):
             >addChannel #edit :- Adding channel "edit" to the allowed-channels list. Here channel has been mentioned
             >addChannel edit :- Adding channel "edit" to the allowed-channels list. Here channel's name has been provided
             >addChannel 842349594825457533 :- Adding channel with given id to the allowed-channels list. Here channel's id has been provided
-        """        
+        """
         guild = ctx.guild
         channel_id = channel.id
         channel_name = channel.name
-        
 
         send_messages = channel.permissions_for(guild.me).send_messages
         if not send_messages:
-            await ctx.reply(f"Bot doesn't have permission to **send messages** in **{channel.name}**!\nPlease add the bot to the channel first!", delete_after=30)
+            await ctx.reply(
+                f"Bot doesn't have permission to **send messages** in **{channel.name}**!\nPlease add the bot to the channel first!",
+                delete_after=30)
             return
 
         config = read("config", guild)
@@ -623,16 +633,16 @@ class Mods(commands.Cog):
         else:
             channels.append(channel_id)
             await ctx.send(
-                f"Added __**{channel_name}**__ to the Channels list", delete_after=10
-            )
+                f"Added __**{channel_name}**__ to the Channels list",
+                delete_after=10)
 
         config["mods"]["channels"] = channels
         save(config, "config", guild)
 
-
     @commands.command()
     @is_author()
-    async def delChannel(self, ctx:commands.Context, channel: TextChannelConverter):
+    async def delChannel(self, ctx: commands.Context,
+                         channel: TextChannelConverter):
         """This command is used to remove given channel from the allowed-channel list.
 
         Args:
@@ -645,7 +655,7 @@ class Mods(commands.Cog):
             >delChannel #edit :- Removing channel "edit" from the allowed channel list. Here channel has been mentioned.
             >delChannel edit :- Removing channel "edit" from the allowed channel list. Here channel's name has been provided.
             >delChannel 842349594825457533 :- Removing channel with given id from the allowed channel list. Here channel's id has been provided.
-        """        
+        """
         guild = ctx.guild
         channel_id = channel.id
         channel_name = channel.name
@@ -659,17 +669,16 @@ class Mods(commands.Cog):
             save(config, "config", guild)
 
             await ctx.send(
-                f"Removed __**{channel_name}**__ from the channels list", delete_after=10
-            )
+                f"Removed __**{channel_name}**__ from the channels list",
+                delete_after=10)
 
         else:
             await ctx.send("Channel is not in the list!", delete_after=10)
 
-
     @commands.command()
     @in_channel()
     @is_author()
-    async def checkEdits(self, ctx:commands.Context, number:int, chap=0):
+    async def checkEdits(self, ctx: commands.Context, number: int, chap=0):
         """This command is used to pickup any edit or suggestion, which bot may have missed due to any reason.
 
         Args:
@@ -682,9 +691,9 @@ class Mods(commands.Cog):
         Example:
             >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
             >checkEdits 2 3 :- Hermione will look for edits of chapter 3 in last 2 days of message history
-        """        
+        """
         #! It is not picking up edits as expected
-        #! Look after Line 480 
+        #! Look after Line 480
         #! Erroring out when there is no edit in database
         #todo Check is Chapter is in allowed edit list before interating thorugh msg
 
@@ -693,7 +702,8 @@ class Mods(commands.Cog):
         date = datetime.now() - timedelta(days=number)
         prefix = read('config', guild)['prefix']
 
-        messages = await channel.history(after=date, oldest_first=False).flatten()
+        messages = await channel.history(after=date,
+                                         oldest_first=False).flatten()
 
         sql = f"select Message_ID from edit Order by Message_ID desc limit {len(messages)}"
         msg_ids = chain(db.execute(guild, "editorial", sql))
@@ -705,7 +715,7 @@ class Mods(commands.Cog):
             command = f'{prefix}edit '
             if command in msg:  # Replace with startwith
 
-                if str(message.id) not in msg_ids:                                                                                                                                       
+                if str(message.id) not in msg_ids:
                     try:
                         size = len(command)
                         chapter, edits = msg[size:].split(maxsplit=1)
@@ -724,13 +734,13 @@ class Mods(commands.Cog):
 
             else:
                 print(msg, f'{prefix}edit' in msg)
-        await ctx.send(f"Total Messages Recovered :- {counter}", delete_after=100)
-
+        await ctx.send(f"Total Messages Recovered :- {counter}",
+                       delete_after=100)
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def export(self, ctx:commands.Context, chapter: int):
+    async def export(self, ctx: commands.Context, chapter: int):
         """This cahpter is used to get all edits and suggestion in .xlsx format
 
         Args:
@@ -741,7 +751,7 @@ class Mods(commands.Cog):
 
         Example:
             >export 1 :- Requested edits and suggestions for chapter 1
-        """        
+        """
         guild = ctx.guild
         conn = db.create_connection(guild, "editorial")
         bio = BytesIO()
@@ -764,17 +774,12 @@ class Mods(commands.Cog):
         if conn:
             conn.close()
 
-
     @commands.command(aliases=["changeColor"])
     @in_channel()
     @is_author()
-    async def changeColour(
-        self,
-        ctx:commands.Context,
-        accepted: ColorConverter,
-        rejected: ColorConverter,
-        notsure: ColorConverter,
-        noVote: ColorConverter):
+    async def changeColour(self, ctx: commands.Context,
+                           accepted: ColorConverter, rejected: ColorConverter,
+                           notsure: ColorConverter, noVote: ColorConverter):
         """This command is used to change the default embed colours for edit is posted, accepted, rejected or when author is not sure about the edit
 
         Args:
@@ -789,7 +794,7 @@ class Mods(commands.Cog):
         Example:
             >changeColour #0f0 #f00 #ff0 #0ff :- Changing dufault embed colour to #0f0 for accepted-edit, #f00 for rejected-edit, #ff0 for when author is not sure about the edit and #0ff for when edit is yet to be voted
             >changeColour #00ff00 #ff0000 #ffff00 #00ffff :- Changing dufault embed colour to #00ff00 for accepted-edit, #ff0000 for rejected-edit, #ffff00 for when author is not sure about the edit and #00ffff for when edit is yet to be voted
-        """        
+        """
         guild = ctx.guild
         config = read("config", guild)
 
@@ -801,16 +806,19 @@ class Mods(commands.Cog):
         }
 
         save(config, "config", guild)
-        draw(guild, (accepted.value, rejected.value, notsure.value, noVote.value))
+        draw(guild,
+             (accepted.value, rejected.value, notsure.value, noVote.value))
 
-        colour_img = discord.File(f'Storage/{guild.id}/images/colour.png', filename='colour.png')
-        await ctx.send("Changed the embed colours to ",file=colour_img, delete_after=20)
-
+        colour_img = discord.File(f'Storage/{guild.id}/images/colour.png',
+                                  filename='colour.png')
+        await ctx.send("Changed the embed colours to ",
+                       file=colour_img,
+                       delete_after=20)
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def setPrefix(self, ctx:commands.Context, prefix):
+    async def setPrefix(self, ctx: commands.Context, prefix):
         """This command is used to change the default prefix to interact the bot
 
         Args:
@@ -821,7 +829,7 @@ class Mods(commands.Cog):
 
         Example:
             >setPrefix ! :- Changing the default prefix to !
-        """        
+        """
         guild = ctx.guild
 
         config = read("config", guild)
@@ -829,7 +837,6 @@ class Mods(commands.Cog):
         save(config, "config", guild)
 
         await ctx.send(f"Changed the prefix to {prefix}", delete_after=30)
-
 
     @commands.command(aliases=["lat"])
     @in_channel()
@@ -843,24 +850,24 @@ class Mods(commands.Cog):
 
         Example:
             >latency  :- Displaing latency is ms
-        """        
+        """
         ping = await ctx.send("Checking latency...")
         latency_ms = round(
-            (ping.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000, 1
-        )
+            (ping.created_at.timestamp() - ctx.message.created_at.timestamp())
+            * 1000, 1)
         heartbeat_ms = round(ctx.bot.latency * 1000, 1)
         await ping.edit(
             content="",
             embed=discord.Embed(
-                description=f"Latency: `{latency_ms}ms`\nHeartbeat: `{heartbeat_ms}ms`"
-            ),
+                description=
+                f"Latency: `{latency_ms}ms`\nHeartbeat: `{heartbeat_ms}ms`"),
         )
-
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def populate(self, ctx:commands.Context, chapter:int, channel: TextChannelConverter):
+    async def populate(self, ctx: commands.Context, chapter: int,
+                       channel: TextChannelConverter):
         """This command is used to populate a channel with all the edits of a given chapter. This command is useful when older channel is either deleted or unusable.
 
         Args:
@@ -874,31 +881,41 @@ class Mods(commands.Cog):
             >populate 1 #edit :- Populating the edits of chapter 1 to channel edit. Here channel is mentioned
             >populate 1 edit :- Populating the edits of chapter 1 to channel edit. Here channel name is provided
             >populate 1 842349594825457533 :- Populating the edits of chapter 1 to channel with provided id. Here channel id is provided
-        """        
+        """
         guild = ctx.guild
         bot = self.client.user
         count = 0
-        msg = await ctx.send(f"Do you want {channel.name} to be new home for all the edits from chapter {chapter}?", delete_after=40)
+        msg = await ctx.send(
+            f"Do you want {channel.name} to be new home for all the edits from chapter {chapter}?",
+            delete_after=40)
 
         choise = await confirm(ctx, msg, lock=True)
         stats_msg = await update_stats(bot, chapter, guild, channel)
 
         config = read('config', guild)
         if choise:
-            config['mods']['allowedEdits'][str(chapter)] = [channel.id, stats_msg.id]
+            config['mods']['allowedEdits'][str(chapter)] = [
+                channel.id, stats_msg.id
+            ]
             config['mods']['channels'].append(channel.id)
             save(config, 'config', guild)
-        
+
         sql = 'SELECT * FROM edit where Chapter = ? ORDER BY RankLine, RankChar'
         results = db.execute(guild, 'editorial', sql, str(chapter))
-        
+
         if not results:
-            await ctx.send('Aborting the mission! There are not edits in this chapter.', delete_after=20)
-        
+            await ctx.send(
+                'Aborting the mission! There are not edits in this chapter.',
+                delete_after=20)
+
         for row in results:
             mID, aID, aName, book, chapter, org, sug, res, rLine, rChar, oChannel, accepted, rejected, notSure = row
-            
-            votes = {'accepted': accepted, 'rejected': rejected, 'notsure': notSure}
+
+            votes = {
+                'accepted': accepted,
+                'rejected': rejected,
+                'notsure': notSure
+            }
             oChannel = guild.get_channel(int(oChannel))
 
             try:
@@ -907,7 +924,7 @@ class Mods(commands.Cog):
                 author = msg.author
                 aName = author.name or author.nick
                 avatar = str(author.avatar_url)
-            
+
             except discord.errors.NotFound:
                 jLink, aName, avatar = None, 'Anonymous', "https://cdn.discordapp.com/embed/avatars/0.png"
 
@@ -929,12 +946,13 @@ class Mods(commands.Cog):
                 rankRow, rankChar = None, None
                 change_status = "**Proposed change was not found in the chapter!**"
 
-
             colour = config["mods"]["colour"]
             emojis = config['mods']['emojis']
 
             try:
-                vote = next((vote for vote, val in votes.items() if val == "1"), 'noVote')
+                vote = next(
+                    (vote for vote, val in votes.items() if val == "1"),
+                    'noVote')
             except StopIteration:
                 continue
 
@@ -947,14 +965,21 @@ class Mods(commands.Cog):
             vote = 'Not Voted Yet' if vote == 'noVote' else vote
 
             embed.set_author(name=aName, icon_url=avatar)
-            embed.set_footer(text=f"Author's Vote - {vote.title() }", icon_url=str(self.client.user.avatar_url))
+            embed.set_footer(text=f"Author's Vote - {vote.title() }",
+                             icon_url=str(self.client.user.avatar_url))
 
             try:
                 if org is not None:
-                    embed.add_field(name="Original Text", value=org or '⠀', inline=False)
-                    embed.add_field(name="Sugested Text", value=sug, inline=False)
+                    embed.add_field(name="Original Text",
+                                    value=org or '⠀',
+                                    inline=False)
+                    embed.add_field(name="Sugested Text",
+                                    value=sug,
+                                    inline=False)
                     embed.add_field(name="Reason", value=res, inline=False)
-                    embed.add_field(name="⠀", value=change_status, inline=False)
+                    embed.add_field(name="⠀",
+                                    value=change_status,
+                                    inline=False)
                 else:
                     embed.add_field(name='Suggestion', value=sug)
 
@@ -968,17 +993,15 @@ class Mods(commands.Cog):
             # values = (mID, msg_send.id, channel_id)
             # db.insert(guild, "editorial", "history", column, values)
 
-
             for emoji in emojis.values():
                 await msg_send.add_reaction(emoji)
-        
-        await ctx.send(f'Total Edits populated :- {count}', delete_after=30)
 
+        await ctx.send(f'Total Edits populated :- {count}', delete_after=30)
 
     @commands.command()
     @in_channel()
     @is_author()
-    async def settings(self, ctx:commands.Context):
+    async def settings(self, ctx: commands.Context):
         """This command display all type of informations like author, channels where bot is active, book info and more
 
         Args:
@@ -988,7 +1011,7 @@ class Mods(commands.Cog):
 
         Example:
             >settings  :- Displaying different informations and settings of Hermione
-        """        
+        """
         # Provide all type of infos like name of all the authors, channels where bot is active, emojis, colours prefix and book info
         async with ctx.typing():
 
@@ -997,22 +1020,29 @@ class Mods(commands.Cog):
             config = read('config', guild)
             author_list = config['mods']['authors']
             channels_list = config['mods']['channels']
-            emojis = "   ".join(list(config['mods']['emojis'].values())) + '\n⠀'
+            emojis = "   ".join(list(
+                config['mods']['emojis'].values())) + '\n⠀'
             prefix = config['prefix']
             books = config['books']
             books_count = len(books.keys())
 
             editing_chapter = tuple(config["mods"]["allowedEdits"].keys())
-            editing_channels = [c[0] for c in config['mods']['allowedEdits'].values()]
-            editing_chapter_str = f'Chpater {" ,".join(editing_chapter)} \n⠀' if len(editing_chapter) > 0 else '**No Active Chapters**\n⠀'
+            editing_channels = [
+                c[0] for c in config['mods']['allowedEdits'].values()
+            ]
+            editing_chapter_str = f'Chpater {" ,".join(editing_chapter)} \n⠀' if len(
+                editing_chapter) > 0 else '**No Active Chapters**\n⠀'
             chapter = books[str(books_count)]['end'] if len(books) > 0 else 0
 
-            colour_img = discord.File(f'Storage/{guild.id}/images/colour.png', filename='colour.png')
-            
+            colour_img = discord.File(f'Storage/{guild.id}/images/colour.png',
+                                      filename='colour.png')
+
             author_names = set()
             channel_names = set()
 
-            interactive_channels = set(channels_list) - set(editing_channels) # List of channel except channels where edits are posted!
+            interactive_channels = set(channels_list) - set(
+                editing_channels
+            )  # List of channel except channels where edits are posted!
 
             for author_id in author_list:
                 _ = await guild.fetch_member(author_id)
@@ -1025,31 +1055,52 @@ class Mods(commands.Cog):
             authors_name = ", ".join(author_names)
             channels_name = ", ".join(channel_names)
 
-            info=discord.Embed(title="Dodging Prison & Stealing Witches", color=0x7b68d9)
-            info.set_author(name="LeadVonE", icon_url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
+            info = discord.Embed(title="Dodging Prison & Stealing Witches",
+                                 color=0x7b68d9)
+            info.set_author(name="LeadVonE",
+                            icon_url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
             # info.set_thumbnail(url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
-            info.add_field(name=":books: Book".ljust(20, "⠀"), value=(str(books_count) + '\n⠀').center(7, '⠀'), inline=True)
-            info.add_field(name=":green_book: Chapter".ljust(25, "⠀"), value=str(chapter).center(7, '⠀'), inline=True)
-            info.add_field(name=":bookmark_tabs: Words", value='646k'.center(7, '⠀'))
-            info.add_field(name=":cowboy: Emojis", value=emojis.center(5, '⠀'), inline=True)
-            info.add_field(name=":point_right: Prefix", value=f"**{prefix.center(7, '⠀')}**", inline=True)
-            info.add_field(name=":man_farmer: Authors", value=f"**{authors_name}**", inline=True)
-            info.add_field(name=":writing_hand: Enabled Edits".center(5, '⠀'), value=editing_chapter_str.center(15, '⠀'), inline=True)
+            info.add_field(name=":books: Book".ljust(20, "⠀"),
+                           value=(str(books_count) + '\n⠀').center(7, '⠀'),
+                           inline=True)
+            info.add_field(name=":green_book: Chapter".ljust(25, "⠀"),
+                           value=str(chapter).center(7, '⠀'),
+                           inline=True)
+            info.add_field(name=":bookmark_tabs: Words",
+                           value='646k'.center(7, '⠀'))
+            info.add_field(name=":cowboy: Emojis",
+                           value=emojis.center(5, '⠀'),
+                           inline=True)
+            info.add_field(name=":point_right: Prefix",
+                           value=f"**{prefix.center(7, '⠀')}**",
+                           inline=True)
+            info.add_field(name=":man_farmer: Authors",
+                           value=f"**{authors_name}**",
+                           inline=True)
+            info.add_field(name=":writing_hand: Enabled Edits".center(5, '⠀'),
+                           value=editing_chapter_str.center(15, '⠀'),
+                           inline=True)
             info.add_field(name='⠀', value='⠀', inline=True)
-            info.add_field(name=":house_with_garden: Channel", value=f"**{channels_name}**".center(10, '⠀'), inline=True)
+            info.add_field(name=":house_with_garden: Channel",
+                           value=f"**{channels_name}**".center(10, '⠀'),
+                           inline=True)
 
-            for b in range(1, books_count+1):
+            for b in range(1, books_count + 1):
                 start, end = books[str(b)].values()
-                info.add_field(name=f":notebook_with_decorative_cover: Book {b}", value=f"{start} - {end}".center(10, '⠀'), inline=True)
+                info.add_field(
+                    name=f":notebook_with_decorative_cover: Book {b}",
+                    value=f"{start} - {end}".center(10, '⠀'),
+                    inline=True)
 
-            info.add_field(name='⠀', value='**:rainbow_flag: Colour**', inline=False)
+            info.add_field(name='⠀',
+                           value='**:rainbow_flag: Colour**',
+                           inline=False)
             info.set_image(url='attachment://colour.png')
             info.set_footer(text="Provided to you by Hermione")
             await ctx.send(embed=info, file=colour_img)
 
 
-
-def draw(guild:discord.Guild, colours:tuple):
+def draw(guild: discord.Guild, colours: tuple):
     """Generate a palette image with all the colours passed as tuple
 
     Args:
@@ -1059,16 +1110,18 @@ def draw(guild:discord.Guild, colours:tuple):
 
     Returns:
         [None]
-    """    
+    """
     img = Image.new("RGB", (200, 50), color=None)
     img2 = ImageDraw.Draw(img)
     pos = 0
     for c in colours:
-        colour_hex="%06x" % c
-        img2.rectangle([pos, 0, 50+pos, 50+pos], fill=f"#{colour_hex}")
+        colour_hex = "%06x" % c
+        img2.rectangle([pos, 0, 50 + pos, 50 + pos], fill=f"#{colour_hex}")
         pos += 50
 
-    img.save(f'Storage/{guild.id}/images/colour.png', 'PNG', dpi=(300,300))
+    img.save(f'Storage/{guild.id}/images/colour.png', 'PNG', dpi=(300, 300))
+
+
 ###############################################################################
 #                         AREA FOR SETUP                                      #
 ###############################################################################

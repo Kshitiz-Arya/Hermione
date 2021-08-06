@@ -2,6 +2,7 @@ import os
 import sqlite3
 from sqlite3 import Error
 
+
 def create_connection(guild, db_file):
     # create a database connection to a SQLite database #
     conn = None
@@ -50,16 +51,17 @@ def get_table(guild, database, table):
     sql = "SELECT name FROM PRAGMA_TABLE_INFO('%s');" % table
     table = execute(guild, database, sql)
 
-    return    [element for tupl in table for element in tupl]
+    return [element for tupl in table for element in tupl]
     # table = execute(guild, database, query('get_table', table))
     # if table:
     #     column = list(map(lambda x: x[0], table.description))
     #     return column
 
 
-def query(query_name, table=None):      # Concider removing this function
+def query(query_name, table=None):  # Concider removing this function
     sql_query = {
-                'edit':      """
+        'edit':
+        """
                                  CREATE TABLE IF NOT EXISTS edit
                                  (
                                    Message_ID TEXT,
@@ -78,7 +80,8 @@ def query(query_name, table=None):      # Concider removing this function
                                    NotSure      Text
                                  )
                               """,
-                'suggestion':   """
+        'suggestion':
+        """
                                     CREATE TABLE IF NOT EXISTS edit
                                     (
                                     Message_ID TEXT,
@@ -90,21 +93,20 @@ def query(query_name, table=None):      # Concider removing this function
                                     Rejected     Text,
                                     NotSure      Text
                                 """,
-                'history':    """
+        'history':
+        """
                                  Create table if not exists history
                                  (
                                    Old_ID TEXT PRIMARY KEY,
                                    New_ID TEXT,
                                    Org_channel TEXT
                                  )""",
-                
-                'get_table':  f"""
+        'get_table':
+        f"""
                               SELECT *
                               FROM {table}
                               """,
-                
-
-             }
+    }
     return sql_query[query_name]
 
 
@@ -127,6 +129,7 @@ def getsql(guild, database, table, column, value):
     rows = cur.fetchall()
     return rows
 
+
 def get_stats(guild, chapter='all'):
     Connection = create_connection(guild, 'editorial')
     if chapter == 'all':
@@ -139,7 +142,9 @@ def get_stats(guild, chapter='all'):
     cur.execute(sql)
     return cur.fetchone()
 
-def update(guild, database, table, U_column, U_value, R_column, R_value): # U_column = Update Column, R column = Reference Column
+
+def update(guild, database, table, U_column, U_value, R_column,
+           R_value):  # U_column = Update Column, R column = Reference Column
     Connection = create_connection(guild, database)
     sql = f''' UPDATE {table}
                SET {U_column} = {U_value}

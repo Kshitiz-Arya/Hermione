@@ -11,9 +11,13 @@ from packages.pretty_help import PrettyHelp
 
 logger = logging.getLogger('discord')
 logger.setLevel(20)
-handler = logging.FileHandler(filename='logs/discord-main.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler = logging.FileHandler(filename='logs/discord-main.log',
+                              encoding='utf-8',
+                              mode='w')
+handler.setFormatter(
+    logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
+
 
 def read(file, guild):
     with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
@@ -23,18 +27,19 @@ def read(file, guild):
 def get_prefix(_, message):
     return read('config', message.guild)['prefix']
 
+
 load_dotenv()
 token = os.getenv('token')
 # menu = DefaultMenu(page_left="\U0001F44D", page_right="👎", remove=":classical_building:", active_time=5)
 
-client = commands.Bot(command_prefix=get_prefix, case_insensitive=True, strip_after_prefix=True)
+client = commands.Bot(command_prefix=get_prefix,
+                      case_insensitive=True,
+                      strip_after_prefix=True)
 client.help_command = PrettyHelp(color=0x635cbd, no_category='Owner Commands')
-
 
 ###############################################################################
 #                         AREA FOR COGS                                       #
 ###############################################################################
-
 
 if __name__ == '__main__':
     _root = os.getcwd()
@@ -48,6 +53,7 @@ async def restart(ctx):
 
     await ctx.bot.close()
     await ctx.bot.login(token, bot=True)
+
 
 @client.command()
 @is_owner()
@@ -93,7 +99,6 @@ for direct in os.listdir("./cogs"):
         if file_name.endswith('.py'):
             client.load_extension(f'cogs.{direct}.{file_name[:-3]}')
 
-
 ###############################################################################
 #                         AREA FOR EVENTS                                     #
 ###############################################################################
@@ -107,15 +112,17 @@ async def on_ready():
 @client.event
 async def on_message(meg):
     if meg.guild:
-        ctx = await client.get_context(meg) 
+        ctx = await client.get_context(meg)
         await client.invoke(ctx)
     else:
         pass
+
 
 @client.event
 async def on_error(event, *args, **kwargs):
     #! Implement Error Handling here
     ctx, error = args
     raise error
-    
+
+
 client.run(token)

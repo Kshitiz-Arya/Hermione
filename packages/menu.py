@@ -14,7 +14,6 @@ class PrettyMenu(metaclass=ABCMeta):
     """
     A base class for menus used with PrettyHelp
     """
-
     async def send_pages(
         self,
         ctx: commands.Context,
@@ -45,10 +44,11 @@ class DefaultMenu(PrettyMenu):
         page_right (str, optional): The emoji to use for going right. Defaults to "▶".
         remove (str, optional): The emoji to use for removing the help message. Defaults to "❌".
     """
-
-    def __init__(
-        self, page_left="◀", page_right="▶", remove="❌", active_time=30
-    ) -> None:
+    def __init__(self,
+                 page_left="◀",
+                 page_right="▶",
+                 remove="❌",
+                 active_time=30) -> None:
 
         self.page_left = self.__match(page_left)
         self.page_right = self.__match(page_right)
@@ -70,7 +70,7 @@ class DefaultMenu(PrettyMenu):
     def get(self, emoji):
         if isinstance(emoji, str):
             return self._dict.get(emoji)
-        
+
         return self._dict.get(self.custom(emoji))
 
     def __contains__(self, emoji):
@@ -114,21 +114,18 @@ class DefaultMenu(PrettyMenu):
 
                     def check(payload: discord.RawReactionActionEvent):
 
-                        if (
-                            payload.user_id != bot.user.id
-                            and message.id == payload.message_id
-                        ):
+                        if (payload.user_id != bot.user.id
+                                and message.id == payload.message_id):
                             return True
 
                     payload: discord.RawReactionActionEvent = await bot.wait_for(
-                        "raw_reaction_add", timeout=self.active_time, check=check
-                    )
+                        "raw_reaction_add",
+                        timeout=self.active_time,
+                        check=check)
 
-                    emoji_name = (
-                        payload.emoji.name
-                        if payload.emoji.id is None
-                        else f":{payload.emoji.name}:{payload.emoji.id}"
-                    )
+                    emoji_name = (payload.emoji.name
+                                  if payload.emoji.id is None else
+                                  f":{payload.emoji.name}:{payload.emoji.id}")
 
                     if emoji_name in self and payload.user_id == ctx.author.id:
                         nav = self.get(emoji_name)
@@ -143,8 +140,7 @@ class DefaultMenu(PrettyMenu):
 
                     try:
                         await message.remove_reaction(
-                            payload.emoji, discord.Object(id=payload.user_id)
-                        )
+                            payload.emoji, discord.Object(id=payload.user_id))
                     except discord.errors.Forbidden:
                         pass
 

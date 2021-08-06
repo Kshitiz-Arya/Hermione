@@ -16,7 +16,6 @@ class Events(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         print(f"Joined {guild.name}")
@@ -150,17 +149,13 @@ class Events(commands.Cog):
         channels = [c[0] for c in list(allowedEdits.values())]
         stats_msgs = [s[1] for s in list(allowedEdits.values())]
 
-        if (
-            channel in channels
-            and emoji in emojis.values()
-            and user_id in authors
-        ):
+        if (channel in channels and emoji in emojis.values()
+                and user_id in authors):
             # Look into making this a seperate function
             edit_status = list(emojis.keys())[list(
                 emojis.values()).index(emoji)]
 
-            row = db.getsql(guild, "editorial", "history", "New_ID",
-                            New_ID)
+            row = db.getsql(guild, "editorial", "history", "New_ID", New_ID)
 
             if not row:
                 return
@@ -170,7 +165,8 @@ class Events(commands.Cog):
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)
-            chapter = list(allowedEdits.keys())[list(allowedEdits.values()).index([channel, stats_msg])]
+            chapter = list(allowedEdits.keys())[list(
+                allowedEdits.values()).index([channel, stats_msg])]
             mainAuthor = await guild.fetch_member(user_id)
             mainAuthor_name = mainAuthor.nick or mainAuthor.name
             embed_msg = await Editorial_Channel.fetch_message(New_ID)
@@ -199,8 +195,7 @@ class Events(commands.Cog):
             )
 
             await update_stats(  # todo Making bot slow. Average Response time :- 2.70 s
-                self.client.user, chapter, guild, Editorial_Channel,
-                stats_msg)
+                self.client.user, chapter, guild, Editorial_Channel, stats_msg)
 
             if old_id.isnumeric():
                 # Adding reaction to the original message if available
@@ -235,18 +230,14 @@ class Events(commands.Cog):
 
         stats_msgs = [c[1] for c in list(allowedEdits.values())]
 
-        if (
-            channel in channels
-            and emoji in emojis.values()
-            and user in authors
-        ):
+        if (channel in channels and emoji in emojis.values()
+                and user in authors):
             # Look into making this a seperate function
 
             edit_status = list(emojis.keys())[list(
                 emojis.values()).index(emoji)]
 
-            row = db.getsql(guild, "editorial", "history", "New_ID",
-                            New_ID)
+            row = db.getsql(guild, "editorial", "history", "New_ID", New_ID)
 
             if not row:
                 return
@@ -256,7 +247,8 @@ class Events(commands.Cog):
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)
-            chapter = list(allowedEdits.keys())[list(allowedEdits.values()).index([channel, stats_msg])]
+            chapter = list(allowedEdits.keys())[list(
+                allowedEdits.values()).index([channel, stats_msg])]
 
             embed_msg = await Editorial_Channel.fetch_message(New_ID)
 
@@ -266,8 +258,7 @@ class Events(commands.Cog):
 
             updated_embed = embed_msg.embeds[0].to_dict()
             updated_embed["color"] = colour["noVote"]
-            updated_embed["footer"][
-                "text"] = "Author's Vote - Not Voted Yet"
+            updated_embed["footer"]["text"] = "Author's Vote - Not Voted Yet"
             updated_embed["footer"]["icon_url"] = None
             updated_embed = discord.Embed.from_dict(updated_embed)
 
@@ -313,7 +304,6 @@ class Events(commands.Cog):
             sql2 = f"select author from edit where Message_ID = {mID}"
             results = db.execute(guild, "editorial", sql2)
 
-
             # Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', mID)[0]
             msg = data["content"]
 
@@ -324,7 +314,8 @@ class Events(commands.Cog):
             edit_command = f'{prefix}edit '
             suggest_command = f'{prefix}suggest '
 
-            if msg[:(len(edit_command))] == edit_command:   # Replace with startwith
+            if msg[:(len(edit_command)
+                     )] == edit_command:  # Replace with startwith
                 chapter, edits = msg[6:].split(maxsplit=1)
 
                 Editorial_Channel, msg_stats = allowedEdits[chapter]
@@ -378,7 +369,8 @@ class Events(commands.Cog):
 
             elif msg[:len(suggest_command)] == suggest_command:
                 try:
-                    chapter, suggestion = msg[len(suggest_command):].split(maxsplit=1)
+                    chapter, suggestion = msg[len(suggest_command):].split(
+                        maxsplit=1)
                     if not chapter.isnumeric():
                         raise ValueError("Chapter number should be a Integer!")
                 except ValueError:
@@ -423,7 +415,6 @@ class Events(commands.Cog):
 
             chapter = results[0][0]
 
-        
             allowedEdits = read("config", guild)["mods"]["allowedEdits"]
             Editorial_Channel, msg_stats = allowedEdits[str(chapter)]
             Editorial_Channel = self.client.get_channel(int(Editorial_Channel))
@@ -443,7 +434,8 @@ class Events(commands.Cog):
                 await update_stats(self.client.user, chapter, guild,
                                    Editorial_Channel, msg_stats)
             else:
-                rand_id = int(random()*10**18)  # Generating a 18 digit random id
+                rand_id = int(random() *
+                              10**18)  # Generating a 18 digit random id
                 update_sql = f"""UPDATE edit
                                 SET Author_ID = 0, Author = "anonymous", Message_ID = "{rand_id}"
                                 WHERE Message_ID = {mID}"""
@@ -474,4 +466,3 @@ class Events(commands.Cog):
 
 def setup(client):
     client.add_cog(Events(client))
-
