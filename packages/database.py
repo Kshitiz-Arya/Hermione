@@ -73,7 +73,7 @@ def query(query_name, table=None):  # Concider removing this function
                                    Sugested   TEXT,
                                    Reason     TEXT,
                                    RankLine   TEXT,
-                                   RankChar   TEXT, 
+                                   RankChar   TEXT,
                                    Org_channel TEXT,
                                    Accepted     Text,
                                    Rejected     Text,

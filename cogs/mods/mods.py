@@ -43,7 +43,7 @@ class Mods(commands.Cog):
             >add_book 2 15 36 :- In this example, the book only has one chapter, therefore only first chapter is provided
             >add_book 3 37 :- In this example, the book has more then one chapter, therefore first chapter and last chapter are provided.
         """
-        #! Check For Negative Number
+        # ! Check For Negative Number
         guild = ctx.guild
         config = read("config", guild)
         books = config["books"]
@@ -568,7 +568,7 @@ class Mods(commands.Cog):
     @is_author()
     async def setEmojis(self, ctx: commands.Context, accepted, rejected,
                         not_sure):
-        """This program is used to change the default emojis for voting perpose. 
+        """This program is used to change the default emojis for voting perpose.
 
         Args:
             accepted :- Emoji that will be used for accepting the edit
@@ -692,10 +692,10 @@ class Mods(commands.Cog):
             >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
             >checkEdits 2 3 :- Hermione will look for edits of chapter 3 in last 2 days of message history
         """
-        #! It is not picking up edits as expected
-        #! Look after Line 480
-        #! Erroring out when there is no edit in database
-        #todo Check is Chapter is in allowed edit list before interating thorugh msg
+        # ! It is not picking up edits as expected
+        # ! Look after Line 480
+        # ! Erroring out when there is no edit in database
+        # todo Check is Chapter is in allowed edit list before interating thorugh msg
 
         guild = ctx.guild
         channel = ctx.channel
@@ -1006,7 +1006,7 @@ class Mods(commands.Cog):
         Args:
             None
         Format:
-            >settings 
+            >settings
 
         Example:
             >settings  :- Displaying different informations and settings of Hermione
