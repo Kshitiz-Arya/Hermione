@@ -10,6 +10,7 @@ from discord.ext.commands.converter import TextChannelConverter
 
 import packages.database as db
 
+
 class EditConverter(commands.Converter):
     async def convert(self, ctx, argument):
         delimiter = '>>'
@@ -23,15 +24,16 @@ class EditConverter(commands.Converter):
 
             except ValueError:
                 if not ctx.command.name == "checkEdits":
-                    await ctx.reply("Your Edit is missing few thing. Please check and try again", delete_after=10)
+                    await ctx.reply(
+                        "Your Edit is missing few thing. Please check and try again",
+                        delete_after=10)
 
                 return (None, None, None)
 
         return (org, sug, res)
-        
+
 
 class EmbedList:
-    
     """A class that creates pages for Discord messages.
 
     Attributes
@@ -47,7 +49,6 @@ class EmbedList:
     ending_note: Optional[:class:`str`]
         The footer in of the help embed
     """
-
     def __init__(self, ctx, **options):
         self.ctx = ctx
         self.colour = options.pop('colour', 0)
@@ -56,7 +57,7 @@ class EmbedList:
         self.description = options.pop('description', '')
         self.footer = options.pop("footer", False)
         self.author = options.pop('author', '')
-        
+
         self.size = 24
         self.field_limit = 25
         self.char_limit = 6000
@@ -78,10 +79,9 @@ class EmbedList:
         Returns:
             bool: Will return True if the emebed isn't too large
         """
-        check = (
-            len(embed) + sum(len(char) for char in chars if char) < self.char_limit
-            and len(embed.fields) < self.field_limit
-        )
+        check = (len(embed) + sum(len(char)
+                                  for char in chars if char) < self.char_limit
+                 and len(embed.fields) < self.field_limit)
         return check
 
     def _new_page(self):
@@ -94,7 +94,10 @@ class EmbedList:
         Returns:
             discord.Emebed: Returns an embed with the title and color set
         """
-        return discord.Embed(title=self.title, description=self.description, timestamp=datetime.now(), color=self.colour)
+        return discord.Embed(title=self.title,
+                             description=self.description,
+                             timestamp=datetime.now(),
+                             color=self.colour)
 
     def _add_page(self, page: discord.Embed):
         """
@@ -115,8 +118,8 @@ class EmbedList:
             raise ValueError("Number of Embed fields can't be zero")
 
         for i in range(0, len(tuple_list), num):
-            yield tuple_list[i:i+num]
-    
+            yield tuple_list[i:i + num]
+
     def add_embed(self, dicts):
         for d in self._chunks(dicts):
             embed = self._new_page()
@@ -136,8 +139,7 @@ class EmbedList:
         for page_no, page in enumerate(self._pages, start=1):
             page: discord.Embed
             page.description = (
-                f"`Page: {page_no}/{len(self._pages)}`\n{page.description}"
-            )
+                f"`Page: {page_no}/{len(self._pages)}`\n{page.description}")
             lst.append(page)
         return lst
 
@@ -147,9 +149,7 @@ class EmbedList:
         await self.menu.send_pages(self.ctx, destination, pages)
 
 
-
-
-def Book(chapter:int, guild:discord.Guild) -> Optional[int]:
+def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
     """Takes chapter number and returns the book number
 
     Args:
@@ -158,7 +158,7 @@ def Book(chapter:int, guild:discord.Guild) -> Optional[int]:
 
     Returns:
         int or None: Returns book number if found else None
-    """    
+    """
     # Opening File where Book information is kept.
     config = read('config', guild)
     books = config['books']
@@ -166,14 +166,15 @@ def Book(chapter:int, guild:discord.Guild) -> Optional[int]:
     for b in books:
         if books[b]['start'] <= int(chapter) <= books[b]['end']:
             return b
-        
+
     return
 
 
-def ranking(guild:discord.Guild, chapter:int, org):
+def ranking(guild: discord.Guild, chapter: int, org):
     # This code Rank each sentence according to their position in text file.
     try:
-        chapter_file = open(f'./Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r')
+        chapter_file = open(
+            f'./Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r')
         #   This is the phrase which we have to search.
         if '\n' in org:  # This is driver code
             org = org.splitlines()
@@ -192,17 +193,17 @@ def ranking(guild:discord.Guild, chapter:int, org):
         return Error
 
 
-def read(file, guild:discord.Guild):
+def read(file, guild: discord.Guild):
     with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
         return json.load(f)
 
 
-def save(data, file, guild:discord.Guild) -> None:
+def save(data, file, guild: discord.Guild) -> None:
     with open(f'Storage/{guild.id}/database/{file}.json', "w") as f:
         json.dump(data, f, indent=4)
 
 
-def get_prefix(guild:discord.Guild):
+def get_prefix(guild: discord.Guild):
 
     return read('config', guild)['prefix']
 
@@ -212,32 +213,39 @@ def in_channel():
         guild = ctx.guild
         channels = read('config', guild)['mods']['channels']
         if ctx.channel.id in channels:
-            return True  
-        
-        raise commands.MissingPermissions(['Bot is not active in this channel!'])
+            return True
+
+        raise commands.MissingPermissions(
+            ['Bot is not active in this channel!'])
+
     return commands.check(predicate)
 
 
 def is_author():
     def predicate(ctx):
         guild = ctx.guild
-        
+
         authors = read('config', guild)['mods']['authors']
 
         if len(authors) > 0:
             if ctx.message.author.id in authors:
                 return True
-            
+
             raise commands.MissingPermissions(['You are not an Author!'])
-        
+
         return True
 
     return commands.check(predicate)
 
 
-async def update_stats(bot:discord.User, chapter:int, guild:discord.Guild, channel:TextChannelConverter, msg_stats=None) -> None:
+async def update_stats(bot: discord.User,
+                       chapter: int,
+                       guild: discord.Guild,
+                       channel: TextChannelConverter,
+                       msg_stats=None) -> None:
 
-    accepted, rejected, notsure, total, book, editors = db.get_stats(guild, chapter)
+    accepted, rejected, notsure, total, book, editors = db.get_stats(
+        guild, chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
 
     bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0
