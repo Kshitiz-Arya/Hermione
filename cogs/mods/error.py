@@ -133,7 +133,6 @@ class Error_control(commands.Cog):
 
             elif isinstance(error, commands.CommandNotFound):
                 logger.error('Command was not found!')
-                pass
 
         else:  
             print('Ignoring exception in command {}:'.format(str(command)), file=sys.stderr)
