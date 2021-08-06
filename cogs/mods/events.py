@@ -150,62 +150,64 @@ class Events(commands.Cog):
         channels = [c[0] for c in list(allowedEdits.values())]
         stats_msgs = [s[1] for s in list(allowedEdits.values())]
 
-        if channel in channels:
-            if emoji in emojis.values():
-                if user_id in authors:
-                    # Look into making this a seperate function
-                    edit_status = list(emojis.keys())[list(
-                        emojis.values()).index(emoji)]
+        if (
+            channel in channels
+            and emoji in emojis.values()
+            and user_id in authors
+        ):
+            # Look into making this a seperate function
+            edit_status = list(emojis.keys())[list(
+                emojis.values()).index(emoji)]
 
-                    row = db.getsql(guild, "editorial", "history", "New_ID",
-                                    New_ID)
+            row = db.getsql(guild, "editorial", "history", "New_ID",
+                            New_ID)
 
-                    if not row:
-                        return
+            if not row:
+                return
 
-                    old_id = row[0][0]
-                    org_channel = int(row[0][2])
+            old_id = row[0][0]
+            org_channel = int(row[0][2])
 
-                    stats_msg = stats_msgs[channels.index(channel)]
-                    Editorial_Channel = self.client.get_channel(channel)
-                    chapter = list(allowedEdits.keys())[list(allowedEdits.values()).index([channel, stats_msg])]
-                    mainAuthor = await guild.fetch_member(user_id)
-                    mainAuthor_name = mainAuthor.nick or mainAuthor.name
-                    embed_msg = await Editorial_Channel.fetch_message(New_ID)
+            stats_msg = stats_msgs[channels.index(channel)]
+            Editorial_Channel = self.client.get_channel(channel)
+            chapter = list(allowedEdits.keys())[list(allowedEdits.values()).index([channel, stats_msg])]
+            mainAuthor = await guild.fetch_member(user_id)
+            mainAuthor_name = mainAuthor.nick or mainAuthor.name
+            embed_msg = await Editorial_Channel.fetch_message(New_ID)
 
-                    main_avatar = str(
-                        mainAuthor.avatar_url) or discord.embeds.EmptyEmbed
+            main_avatar = str(
+                mainAuthor.avatar_url) or discord.embeds.EmptyEmbed
 
-                    colour = read("config", guild)["mods"]["colour"]
+            colour = read("config", guild)["mods"]["colour"]
 
-                    updated_embed = embed_msg.embeds[0].to_dict()
-                    updated_embed["color"] = int(colour[edit_status])
-                    updated_embed["footer"][
-                        "text"] = f"{mainAuthor_name} Voted - {edit_status.title()} {emoji}"
-                    updated_embed["footer"]["icon_url"] = main_avatar
-                    updated_embed = discord.Embed.from_dict(updated_embed)
-                    await embed_msg.edit(embed=updated_embed)
+            updated_embed = embed_msg.embeds[0].to_dict()
+            updated_embed["color"] = int(colour[edit_status])
+            updated_embed["footer"][
+                "text"] = f"{mainAuthor_name} Voted - {edit_status.title()} {emoji}"
+            updated_embed["footer"]["icon_url"] = main_avatar
+            updated_embed = discord.Embed.from_dict(updated_embed)
+            await embed_msg.edit(embed=updated_embed)
 
-                    db.update(
-                        guild,
-                        "editorial",
-                        "edit",
-                        edit_status,
-                        "1",
-                        "Message_ID",
-                        old_id,
-                    )
+            db.update(
+                guild,
+                "editorial",
+                "edit",
+                edit_status,
+                "1",
+                "Message_ID",
+                old_id,
+            )
 
-                    await update_stats(  # todo Making bot slow. Average Responce time :- 2.70 s
-                        self.client.user, chapter, guild, Editorial_Channel,
-                        stats_msg)
+            await update_stats(  # todo Making bot slow. Average Responce time :- 2.70 s
+                self.client.user, chapter, guild, Editorial_Channel,
+                stats_msg)
 
-                    if old_id.isnumeric():
-                        # Adding reaction to the original message if available
+            if old_id.isnumeric():
+                # Adding reaction to the original message if available
 
-                        org_channel = self.client.get_channel(org_channel)
-                        msg = await org_channel.fetch_message(old_id)
-                        await msg.add_reaction(emoji)
+                org_channel = self.client.get_channel(org_channel)
+                msg = await org_channel.fetch_message(old_id)
+                await msg.add_reaction(emoji)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -233,61 +235,63 @@ class Events(commands.Cog):
 
         stats_msgs = [c[1] for c in list(allowedEdits.values())]
 
-        if channel in channels:
-            if emoji in emojis.values():
-                if user in authors:
-                    # Look into making this a seperate function
+        if (
+            channel in channels
+            and emoji in emojis.values()
+            and user in authors
+        ):
+            # Look into making this a seperate function
 
-                    edit_status = list(emojis.keys())[list(
-                        emojis.values()).index(emoji)]
+            edit_status = list(emojis.keys())[list(
+                emojis.values()).index(emoji)]
 
-                    row = db.getsql(guild, "editorial", "history", "New_ID",
-                                    New_ID)
+            row = db.getsql(guild, "editorial", "history", "New_ID",
+                            New_ID)
 
-                    if not row:
-                        return
+            if not row:
+                return
 
-                    old_id = str(row[0][0])
-                    org_channel = int(row[0][2])
+            old_id = str(row[0][0])
+            org_channel = int(row[0][2])
 
-                    stats_msg = stats_msgs[channels.index(channel)]
-                    Editorial_Channel = self.client.get_channel(channel)
-                    chapter = list(allowedEdits.keys())[list(allowedEdits.values()).index([channel, stats_msg])]
+            stats_msg = stats_msgs[channels.index(channel)]
+            Editorial_Channel = self.client.get_channel(channel)
+            chapter = list(allowedEdits.keys())[list(allowedEdits.values()).index([channel, stats_msg])]
 
-                    embed_msg = await Editorial_Channel.fetch_message(New_ID)
+            embed_msg = await Editorial_Channel.fetch_message(New_ID)
 
-                    # colour = {'accepted': 0x46e334, rejected: 0xff550d, 'notsure': 0x00ffa6}
+            # colour = {'accepted': 0x46e334, rejected: 0xff550d, 'notsure': 0x00ffa6}
 
-                    colour = read("config", guild)["mods"]["colour"]
+            colour = read("config", guild)["mods"]["colour"]
 
-                    updated_embed = embed_msg.embeds[0].to_dict()
-                    updated_embed["color"] = colour["noVote"]
-                    updated_embed["footer"][
-                        "text"] = "Author's Vote - Not Voted Yet"
-                    updated_embed["footer"]["icon_url"] = None
-                    updated_embed = discord.Embed.from_dict(updated_embed)
+            updated_embed = embed_msg.embeds[0].to_dict()
+            updated_embed["color"] = colour["noVote"]
+            updated_embed["footer"][
+                "text"] = "Author's Vote - Not Voted Yet"
+            updated_embed["footer"]["icon_url"] = None
+            updated_embed = discord.Embed.from_dict(updated_embed)
 
-                    await embed_msg.edit(embed=updated_embed)
+            await embed_msg.edit(embed=updated_embed)
 
-                    db.update(
-                        guild,
-                        "editorial",
-                        "edit",
-                        edit_status,
-                        "NULL",
-                        "Message_ID",
-                        old_id,
-                    )
+            db.update(
+                guild,
+                "editorial",
+                "edit",
+                edit_status,
+                "NULL",
+                "Message_ID",
+                old_id,
+            )
 
-                    await update_stats(self.client.user, chapter, guild,
-                                       Editorial_Channel, stats_msg)
+            await update_stats(self.client.user, chapter, guild,
+                               Editorial_Channel, stats_msg)
 
-                    if old_id.isnumeric():
-                        # Removing the reaction from original message
+            if old_id.isnumeric():
+                # Removing the reaction from original message
 
-                        org_channel = self.client.get_channel(org_channel)
-                        msg = await org_channel.fetch_message(old_id)
-                        await msg.remove_reaction(emoji, member)
+                org_channel = self.client.get_channel(org_channel)
+                msg = await org_channel.fetch_message(old_id)
+                await msg.remove_reaction(emoji, member)
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload):
