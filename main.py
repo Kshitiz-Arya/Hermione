@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import sys
-from dotenv import load_dotenv
 
 from discord.ext import commands
 from discord.ext.commands.core import check, is_owner
@@ -28,7 +27,6 @@ def get_prefix(_, message):
     return read('config', message.guild)['prefix']
 
 
-load_dotenv()
 token = os.getenv('token')
 # menu = DefaultMenu(page_left="\U0001F44D", page_right="👎", remove=":classical_building:", active_time=5)
 

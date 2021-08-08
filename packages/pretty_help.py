@@ -38,6 +38,7 @@ class Paginator:
     ending_note: Optional[:class:`str`]
         The footer in of the help embed
     """
+    
     def __init__(self, color=0):
         self.ending_note = None
         self.color = color
@@ -272,6 +273,7 @@ class PrettyHelp(HelpCommand):
         A bool that indicates if the index page should be shown listing the available cogs
         Defaults to ``True``.
     """
+
     def __init__(self, **options):
 
         self.color = options.pop(

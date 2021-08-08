@@ -49,6 +49,7 @@ class EmbedList:
     ending_note: Optional[:class:`str`]
         The footer in of the help embed
     """
+    
     def __init__(self, ctx, **options):
         self.ctx = ctx
         self.colour = options.pop('colour', 0)
