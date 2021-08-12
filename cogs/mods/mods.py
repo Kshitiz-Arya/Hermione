@@ -353,8 +353,8 @@ class Mods(commands.Cog):
         """
         guild = ctx.guild
 
-        accepted, rejected, notsure, total, book, editors = db.get_stats(
-            guild, chapter)
+        total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
+
 
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
         info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
@@ -386,7 +386,8 @@ class Mods(commands.Cog):
         """
         guild = ctx.guild
 
-        accepted, rejected, notsure, total, book, editors = db.get_stats(guild)
+        total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial')
+
         print(book)
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
         info.add_field(name="Number of Editors", value=editors, inline=False)
