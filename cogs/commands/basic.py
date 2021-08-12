@@ -22,6 +22,7 @@ class Basic(commands.Cog):
     """
     This cog has contains the command for submiting edits and suggestions
     """
+
     def __init__(self, client):
         self.client = client
 
