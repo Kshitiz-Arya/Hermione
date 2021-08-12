@@ -8,3 +8,4 @@ workspace.code-workspace
 .env
 .vscode/.ropeproject/config.py
 .vscode/.ropeproject/objectdb
+Testing/

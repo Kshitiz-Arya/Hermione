@@ -245,8 +245,7 @@ async def update_stats(bot: discord.User,
                        channel: TextChannelConverter,
                        msg_stats=None) -> None:
 
-    accepted, rejected, notsure, total, book, editors = db.get_stats(
-        guild, chapter)
+    total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
 
     bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0

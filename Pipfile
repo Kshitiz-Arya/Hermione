@@ -9,9 +9,12 @@ skip_lock = true
 dpytools = "*"
 pandas = "*"
 pillow = "*"
+motor = "*"
+pymongo = {extras = ["srv"], version = "*"}
 
 [dev-packages]
 dpytools = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.9"

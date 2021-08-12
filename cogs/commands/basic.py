@@ -102,30 +102,11 @@ class Basic(commands.Cog):
             #     bot_avatar = str(self.client.user.avatar_url)
 
             book = Book(chapter, guild)
-            column = str(tuple(db.get_table(guild, "editorial",
-                                            "edit"))).replace("'", "")
+            # column = str(tuple(db.get_table(guild, "editorial",
+                                            # "edit"))).replace("'", "")
 
-            Editorial_Channel, msg_stats = allowedEdits[chapter]
-            Editorial_Channel = self.client.get_channel(Editorial_Channel)
-            # Last three zeros are the Acceptence value, which is 0 by default
-            values = (
-                mID,
-                aID,
-                author_name,
-                book,
-                chapter,
-                org,
-                sug,
-                res,
-                rankRow,
-                rankChar,
-                channel_id,
-                None,
-                None,
-                None,
-            )
-            # values = (mID, aID, author, book, chapter, org, sug, res, rankRow, channel)
-            db.insert(guild, "editorial", "edit", column, values)
+            editorial_channel_id, msg_stats = allowedEdits[chapter]
+            editorial_channel = self.client.get_channel(editorial_channel_id)
 
             # Sending the embed to distineted channel
             link = ctx.message.jump_url
@@ -143,14 +124,29 @@ class Basic(commands.Cog):
             embed.add_field(name="Reason", value=res, inline=False)
             embed.add_field(name="⠀", value=change_status, inline=False)
 
-            msg_send = await Editorial_Channel.send(embed=embed)
+            msg_send = await editorial_channel.send(embed=embed)
 
-            column = "('Old_ID', 'New_ID', 'Org_channel')"
-            values = (mID, msg_send.id, channel_id)
-            db.insert(guild, "editorial", "history", column, values)
+            update_statement = {
+                '_id': mID,
+                'editor_id': aID,
+                'editor': author_name,
+                'book': book,
+                'chapter': chapter,
+                'original': org,
+                'suggested': sug,
+                'reason': res,
+                'rank_row': rankRow,
+                'rank_col': rankChar,
+                'edit_msg_id': msg_send.id,
+                'org_channel_id': channel_id,
+                'edit_channel_id': editorial_channel_id,
+                'status': 'Not Voted Yet',
+                'type': 'edit'
+            }
+            await db.insert(guild.id, "editorial", update_statement )
 
             await update_stats(self.client.user, chapter, guild,
-                               Editorial_Channel, msg_stats)
+                               editorial_channel, msg_stats)
 
             for emoji in emojis.values():
                 await msg_send.add_reaction(emoji)
@@ -186,6 +182,8 @@ class Basic(commands.Cog):
             channel = ctx.channel
             author = ctx.author
             author_name = author.name if author.nick is None else author.nick
+            
+            book = Book(chapter, guild),
 
             msg = ctx.message
             link = msg.jump_url
@@ -193,30 +191,10 @@ class Basic(commands.Cog):
             avatar = str(author.avatar_url) if bool(
                 author.avatar_url) else discord.embeds.EmptyEmbed
 
-            Editorial_Channel, msg_stats = edit_channels[chapter]
-            Editorial_Channel = self.client.get_channel(Editorial_Channel)
+            editorial_channel_id, msg_stats = edit_channels[chapter]
+            editorial_channel = self.client.get_channel(editorial_channel_id)
 
             emojis = read("config", guild)["mods"]["emojis"]
-
-            column = str(tuple(db.get_table(guild, "editorial",
-                                            "edit"))).replace("'", "")
-            values = (
-                msg.id,
-                author.id,
-                author_name,
-                Book(chapter, guild),
-                chapter,
-                None,
-                suggestion,
-                None,
-                None,
-                None,
-                channel.id,
-                None,
-                None,
-                None,
-            )
-            db.insert(guild, "editorial", "edit", column, values)
 
             colour = read("config", guild)["mods"]["colour"]
             sug = discord.Embed(
@@ -230,14 +208,26 @@ class Basic(commands.Cog):
             sug.set_footer(
                 text="Author's Vote - Not Voted Yet | Provided by Hermione")
 
-            msg_send = await Editorial_Channel.send(embed=sug)
+            msg_send = await editorial_channel.send(embed=sug)
 
-            column = "('Old_ID', 'New_ID', 'Org_channel')"
-            values = (msg.id, msg_send.id, channel.id)
-            db.insert(guild, "editorial", "history", column, values)
+
+            update_statement = {
+                '_id': msg.id,
+                'editor_id': author.id,
+                'editor': author_name,
+                'book': book,
+                'chapter': chapter,
+                'suggested': suggestion,
+                'edit_msg_id': msg_send.id,
+                'org_channel_id': channel.id,
+                'edit_channel_id': editorial_channel_id,
+                'status': 'Not Voted Yet',
+                'type': 'suggestion'
+            }
+            await db.insert(guild.id, "editorial", update_statement )
 
             await update_stats(self.client.user, chapter, guild,
-                               Editorial_Channel, msg_stats)
+                               editorial_channel, msg_stats)
             for emoji in emojis.values():
                 await msg_send.add_reaction(emoji)
 

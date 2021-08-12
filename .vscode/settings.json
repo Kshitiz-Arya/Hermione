@@ -1,6 +1,6 @@
 {
-    "python.pythonPath": "/home/ishu/Python/hermione/bin/python",
-    "python.formatting.provider": "yapf",
+    "python.pythonPath": "/home/ishu/.local/share/virtualenvs/Hermione--FouIw_D/bin/python",
+    "python.formatting.provider": "autopep8",
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.typeCheckingMode": "basic",
     "python.autoComplete.addBrackets": true

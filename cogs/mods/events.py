@@ -350,16 +350,7 @@ class Events(commands.Cog):
                 updated_embed_dict["fields"][2]["value"] = res
                 updated_embed_dict["fields"][3]["value"] = change_status
 
-                db.execute(
-                    guild,
-                    "editorial",
-                    update_sql,
-                    (
-                        org,
-                        sug,
-                        res,
-                    ),
-                )
+                db.execute(guild, "editorial", update_sql, (org, sug, res))
 
             elif msg[:len(suggest_command)] == suggest_command:
                 try:
