@@ -38,7 +38,7 @@ class Paginator:
     ending_note: Optional[:class:`str`]
         The footer in of the help embed
     """
-    
+
     def __init__(self, color=0):
         self.ending_note = None
         self.color = color

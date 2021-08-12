@@ -22,6 +22,7 @@ class Basic(commands.Cog):
     """
     This cog has contains the command for submiting edits and suggestions
     """
+
     def __init__(self, client):
         self.client = client
 
@@ -103,7 +104,7 @@ class Basic(commands.Cog):
 
             book = Book(chapter, guild)
             # column = str(tuple(db.get_table(guild, "editorial",
-                                            # "edit"))).replace("'", "")
+            # "edit"))).replace("'", "")
 
             editorial_channel_id, msg_stats = allowedEdits[chapter]
             editorial_channel = self.client.get_channel(editorial_channel_id)
@@ -143,7 +144,7 @@ class Basic(commands.Cog):
                 'status': 'Not Voted Yet',
                 'type': 'edit'
             }
-            await db.insert(guild.id, "editorial", update_statement )
+            await db.insert(guild.id, "editorial", update_statement)
 
             await update_stats(self.client.user, chapter, guild,
                                editorial_channel, msg_stats)
@@ -182,7 +183,7 @@ class Basic(commands.Cog):
             channel = ctx.channel
             author = ctx.author
             author_name = author.name if author.nick is None else author.nick
-            
+
             book = Book(chapter, guild),
 
             msg = ctx.message
@@ -210,7 +211,6 @@ class Basic(commands.Cog):
 
             msg_send = await editorial_channel.send(embed=sug)
 
-
             update_statement = {
                 '_id': msg.id,
                 'editor_id': author.id,
@@ -224,7 +224,7 @@ class Basic(commands.Cog):
                 'status': 'Not Voted Yet',
                 'type': 'suggestion'
             }
-            await db.insert(guild.id, "editorial", update_statement )
+            await db.insert(guild.id, "editorial", update_statement)
 
             await update_stats(self.client.user, chapter, guild,
                                editorial_channel, msg_stats)
