@@ -45,7 +45,7 @@ class DefaultMenu(PrettyMenu):
         page_right (str, optional): The emoji to use for going right. Defaults to "▶".
         remove (str, optional): The emoji to use for removing the help message. Defaults to "❌".
     """
-    
+
     def __init__(self,
                  page_left="◀",
                  page_right="▶",

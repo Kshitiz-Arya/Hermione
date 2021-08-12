@@ -5,7 +5,7 @@ connect = AsyncIOMotorClient(os.environ.get('connect'))
 
 
 # def create_connection(guild, db_file):
-    # create a database connection to a SQLite database #
+# create a database connection to a SQLite database #
 #     conn = None
 #     directory = os.getcwd()
 #     db_file = f"{directory}/Storage/{guild.id}/database/{db_file}.db"
@@ -53,10 +53,10 @@ connect = AsyncIOMotorClient(os.environ.get('connect'))
 #     table = execute(guild, database, sql)
 
 #     return [element for tupl in table for element in tupl]
-    # table = execute(guild, database, query('get_table', table))
-    # if table:
-    #     column = list(map(lambda x: x[0], table.description))
-    #     return column
+# table = execute(guild, database, query('get_table', table))
+# if table:
+#     column = list(map(lambda x: x[0], table.description))
+#     return column
 
 
 def query(query_name, table=None):  # Concider removing this function
@@ -110,13 +110,12 @@ def query(query_name, table=None):  # Concider removing this function
     }
     return sql_query[query_name]
 
-async def insert(guild_id:str, database:str, update_statement:dict, connect:AsyncIOMotorClient=connect):
+
+async def insert(guild_id: str, database: str, update_statement: dict, connect: AsyncIOMotorClient = connect):
     collection = connect[database][str(guild_id)]
 
-    #Need to pass type of document with colunms
+    # Need to pass type of document with colunms
     await collection.insert_one(update_statement)
-
-
 
 
 # def insert(guild, database, table, column, values):
@@ -134,13 +133,14 @@ async def getsql(guild, database, query, return_column, connect=connect):
     # Just pass an empty dict as query for getting all the columns
 
     collections = connect[database][guild.id]
-    document = {column:1 for column in return_column}
+    document = {column: 1 for column in return_column}
 
     return await collections.find_one(query, document)
 
-async def get_documents(guild, database, query:dict, return_column:list, limit=0, connect=connect):
+
+async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connect):
     collections = connect[database][guild.id]
-    document = {column:1 for column in return_column}
+    document = {column: 1 for column in return_column}
     num_document = await collections.count_documents(query)
 
     return await collections.find(query, document, limit=limit).to_list(num_document)
@@ -154,52 +154,53 @@ async def get_documents(guild, database, query:dict, return_column:list, limit=0
 #     rows = cur.fetchall()
 #     return rows
 
-async def get_stats(guild, database:str, chapter:int=None, connect=connect):
+
+async def get_stats(guild, database: str, chapter: int = None, connect=connect):
     collections = connect[database][str(guild.id)]
 
     pipeline = [
 
-    {
-        "$group": {
-            "_id": None,
-            "distinct_editors": { "$addToSet": "$editor_id" },
-            "distinct_book": { "$addToSet": "$book" },
-            "count_message_id": {"$sum": 1},
-            "count_accepted": { 
-                "$sum": { 
-                "$cond": [ { "$eq": [ "$status",  "Accepted" ] }, 1, 0] 
-                }},
-            "count_rejected": { 
-                "$sum": { 
-                "$cond": [ { "$eq": [ "$status",  "Rejected" ] }, 1, 0] 
-                }},
-            "count_not_sure": { 
-                "$sum": { 
-                "$cond": [ { "$eq": [ "$status",  "Not Sure" ] }, 1, 0] 
-                }},
-        }
-    },
-    {
-        "$project": {
-            "_id": 0,
-            "count_message": "$count_message_id",
-            "distinct_count_editors": { "$size": "$distinct_editors" },
-            "distinct_count_book": { "$size": "$distinct_book" },
-            "count_accepted": "$count_accepted",
-            "count_rejected": "$count_rejected",
-            "count_not_sure": "$count_not_sure"
-        }
-        
-    }
-]
+        {
+            "$group": {
+                "_id": None,
+                "distinct_editors": {"$addToSet": "$editor_id"},
+                "distinct_book": {"$addToSet": "$book"},
+                "count_message_id": {"$sum": 1},
+                "count_accepted": {
+                    "$sum": {
+                        "$cond": [{"$eq": ["$status",  "Accepted"]}, 1, 0]
+                    }},
+                "count_rejected": {
+                    "$sum": {
+                        "$cond": [{"$eq": ["$status",  "Rejected"]}, 1, 0]
+                    }},
+                "count_not_sure": {
+                    "$sum": {
+                        "$cond": [{"$eq": ["$status",  "Not Sure"]}, 1, 0]
+                    }},
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "count_message": "$count_message_id",
+                "distinct_count_editors": {"$size": "$distinct_editors"},
+                "distinct_count_book": {"$size": "$distinct_book"},
+                "count_accepted": "$count_accepted",
+                "count_rejected": "$count_rejected",
+                "count_not_sure": "$count_not_sure"
+            }
 
-    match = { "$match" : { 'chapter' : chapter } }
+        }
+    ]
+
+    match = {"$match": {'chapter': chapter}}
 
 # if chapter is not none, instert match to pipeline at index 0
     if chapter:
         pipeline.insert(0, match)
 
-    result =  await collections.aggregate(pipeline).to_list(None)
+    result = await collections.aggregate(pipeline).to_list(None)
     return result[0].values()
 
 # def get_stats(guild, chapter='all'):
@@ -214,7 +215,8 @@ async def get_stats(guild, database:str, chapter:int=None, connect=connect):
 #     cur.execute(sql)
 #     return cur.fetchone()
 
-async def update(guild, database, columns:list, values:list, match:dict, connect=connect):
+
+async def update(guild, database, columns: list, values: list, match: dict, connect=connect):
     collection = connect[database][guild.id]
     update_str = {"$set": dict(zip(columns, values))}
     await collection.update_one(match, update_str)
@@ -228,4 +230,3 @@ async def update(guild, database, columns:list, values:list, match:dict, connect
 #     cur = Connection.cursor()
 #     cur.execute(sql)
 #     return Connection.commit()
-
