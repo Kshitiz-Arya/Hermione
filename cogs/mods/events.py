@@ -13,6 +13,7 @@ class Events(commands.Cog):
     """
     This cog has contains the all the events
     """
+
     def __init__(self, client):
         self.client = client
 

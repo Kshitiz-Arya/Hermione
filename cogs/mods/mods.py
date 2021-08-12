@@ -18,6 +18,7 @@ class Mods(commands.Cog):
     """
     This cog has all the Mod commands to manage Hermione - the bot.
     """
+
     def __init__(self, client):
         self.client = client
 
