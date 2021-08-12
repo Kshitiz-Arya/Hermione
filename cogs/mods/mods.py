@@ -18,6 +18,7 @@ class Mods(commands.Cog):
     """
     This cog has all the Mod commands to manage Hermione - the bot.
     """
+
     def __init__(self, client):
         self.client = client
 
@@ -354,7 +355,6 @@ class Mods(commands.Cog):
         guild = ctx.guild
 
         total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
-
 
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
         info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
