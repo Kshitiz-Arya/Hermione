@@ -354,12 +354,11 @@ class Mods(commands.Cog):
         """
         guild = ctx.guild
 
-
         result = await db.get_stats(guild, 'editorial', chapter)
         if not result:  # Empty result means no entery for the chapter
             await ctx.send('No **Stats** found for this chapter', delete_after=30)
             return
-        
+
         total, editors, book, accepted, rejected, notsure = result
 
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
@@ -396,7 +395,7 @@ class Mods(commands.Cog):
         if not result:  # Empty result means no entery for the chapter
             await ctx.send('No **Stats** found', delete_after=30)
             return
-        
+
         total, editors, book, accepted, rejected, notsure = result
 
         print(book)
@@ -939,9 +938,7 @@ class Mods(commands.Cog):
     #         except discord.errors.NotFound:
     #             jLink, aName, avatar = None, 'Anonymous', "https://cdn.discordapp.com/embed/avatars/0.png"
 
-
     #         rankRow, rankChar, change_status = ranking(guild, chapter, org)
-
 
     #         colour = config["mods"]["colour"]
     #         emojis = config['mods']['emojis']

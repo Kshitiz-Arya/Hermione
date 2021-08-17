@@ -182,7 +182,7 @@ class Basic(commands.Cog):
             editorial_channel = self.client.get_channel(editorial_channel_id)
 
             config = read("config", guild)
-            emojis = config["mods"]["emojis"] 
+            emojis = config["mods"]["emojis"]
             colour = config["mods"]["colour"]
             sug = discord.Embed(
                 color=colour["No Vote"],
