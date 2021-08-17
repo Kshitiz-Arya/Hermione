@@ -48,69 +48,6 @@ connect = AsyncIOMotorClient(os.environ.get('connect'))
 #             connection.close()
 
 
-# def get_table(guild, database, table):
-#     sql = "SELECT name FROM PRAGMA_TABLE_INFO('%s');" % table
-#     table = execute(guild, database, sql)
-
-#     return [element for tupl in table for element in tupl]
-# table = execute(guild, database, query('get_table', table))
-# if table:
-#     column = list(map(lambda x: x[0], table.description))
-#     return column
-
-
-def query(query_name, table=None):  # Concider removing this function
-    sql_query = {
-        'edit':
-        """
-                                 CREATE TABLE IF NOT EXISTS edit
-                                 (
-                                   Message_ID TEXT,
-                                   Author_ID  TEXT,
-                                   Author     TEXT,
-                                   Book       INT,
-                                   Chapter    INT,
-                                   Original   TEXT,
-                                   Sugested   TEXT,
-                                   Reason     TEXT,
-                                   RankLine   TEXT,
-                                   RankChar   TEXT,
-                                   Org_channel TEXT,
-                                   Accepted     Text,
-                                   Rejected     Text,
-                                   NotSure      Text
-                                 )
-                              """,
-        'suggestion':
-        """
-                                    CREATE TABLE IF NOT EXISTS edit
-                                    (
-                                    Message_ID TEXT,
-                                    Author_ID  TEXT,
-                                    Author     TEXT,
-                                    Sugested   TEXT,
-                                    Org_channel TEXT,
-                                    Accepted     Text,
-                                    Rejected     Text,
-                                    NotSure      Text
-                                """,
-        'history':
-        """
-                                 Create table if not exists history
-                                 (
-                                   Old_ID TEXT PRIMARY KEY,
-                                   New_ID TEXT,
-                                   Org_channel TEXT
-                                 )""",
-        'get_table':
-        f"""
-                              SELECT *
-                              FROM {table}
-                              """,
-    }
-    return sql_query[query_name]
-
-
 async def insert(guild_id: str, database: str, update_statement: dict, connect: AsyncIOMotorClient = connect):
     collection = connect[database][str(guild_id)]
 
@@ -118,24 +55,18 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
     await collection.insert_one(update_statement)
 
 
-# def insert(guild, database, table, column, values):
-#     Connection = create_connection(guild, database)
-#     sql = f''' INSERT INTO {table} {column}
-#               VALUES({'?' + ',?'*(len(values)-1)}) '''
-#     cur = Connection.cursor()
-#     cur.execute(sql, values)
-#     Connection.commit()
-#     return cur.lastrowid
 
 # todo Rename this function to get_document
-async def getsql(guild, database, query, return_column, connect=connect):
+async def get_document(guild_id, database, query, return_column, connect=connect):
     # This function just return one doucment
     # Just pass an empty dict as query for getting all the columns
+    # This always returns _id
 
-    collections = connect[database][guild.id]
+    collections = connect[database][str(guild_id)]
     document = {column: 1 for column in return_column}
 
-    return await collections.find_one(query, document)
+    return_doucment = await collections.find_one(query, document)
+    return return_doucment
 
 
 async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connect):
@@ -144,15 +75,6 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
     num_document = await collections.count_documents(query)
 
     return await collections.find(query, document, limit=limit).to_list(num_document)
-
-# def getsql(guild, database, table, column, value):
-#     Connection = create_connection(guild, database)
-#     sql = f''' SELECT * FROM {table}
-#                WHERE {column} = {value}'''
-#     cur = Connection.cursor()
-#     cur.execute(sql)
-#     rows = cur.fetchall()
-#     return rows
 
 
 async def get_stats(guild, database: str, chapter: int = None, connect=connect):
@@ -194,39 +116,21 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connect):
         }
     ]
 
-    match = {"$match": {'chapter': chapter}}
+    match = {"$match": {'chapter': str(chapter)}}
 
-# if chapter is not none, instert match to pipeline at index 0
+    # if chapter is not none, instert match to pipeline at index 0
     if chapter:
         pipeline.insert(0, match)
 
     result = await collections.aggregate(pipeline).to_list(None)
-    return result[0].values()
-
-# def get_stats(guild, chapter='all'):
-#     Connection = create_connection(guild, 'editorial')
-#     if chapter == 'all':
-
-#         sql = """ SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), COUNT(DISTINCT(Book)), COUNT(DISTINCT(Author)) FROM edit"""
-#     else:
-#         sql = f""" SELECT COUNT(Accepted), COUNT(Rejected), COUNT(NotSure), COUNT(Message_ID), Book, COUNT(DISTINCT(Author)) FROM edit
-#                     WHERE chapter = {chapter}"""
-#     cur = Connection.cursor()
-#     cur.execute(sql)
-#     return cur.fetchone()
+    return result[0].values() if result else []
 
 
-async def update(guild, database, columns: list, values: list, match: dict, connect=connect):
-    collection = connect[database][guild.id]
+async def update(guild_id, database, columns: list, values: list, match: dict, connect=connect):
+    collection = connect[database][str(guild_id)]
     update_str = {"$set": dict(zip(columns, values))}
     await collection.update_one(match, update_str)
 
-# def update(guild, database, table, U_column, U_value, R_column,
-#            R_value):  # U_column = Update Column, R column = Reference Column
-#     Connection = create_connection(guild, database)
-#     sql = f''' UPDATE {table}
-#                SET {U_column} = {U_value}
-#                WHERE {R_column} = {R_value}'''
-#     cur = Connection.cursor()
-#     cur.execute(sql)
-#     return Connection.commit()
+async def delete_document(guild_id:str, database:str, match:dict, connect=connect):
+    collection = connect[database][str(guild_id)]
+    await collection.delete_one(match)

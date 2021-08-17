@@ -5,7 +5,7 @@ name = "pypi"
 skip_lock = true
 
 [packages]
-"discord.py" = "*"
+"discord.py" = "==1.7.3"
 dpytools = "*"
 pandas = "*"
 pillow = "*"

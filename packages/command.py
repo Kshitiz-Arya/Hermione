@@ -183,15 +183,22 @@ def ranking(guild: discord.Guild, chapter: int, org):
             for count, i in enumerate(chapter_file, 1):
                 if org[0] in i:
                     byte = i.find(org[0])
-                    return [count, byte]
+                    change_status = f"**Proposed change was found in the chapter at line {count}!**"
+                    return [count, byte, change_status]
 
         else:
             for count, i in enumerate(chapter_file, 1):
                 if org in i:
                     byte = i.find(org)
-                    return [count, byte]
-    except FileNotFoundError as Error:
-        return Error
+                    change_status = f"**Proposed change was found in the chapter at line {count}!**"
+                    return [count, byte, change_status]
+        
+        change_status = "**Proposed change was not found in the chapter!**"
+        return [None, None, change_status]
+
+    except FileNotFoundError:
+        change_status = "**Chapter has not yet been uploaded!**"
+        return [None, None, change_status]
 
 
 def read(file, guild: discord.Guild):

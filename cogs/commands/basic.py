@@ -16,6 +16,7 @@ intents.reactions = True
 permissions = discord.Permissions
 permissions.add_reactions = True
 permissions.read_messsage_history = True
+permissions.use_slash_commands = True
 
 
 class Basic(commands.Cog):
@@ -54,22 +55,7 @@ class Basic(commands.Cog):
             return
         guild = ctx.guild
 
-        try:
-            rank = ranking(guild, chapter, org)
-            if isinstance(rank, FileNotFoundError):
-                raise FileNotFoundError
-            rankRow, rankChar = rank
-            change_status = (
-                f"**Proposed change was found in the chapter at line {rankRow}!**"
-            )
-
-        except FileNotFoundError:
-            rankRow, rankChar = None, None
-            change_status = "**Chapter is yet to be uploaded!**"
-
-        except TypeError:
-            rankRow, rankChar = None, None
-            change_status = "**Proposed change was not found in the chapter!**"
+        rankRow, rankChar, change_status = ranking(guild, chapter, org)
 
         config = read("config", guild)
         allowedEdits = config["mods"]["allowedEdits"]
@@ -114,7 +100,7 @@ class Basic(commands.Cog):
 
             colour = read("config", guild)["mods"]["colour"]
             embed = discord.Embed(
-                color=colour["noVote"],
+                color=colour["No Vote"],
                 description=f"[Message Link]({link})",
                 timestamp=datetime.now(),
             )
@@ -184,7 +170,7 @@ class Basic(commands.Cog):
             author = ctx.author
             author_name = author.name if author.nick is None else author.nick
 
-            book = Book(chapter, guild),
+            book = Book(chapter, guild)
 
             msg = ctx.message
             link = msg.jump_url
@@ -195,11 +181,11 @@ class Basic(commands.Cog):
             editorial_channel_id, msg_stats = edit_channels[chapter]
             editorial_channel = self.client.get_channel(editorial_channel_id)
 
-            emojis = read("config", guild)["mods"]["emojis"]
-
-            colour = read("config", guild)["mods"]["colour"]
+            config = read("config", guild)
+            emojis = config["mods"]["emojis"] 
+            colour = config["mods"]["colour"]
             sug = discord.Embed(
-                color=colour["noVote"],
+                color=colour["No Vote"],
                 description=f"[Message Link]({link})",
                 timestamp=datetime.now(),
             )

@@ -38,10 +38,10 @@ class Events(commands.Cog):
         config = {
             "mods": {
                 "colour": {
-                    "accepted": 65280,
-                    "rejected": 16711680,
-                    "notsure": 16776960,
-                    "noVote": 65535,
+                    "Accepted": 65280,
+                    "Rejected": 16711680,
+                    "Not Sure": 16776960,
+                    "No Vote": 65535,
                 },
                 "allowedEdits": {},
                 "emojis": {
@@ -58,9 +58,6 @@ class Events(commands.Cog):
 
         save(config, "config", guild)
         draw(guild, (65280, 16711680, 16776960, 65635))
-
-        db.create_table("editorial", "edit", guild)
-        db.create_table("editorial", "history", guild)
 
         bot = self.client.user
         bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0
@@ -132,7 +129,7 @@ class Events(commands.Cog):
         # msg = db.get_table(guild, 'editorial', 'history')
         user_id = payload.user_id
         emoji = str(payload.emoji)
-        New_ID = payload.message_id
+        edit_id = payload.message_id
 
         config = read("config", guild)
 
@@ -149,14 +146,12 @@ class Events(commands.Cog):
             # Look into making this a seperate function
             edit_status = list(emojis.keys())[list(
                 emojis.values()).index(emoji)]
+            row = await db.get_document(guild.id, "editorial", {'edit_msg_id': edit_id}, ['_id', 'org_channel_id'])
 
-            row = db.getsql(guild, "editorial", "history", "New_ID", New_ID)
-
-            if not row:
+            if row is None:
                 return
 
-            old_id = row[0][0]
-            org_channel = int(row[0][2])
+            old_id, org_channel = [num.real for num in row.values()]    # ids are received in bson.Int64 format, which needs to be converted back to int
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)
@@ -164,7 +159,7 @@ class Events(commands.Cog):
                 allowedEdits.values()).index([channel, stats_msg])]
             mainAuthor = await guild.fetch_member(user_id)
             mainAuthor_name = mainAuthor.nick or mainAuthor.name
-            embed_msg = await Editorial_Channel.fetch_message(New_ID)
+            embed_msg = await Editorial_Channel.fetch_message(edit_id)
 
             main_avatar = str(
                 mainAuthor.avatar_url) or discord.embeds.EmptyEmbed
@@ -178,26 +173,19 @@ class Events(commands.Cog):
             updated_embed["footer"]["icon_url"] = main_avatar
             updated_embed = discord.Embed.from_dict(updated_embed)
             await embed_msg.edit(embed=updated_embed)
+            await db.update(guild.id, "editorial", ['status'], [edit_status], {'_id': old_id})
 
-            db.update(
-                guild,
-                "editorial",
-                "edit",
-                edit_status,
-                "1",
-                "Message_ID",
-                old_id,
-            )
 
             await update_stats(  # todo Making bot slow. Average Response time :- 2.70 s
                 self.client.user, chapter, guild, Editorial_Channel, stats_msg)
 
-            if old_id.isnumeric():
-                # Adding reaction to the original message if available
 
-                org_channel = self.client.get_channel(org_channel)
-                msg = await org_channel.fetch_message(old_id)
-                await msg.add_reaction(emoji)
+            # todo Figure out another way to check if msg exist or not
+            # org_channel = self.client.get_channel(org_channel)
+            # msg = await org_channel.fetch_message(old_id)
+            # breakpoint()
+            # # Adding reaction to the original message if available
+            # await msg.add_reaction(emoji)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -214,7 +202,7 @@ class Events(commands.Cog):
         channel = payload.channel_id
         member = self.client.user
         emoji = str(payload.emoji)
-        New_ID = payload.message_id
+        edit_id = payload.message_id
 
         config = read("config", guild)
 
@@ -232,217 +220,181 @@ class Events(commands.Cog):
             edit_status = list(emojis.keys())[list(
                 emojis.values()).index(emoji)]
 
-            row = db.getsql(guild, "editorial", "history", "New_ID", New_ID)
+            row = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_id}, ['_id', 'org_channel_id'])
+            
 
-            if not row:
+            if row is None:
                 return
 
-            old_id = str(row[0][0])
-            org_channel = int(row[0][2])
+            org_id, org_channel = row.values()
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)
             chapter = list(allowedEdits.keys())[list(
                 allowedEdits.values()).index([channel, stats_msg])]
 
-            embed_msg = await Editorial_Channel.fetch_message(New_ID)
+            embed_msg = await Editorial_Channel.fetch_message(edit_id)
 
             # colour = {'accepted': 0x46e334, rejected: 0xff550d, 'notsure': 0x00ffa6}
 
             colour = read("config", guild)["mods"]["colour"]
 
             updated_embed = embed_msg.embeds[0].to_dict()
-            updated_embed["color"] = colour["noVote"]
+            updated_embed["color"] = colour["No Vote"]
             updated_embed["footer"]["text"] = "Author's Vote - Not Voted Yet"
             updated_embed["footer"]["icon_url"] = None
             updated_embed = discord.Embed.from_dict(updated_embed)
 
             await embed_msg.edit(embed=updated_embed)
 
-            db.update(
-                guild,
-                "editorial",
-                "edit",
-                edit_status,
-                "NULL",
-                "Message_ID",
-                old_id,
-            )
+            await db.update(guild.id, "editorial", ['status'], ['Not Voted Yet'], {'_id': org_id})
 
             await update_stats(self.client.user, chapter, guild,
                                Editorial_Channel, stats_msg)
 
-            if old_id.isnumeric():
-                # Removing the reaction from original message
+            # if org_id.isnumeric():
+            #     # Removing the reaction from original message
 
-                org_channel = self.client.get_channel(org_channel)
-                msg = await org_channel.fetch_message(old_id)
-                await msg.remove_reaction(emoji, member)
+            #     org_channel = self.client.get_channel(org_channel)
+            #     msg = await org_channel.fetch_message(org_id)
+            #     await msg.remove_reaction(emoji, member)
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload):
 
         data = payload.data
         guild_id = data["guild_id"]
-        mID = data["id"]
+        msg_id = data["id"]
+
         guild = self.client.get_guild(int(guild_id))
-        colour = read("config", guild)["mods"]["colour"]
 
-        sql = f"select New_ID from history where Old_id = {mID}"
-        results = db.execute(guild, "editorial", sql)
-        if 'bot' not in data['author'] and len(results) != 0:
-            newID = results[0][0]
-            config = read("config", guild)
-            allowedEdits = config["mods"]["allowedEdits"]
-            prefix = config["prefix"]
+        config = read("config", guild)
+        colour = config["mods"]["colour"]
+        allowedEdits = config["mods"]["allowedEdits"]
+        prefix = config["prefix"]
 
-            sql2 = f"select author from edit where Message_ID = {mID}"
-            results = db.execute(guild, "editorial", sql2)
+        query = {'_id': int(msg_id)}
+        results = await db.get_document(guild.id, "editorial", query, ['edit_msg_id'])
 
-            # Message_ID, Author_ID, author, Book, chapter, org, sug, res, RankCol, RankChar, channel, Accepted, Rejected, NotSure = db.getsql(guild, 'editorial', 'edit', 'Message_ID', mID)[0]
-            msg = data["content"]
+        if 'author' not in data.keys() or 'bot' in data['author'] or results is None:
+            return 
 
-            update_sql = f"""UPDATE edit
-                            SET Original = ?, Sugested = ?, Reason = ?
-                            WHERE Message_ID = {mID}
-                            """
-            edit_command = f'{prefix}edit '
-            suggest_command = f'{prefix}suggest '
+        msg = data["content"]
+        edit_msg_id = results['edit_msg_id']
 
-            if msg[:(len(edit_command)
-                     )] == edit_command:  # Replace with startwith
-                chapter, edits = msg[6:].split(maxsplit=1)
+        edit_command = f'{prefix}edit '
+        suggest_command = f'{prefix}suggest '
 
-                Editorial_Channel, msg_stats = allowedEdits[chapter]
-                Editorial_Channel = guild.get_channel(Editorial_Channel)
-                msg = await Editorial_Channel.fetch_message(newID)
+        if msg.startswith(edit_command):  # Replace with startwith
+            chapter, edits = msg[len(edit_command):].split(maxsplit=1)
 
-                updated_embed_dict = msg.embeds[0].to_dict()
+            editorial_channel_id, msg_stats = allowedEdits[chapter]
+            editorial_channel = guild.get_channel(editorial_channel_id)
+            msg = await editorial_channel.fetch_message(edit_msg_id)
 
-                vote = updated_embed_dict["footer"]["text"]
+            updated_embed_dict = msg.embeds[0].to_dict()
 
-                if "Not Voted Yet" not in vote:
-                    return
+            vote = updated_embed_dict["footer"]["text"]
 
+            if "Not Voted Yet" not in vote:
+                return
+
+            try:
+                # splitting the edit request into definable parts
+                org, sug, res = edits.split(">>")
+            except ValueError:
                 try:
-                    # splitting the edit request into definable parts
-                    org, sug, res = edits.split(">>")
+                    org, sug = edits.split(">>")
+                    res = "Not Provided!"
                 except ValueError:
-                    try:
-                        org, sug = edits.split(">>")
-                        res = "Not Provided!"
-                    except ValueError:
-                        return None
+                    return None
 
-                try:
-                    rankRow, _ = ranking(guild, chapter, org)
-                    change_status = f"**Proposed change was found in the chapter at line {rankRow}!**"
+            rank_row, rank_col, change_status = ranking(guild, chapter, org)
 
-                except TypeError:
-                    rankRow, _ = None, None
-                    change_status = "**Proposed change was not found in the chapter!**"
 
-                except FileNotFoundError:
-                    rankRow, _ = None, None
-                    change_status = "**Chapter has not yet been uploaded!**"
+            updated_embed_dict["fields"][0]["value"] = org
+            updated_embed_dict["fields"][1]["value"] = sug
+            updated_embed_dict["fields"][2]["value"] = res
+            updated_embed_dict["fields"][3]["value"] = change_status
 
-                updated_embed_dict["fields"][0]["value"] = org
-                updated_embed_dict["fields"][1]["value"] = sug
-                updated_embed_dict["fields"][2]["value"] = res
-                updated_embed_dict["fields"][3]["value"] = change_status
+            await db.update(guild, "editorial", ('original', 'suggested', 'reason', 'rank_row', 'rank_col'), (org, sug, res, rank_row, rank_col), {"_id": msg_id})
 
-                db.execute(guild, "editorial", update_sql, (org, sug, res))
+        elif msg.startswith(suggest_command):
+            try:
+                chapter, suggestion = msg[len(suggest_command):].split(
+                    maxsplit=1)
+                if not chapter.isnumeric():
+                    raise ValueError("Chapter number should be a Integer!")
+            except ValueError:
+                return None  # TODO Bot should reply to the edited chapter with error text!
 
-            elif msg[:len(suggest_command)] == suggest_command:
-                try:
-                    chapter, suggestion = msg[len(suggest_command):].split(
-                        maxsplit=1)
-                    if not chapter.isnumeric():
-                        raise ValueError("Chapter number should be a Integer!")
-                except ValueError:
-                    return None  # TODO Bot should reply to the edited chapter with error text!
+            editorial_channel_id, msg_stats = allowedEdits[chapter]
+            editorial_channel = guild.get_channel(editorial_channel_id)
+            msg = await editorial_channel.fetch_message(edit_msg_id)
 
-                Editorial_Channel, msg_stats = allowedEdits[chapter]
-                Editorial_Channel = guild.get_channel(Editorial_Channel)
-                msg = await Editorial_Channel.fetch_message(newID)
+            updated_embed_dict = msg.embeds[0].to_dict()
 
-                updated_embed_dict = msg.embeds[0].to_dict()
+            vote = updated_embed_dict["footer"]["text"]
 
-                vote = updated_embed_dict["footer"]["text"]
+            if "Not Voted Yet" not in vote:
+                return
 
-                if "Not Voted Yet" not in vote:
-                    return
+            updated_embed_dict["fields"][0]["value"] = suggestion
 
-                updated_embed_dict["fields"][0]["value"] = suggestion
+            await db.update(guild, "editorial", ['suggested'],
+                         [suggestion], {"_id": msg_id})
 
-                db.execute(guild, "editorial", update_sql,
-                           (None, suggestion, None))
+        updated_embed_dict["color"] = colour["No Vote"]
+        updated_embed = discord.Embed.from_dict(updated_embed_dict)
 
-            updated_embed_dict["color"] = colour["noVote"]
-            updated_embed = discord.Embed.from_dict(updated_embed_dict)
-
-            await msg.edit(embed=updated_embed)
-            await update_stats(self.client.user, chapter, guild,
-                               Editorial_Channel, msg_stats)
+        await msg.edit(embed=updated_embed)
+        await update_stats(self.client.user, chapter, guild,
+                            editorial_channel, msg_stats)
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
-        mID = payload.message_id
+        msg_id = payload.message_id
         guild_id = payload.guild_id
         guild = self.client.get_guild(int(guild_id))
 
-        sql = f"select New_ID from history where Old_id = {mID}"
-        results = db.execute(guild, "editorial", sql)
-        if len(results) != 0:
-            newID = results[0][0]
+        query = {'_id': int(msg_id)}
+        results = await db.get_document(guild.id, "editorial", query, ['chapter', 'edit_msg_id'])
 
-            sql2 = f"select chapter from edit where Message_ID = {mID}"
-            results = db.execute(guild, "editorial", sql2)
+        if results is None:
+            return
 
-            chapter = results[0][0]
+        _, chapter, edit_msg_id = results.values()
 
-            allowedEdits = read("config", guild)["mods"]["allowedEdits"]
-            Editorial_Channel, msg_stats = allowedEdits[str(chapter)]
-            Editorial_Channel = self.client.get_channel(int(Editorial_Channel))
-            edit_msg = await Editorial_Channel.fetch_message(newID)
+        allowedEdits = read("config", guild)["mods"]["allowedEdits"]
+        edit_channel_id, msg_stats = allowedEdits[str(chapter)]
+        edit_channel = self.client.get_channel(int(edit_channel_id))
+        edit_msg = await edit_channel.fetch_message(edit_msg_id)
 
-            embed_dict = edit_msg.embeds[0].to_dict()
+        embed_dict = edit_msg.embeds[0].to_dict()
 
-            vote = embed_dict["footer"]["text"]
-            if "Not Voted Yet" in vote:
+        vote = embed_dict["footer"]["text"]
 
-                delete_sql = f"delete from edit where Message_ID = {mID}"
-                delete_sql2 = f"delete from history where Old_ID = {mID}"
+        if "Not Voted Yet" in vote:
 
-                await edit_msg.delete()
-                db.execute(guild, "editorial", delete_sql)
-                db.execute(guild, "editorial", delete_sql2)
-                await update_stats(self.client.user, chapter, guild,
-                                   Editorial_Channel, msg_stats)
-            else:
-                rand_id = int(random() *
-                              10**18)  # Generating a 18 digit random id
-                update_sql = f"""UPDATE edit
-                                SET Author_ID = 0, Author = "anonymous", Message_ID = "{rand_id}"
-                                WHERE Message_ID = {mID}"""
+            await edit_msg.delete()
+            await db.delete_document(guild.id, 'editorial', {'_id': msg_id})
+            await update_stats(self.client.user, chapter, guild,
+                                edit_channel, msg_stats)
+        else:
 
-                delete_sql1 = f"""UPDATE history
-                                SET Old_ID = "{rand_id}" where Old_ID = {mID}"""
+            author = {
+                "name": "Anonymous",
+                "url": "",
+                "icon_url":
+                "https://cdn.discordapp.com/embed/avatars/0.png",
+            }
 
-                author = {
-                    "name": "Anonymous",
-                    "url": "",
-                    "icon_url":
-                    "https://cdn.discordapp.com/embed/avatars/0.png",
-                }
+            embed_dict["author"] = author
 
-                embed_dict["author"] = author
+            updated_embed = discord.Embed.from_dict(embed_dict)
+            await edit_msg.edit(embed=updated_embed)
 
-                updated_embed = discord.Embed.from_dict(embed_dict)
-                await edit_msg.edit(embed=updated_embed)
-
-                db.execute(guild, "editorial", update_sql)
-                db.execute(guild, "editorial", delete_sql1)
+            await db.update(guild.id, 'editorial', ['editor', 'editor_id'],['anonymous', 0], {"_id": msg_id})
 
 
 ###############################################################################

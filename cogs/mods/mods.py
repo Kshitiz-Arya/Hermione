@@ -354,7 +354,13 @@ class Mods(commands.Cog):
         """
         guild = ctx.guild
 
-        total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
+
+        result = await db.get_stats(guild, 'editorial', chapter)
+        if not result:  # Empty result means no entery for the chapter
+            await ctx.send('No **Stats** found for this chapter', delete_after=30)
+            return
+        
+        total, editors, book, accepted, rejected, notsure = result
 
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
         info.set_thumbnail(url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
@@ -386,7 +392,12 @@ class Mods(commands.Cog):
         """
         guild = ctx.guild
 
-        total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial')
+        result = await db.get_stats(guild, 'editorial')
+        if not result:  # Empty result means no entery for the chapter
+            await ctx.send('No **Stats** found', delete_after=30)
+            return
+        
+        total, editors, book, accepted, rejected, notsure = result
 
         print(book)
         info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
@@ -589,7 +600,7 @@ class Mods(commands.Cog):
         for e in emojis:
             await ctx.message.add_reaction(e)
 
-        eTypes = ["accepted", "rejected", "notsure"]
+        eTypes = ["Accepted", "Rejected", "Not Sure"]
         emojis_dict = dict(zip(eTypes, emojis))
 
         config = read("config", guild)
@@ -676,67 +687,67 @@ class Mods(commands.Cog):
         else:
             await ctx.send("Channel is not in the list!", delete_after=10)
 
-    @commands.command()
-    @in_channel()
-    @is_author()
-    async def checkEdits(self, ctx: commands.Context, number: int, chap=0):
-        """This command is used to pickup any edit or suggestion, which bot may have missed due to any reason.
+    # @commands.command()
+    # @in_channel()
+    # @is_author()
+    # async def checkEdits(self, ctx: commands.Context, number: int, chap=0):
+    #     """This command is used to pickup any edit or suggestion, which bot may have missed due to any reason.
 
-        Args:
-            No-of-days :- Number of previous days to look for edits in message history
-            chapter (optional) :- chapter number for which edit to look for
+    #     Args:
+    #         No-of-days :- Number of previous days to look for edits in message history
+    #         chapter (optional) :- chapter number for which edit to look for
 
-        Format:
-            >checkEdits days chapter (optional)
+    #     Format:
+    #         >checkEdits days chapter (optional)
 
-        Example:
-            >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
-            >checkEdits 2 3 :- Hermione will look for edits of chapter 3 in last 2 days of message history
-        """
-        # ! It is not picking up edits as expected
-        # ! Look after Line 480
-        # ! Erroring out when there is no edit in database
-        # todo Check is Chapter is in allowed edit list before interating thorugh msg
+    #     Example:
+    #         >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
+    #         >checkEdits 2 3 :- Hermione will look for edits of chapter 3 in last 2 days of message history
+    #     """
+    #     # ! It is not picking up edits as expected
+    #     # ! Look after Line 480
+    #     # ! Erroring out when there is no edit in database
+    #     # todo Check is Chapter is in allowed edit list before interating thorugh msg
 
-        guild = ctx.guild
-        channel = ctx.channel
-        date = datetime.now() - timedelta(days=number)
-        prefix = read('config', guild)['prefix']
+    #     guild = ctx.guild
+    #     channel = ctx.channel
+    #     date = datetime.now() - timedelta(days=number)
+    #     prefix = read('config', guild)['prefix']
 
-        messages = await channel.history(after=date,
-                                         oldest_first=False).flatten()
+    #     messages = await channel.history(after=date,
+    #                                      oldest_first=False).flatten()
 
-        sql = f"select Message_ID from edit Order by Message_ID desc limit {len(messages)}"
-        msg_ids = chain(db.execute(guild, "editorial", sql))
+    #     sql = f"select Message_ID from edit Order by Message_ID desc limit {len(messages)}"
+    #     msg_ids = chain(db.execute(guild, "editorial", sql))
 
-        counter = 0
-        for message in messages:
-            msg = message.content
+    #     counter = 0
+    #     for message in messages:
+    #         msg = message.content
 
-            command = f'{prefix}edit '
-            if command in msg:  # Replace with startwith
+    #         command = f'{prefix}edit '
+    #         if command in msg:  # Replace with startwith
 
-                if str(message.id) not in msg_ids:
-                    try:
-                        size = len(command)
-                        chapter, edits = msg[size:].split(maxsplit=1)
-                        edits = await EditConverter.convert(self, ctx, edits)
-                    except ValueError:
-                        print('NO')
+    #             if str(message.id) not in msg_ids:
+    #                 try:
+    #                     size = len(command)
+    #                     chapter, edits = msg[size:].split(maxsplit=1)
+    #                     edits = await EditConverter.convert(self, ctx, edits)
+    #                 except ValueError:
+    #                     print('NO')
 
-                    if chapter == str(chap) or chap == 0:
-                        context = await self.client.get_context(message)
-                        result = await ctx.invoke(
-                            self.client.get_command("edit"),
-                            chapter=chapter,
-                            edit=edits,
-                            context=context,
-                        )
+    #                 if chapter == str(chap) or chap == 0:
+    #                     context = await self.client.get_context(message)
+    #                     result = await ctx.invoke(
+    #                         self.client.get_command("edit"),
+    #                         chapter=chapter,
+    #                         edit=edits,
+    #                         context=context,
+    #                     )
 
-            else:
-                print(msg, f'{prefix}edit' in msg)
-        await ctx.send(f"Total Messages Recovered :- {counter}",
-                       delete_after=100)
+    #         else:
+    #             print(msg, f'{prefix}edit' in msg)
+    #     await ctx.send(f"Total Messages Recovered :- {counter}",
+    #                    delete_after=100)
 
     @commands.command()
     @in_channel()
@@ -800,10 +811,10 @@ class Mods(commands.Cog):
         config = read("config", guild)
 
         config["mods"]["colour"] = {
-            "accepted": accepted.value,
-            "rejected": rejected.value,
-            "notsure": notsure.value,
-            "noVote": noVote.value,
+            "Accepted": accepted.value,
+            "Rejected": rejected.value,
+            "Not Sure": notsure.value,
+            "No Vote": noVote.value,
         }
 
         save(config, "config", guild)
@@ -863,140 +874,126 @@ class Mods(commands.Cog):
                 description=f"Latency: `{latency_ms}ms`\nHeartbeat: `{heartbeat_ms}ms`"),
         )
 
-    @commands.command()
-    @in_channel()
-    @is_author()
-    async def populate(self, ctx: commands.Context, chapter: int,
-                       channel: TextChannelConverter):
-        """This command is used to populate a channel with all the edits of a given chapter. This command is useful when older channel is either deleted or unusable.
+    # @commands.command()
+    # @in_channel()
+    # @is_author()
+    # async def populate(self, ctx: commands.Context, chapter: int,
+    #                    channel: TextChannelConverter):
+    #     """This command is used to populate a channel with all the edits of a given chapter. This command is useful when older channel is either deleted or unusable.
 
-        Args:
-            chapter :- Chapter for which edits are to be posted
-            channel :- Channel where edits are to be posted. This can be channel mention, id or name
+    #     Args:
+    #         chapter :- Chapter for which edits are to be posted
+    #         channel :- Channel where edits are to be posted. This can be channel mention, id or name
 
-        Format:
-            >populate chapter-name channel-mention/id/name
+    #     Format:
+    #         >populate chapter-name channel-mention/id/name
 
-        Example:
-            >populate 1 #edit :- Populating the edits of chapter 1 to channel edit. Here channel is mentioned
-            >populate 1 edit :- Populating the edits of chapter 1 to channel edit. Here channel name is provided
-            >populate 1 842349594825457533 :- Populating the edits of chapter 1 to channel with provided id. Here channel id is provided
-        """
-        guild = ctx.guild
-        bot = self.client.user
-        count = 0
-        msg = await ctx.send(
-            f"Do you want {channel.name} to be new home for all the edits from chapter {chapter}?",
-            delete_after=40)
+    #     Example:
+    #         >populate 1 #edit :- Populating the edits of chapter 1 to channel edit. Here channel is mentioned
+    #         >populate 1 edit :- Populating the edits of chapter 1 to channel edit. Here channel name is provided
+    #         >populate 1 842349594825457533 :- Populating the edits of chapter 1 to channel with provided id. Here channel id is provided
+    #     """
+    #     guild = ctx.guild
+    #     bot = self.client.user
+    #     count = 0
+    #     msg = await ctx.send(
+    #         f"Do you want {channel.name} to be new home for all the edits from chapter {chapter}?",
+    #         delete_after=40)
 
-        choise = await confirm(ctx, msg, lock=True)
-        stats_msg = await update_stats(bot, chapter, guild, channel)
+    #     choise = await confirm(ctx, msg, lock=True)
+    #     stats_msg = await update_stats(bot, chapter, guild, channel)
 
-        config = read('config', guild)
-        if choise:
-            config['mods']['allowedEdits'][str(chapter)] = [
-                channel.id, stats_msg.id
-            ]
-            config['mods']['channels'].append(channel.id)
-            save(config, 'config', guild)
+    #     config = read('config', guild)
+    #     if choise:
+    #         config['mods']['allowedEdits'][str(chapter)] = [
+    #             channel.id, stats_msg.id
+    #         ]
+    #         config['mods']['channels'].append(channel.id)
+    #         save(config, 'config', guild)
 
-        sql = 'SELECT * FROM edit where Chapter = ? ORDER BY RankLine, RankChar'
-        results = db.execute(guild, 'editorial', sql, str(chapter))
+    #     sql = 'SELECT * FROM edit where Chapter = ? ORDER BY RankLine, RankChar'
+    #     results = db.execute(guild, 'editorial', sql, str(chapter))
 
-        if not results:
-            await ctx.send(
-                'Aborting the mission! There are not edits in this chapter.',
-                delete_after=20)
+    #     if not results:
+    #         await ctx.send(
+    #             'Aborting the mission! There are not edits in this chapter.',
+    #             delete_after=20)
 
-        for row in results:
-            mID, aID, aName, book, chapter, org, sug, res, rLine, rChar, oChannel, accepted, rejected, notSure = row
+    #     for row in results:
+    #         mID, aID, aName, book, chapter, org, sug, res, rLine, rChar, oChannel, accepted, rejected, notSure = row
 
-            votes = {
-                'accepted': accepted,
-                'rejected': rejected,
-                'notsure': notSure
-            }
-            oChannel = guild.get_channel(int(oChannel))
+    #         votes = {
+    #             'accepted': accepted,
+    #             'rejected': rejected,
+    #             'notsure': notSure
+    #         }
+    #         oChannel = guild.get_channel(int(oChannel))
 
-            try:
-                msg = await oChannel.fetch_message(int(mID))
-                jLink = msg.jump_url
-                author = msg.author
-                aName = author.name or author.nick
-                avatar = str(author.avatar_url)
+    #         try:
+    #             msg = await oChannel.fetch_message(int(mID))
+    #             jLink = msg.jump_url
+    #             author = msg.author
+    #             aName = author.name or author.nick
+    #             avatar = str(author.avatar_url)
 
-            except discord.errors.NotFound:
-                jLink, aName, avatar = None, 'Anonymous', "https://cdn.discordapp.com/embed/avatars/0.png"
+    #         except discord.errors.NotFound:
+    #             jLink, aName, avatar = None, 'Anonymous', "https://cdn.discordapp.com/embed/avatars/0.png"
 
-            try:
 
-                rank = ranking(guild, chapter, org)
-                if isinstance(rank, FileNotFoundError):
-                    raise FileNotFoundError
-                rankRow, rankChar = rank
-                change_status = (
-                    f"**Proposed change was found in the chapter at line {rankRow}!**"
-                )
+    #         rankRow, rankChar, change_status = ranking(guild, chapter, org)
 
-            except FileNotFoundError:
-                rankRow, rankChar = None, None
-                change_status = "**Chapter is yet to be uploaded!**"
 
-            except TypeError:
-                rankRow, rankChar = None, None
-                change_status = "**Proposed change was not found in the chapter!**"
+    #         colour = config["mods"]["colour"]
+    #         emojis = config['mods']['emojis']
 
-            colour = config["mods"]["colour"]
-            emojis = config['mods']['emojis']
+    #         try:
+    #             vote = next(
+    #                 (vote for vote, val in votes.items() if val == "1"),
+    #                 'No Vote')
+    #         except StopIteration:
+    #             continue
 
-            try:
-                vote = next(
-                    (vote for vote, val in votes.items() if val == "1"),
-                    'noVote')
-            except StopIteration:
-                continue
+    #         embed = discord.Embed(
+    #             color=colour[vote],
+    #             description=f"[Message Link]({jLink})",
+    #             timestamp=datetime.now(),
+    #         )
 
-            embed = discord.Embed(
-                color=colour[vote],
-                description=f"[Message Link]({jLink})",
-                timestamp=datetime.now(),
-            )
+    #         vote = 'Not Voted Yet' if vote == 'No Vote' else vote
 
-            vote = 'Not Voted Yet' if vote == 'noVote' else vote
+    #         embed.set_author(name=aName, icon_url=avatar)
+    #         embed.set_footer(text=f"Author's Vote - {vote.title() }",
+    #                          icon_url=str(self.client.user.avatar_url))
 
-            embed.set_author(name=aName, icon_url=avatar)
-            embed.set_footer(text=f"Author's Vote - {vote.title() }",
-                             icon_url=str(self.client.user.avatar_url))
+    #         try:
+    #             if org is not None:
+    #                 embed.add_field(name="Original Text",
+    #                                 value=org or '⠀',
+    #                                 inline=False)
+    #                 embed.add_field(name="Sugested Text",
+    #                                 value=sug,
+    #                                 inline=False)
+    #                 embed.add_field(name="Reason", value=res, inline=False)
+    #                 embed.add_field(name="⠀",
+    #                                 value=change_status,
+    #                                 inline=False)
+    #             else:
+    #                 embed.add_field(name='Suggestion', value=sug)
 
-            try:
-                if org is not None:
-                    embed.add_field(name="Original Text",
-                                    value=org or '⠀',
-                                    inline=False)
-                    embed.add_field(name="Sugested Text",
-                                    value=sug,
-                                    inline=False)
-                    embed.add_field(name="Reason", value=res, inline=False)
-                    embed.add_field(name="⠀",
-                                    value=change_status,
-                                    inline=False)
-                else:
-                    embed.add_field(name='Suggestion', value=sug)
+    #             msg_send = await channel.send(embed=embed)
+    #             count += 1
+    #         except:
+    #             print(org, sug, res)
+    #             print(type(org))
 
-                msg_send = await channel.send(embed=embed)
-                count += 1
-            except:
-                print(org, sug, res)
-                print(type(org))
+    #         # column = "('Old_ID', 'New_ID', 'Org_channel')"  #! Update history if message is found
+    #         # values = (mID, msg_send.id, channel_id)
+    #         # db.insert(guild, "editorial", "history", column, values)
 
-            # column = "('Old_ID', 'New_ID', 'Org_channel')"  #! Update history if message is found
-            # values = (mID, msg_send.id, channel_id)
-            # db.insert(guild, "editorial", "history", column, values)
+    #         for emoji in emojis.values():
+    #             await msg_send.add_reaction(emoji)
 
-            for emoji in emojis.values():
-                await msg_send.add_reaction(emoji)
-
-        await ctx.send(f'Total Edits populated :- {count}', delete_after=30)
+    #     await ctx.send(f'Total Edits populated :- {count}', delete_after=30)
 
     @commands.command()
     @in_channel()
