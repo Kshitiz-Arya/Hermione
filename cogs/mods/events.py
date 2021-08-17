@@ -151,7 +151,8 @@ class Events(commands.Cog):
             if row is None:
                 return
 
-            old_id, org_channel = [num.real for num in row.values()]    # ids are received in bson.Int64 format, which needs to be converted back to int
+            # ids are received in bson.Int64 format, which needs to be converted back to int
+            old_id, org_channel = [num.real for num in row.values()]
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)
@@ -175,10 +176,8 @@ class Events(commands.Cog):
             await embed_msg.edit(embed=updated_embed)
             await db.update(guild.id, "editorial", ['status'], [edit_status], {'_id': old_id})
 
-
             await update_stats(  # todo Making bot slow. Average Response time :- 2.70 s
                 self.client.user, chapter, guild, Editorial_Channel, stats_msg)
-
 
             # todo Figure out another way to check if msg exist or not
             # org_channel = self.client.get_channel(org_channel)
@@ -221,7 +220,6 @@ class Events(commands.Cog):
                 emojis.values()).index(emoji)]
 
             row = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_id}, ['_id', 'org_channel_id'])
-            
 
             if row is None:
                 return
@@ -277,7 +275,7 @@ class Events(commands.Cog):
         results = await db.get_document(guild.id, "editorial", query, ['edit_msg_id'])
 
         if 'author' not in data.keys() or 'bot' in data['author'] or results is None:
-            return 
+            return
 
         msg = data["content"]
         edit_msg_id = results['edit_msg_id']
@@ -311,7 +309,6 @@ class Events(commands.Cog):
 
             rank_row, rank_col, change_status = ranking(guild, chapter, org)
 
-
             updated_embed_dict["fields"][0]["value"] = org
             updated_embed_dict["fields"][1]["value"] = sug
             updated_embed_dict["fields"][2]["value"] = res
@@ -342,14 +339,14 @@ class Events(commands.Cog):
             updated_embed_dict["fields"][0]["value"] = suggestion
 
             await db.update(guild, "editorial", ['suggested'],
-                         [suggestion], {"_id": msg_id})
+                            [suggestion], {"_id": msg_id})
 
         updated_embed_dict["color"] = colour["No Vote"]
         updated_embed = discord.Embed.from_dict(updated_embed_dict)
 
         await msg.edit(embed=updated_embed)
         await update_stats(self.client.user, chapter, guild,
-                            editorial_channel, msg_stats)
+                           editorial_channel, msg_stats)
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
@@ -379,7 +376,7 @@ class Events(commands.Cog):
             await edit_msg.delete()
             await db.delete_document(guild.id, 'editorial', {'_id': msg_id})
             await update_stats(self.client.user, chapter, guild,
-                                edit_channel, msg_stats)
+                               edit_channel, msg_stats)
         else:
 
             author = {
@@ -394,7 +391,7 @@ class Events(commands.Cog):
             updated_embed = discord.Embed.from_dict(embed_dict)
             await edit_msg.edit(embed=updated_embed)
 
-            await db.update(guild.id, 'editorial', ['editor', 'editor_id'],['anonymous', 0], {"_id": msg_id})
+            await db.update(guild.id, 'editorial', ['editor', 'editor_id'], ['anonymous', 0], {"_id": msg_id})
 
 
 ###############################################################################

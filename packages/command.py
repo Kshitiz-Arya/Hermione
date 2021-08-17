@@ -192,7 +192,7 @@ def ranking(guild: discord.Guild, chapter: int, org):
                     byte = i.find(org)
                     change_status = f"**Proposed change was found in the chapter at line {count}!**"
                     return [count, byte, change_status]
-        
+
         change_status = "**Proposed change was not found in the chapter!**"
         return [None, None, change_status]
 
