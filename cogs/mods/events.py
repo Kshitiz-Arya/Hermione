@@ -200,7 +200,7 @@ class Events(commands.Cog):
         guild = self.client.get_guild(guild)
         user = payload.user_id
         channel = payload.channel_id
-        member = self.client.user
+        # member = self.client.user
         emoji = str(payload.emoji)
         edit_id = payload.message_id
 
@@ -216,9 +216,6 @@ class Events(commands.Cog):
         if (channel in channels and emoji in emojis.values()
                 and user in authors):
             # Look into making this a seperate function
-
-            edit_status = list(emojis.keys())[list(
-                emojis.values()).index(emoji)]
 
             row = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_id}, ['_id', 'org_channel_id'])
             

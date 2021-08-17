@@ -1,7 +1,7 @@
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 
-connect = AsyncIOMotorClient(os.environ.get('connect'))
+connection = AsyncIOMotorClient(os.environ.get('connect'))
 
 
 # def create_connection(guild, db_file):
@@ -48,7 +48,7 @@ connect = AsyncIOMotorClient(os.environ.get('connect'))
 #             connection.close()
 
 
-async def insert(guild_id: str, database: str, update_statement: dict, connect: AsyncIOMotorClient = connect):
+async def insert(guild_id: str, database: str, update_statement: dict, connect: AsyncIOMotorClient = connection):
     collection = connect[database][str(guild_id)]
 
     # Need to pass type of document with colunms
@@ -57,7 +57,7 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
 
 
 # todo Rename this function to get_document
-async def get_document(guild_id, database, query, return_column, connect=connect):
+async def get_document(guild_id, database, query, return_column, connect=connection):
     # This function just return one doucment
     # Just pass an empty dict as query for getting all the columns
     # This always returns _id
@@ -69,7 +69,7 @@ async def get_document(guild_id, database, query, return_column, connect=connect
     return return_doucment
 
 
-async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connect):
+async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connection):
     collections = connect[database][guild.id]
     document = {column: 1 for column in return_column}
     num_document = await collections.count_documents(query)
@@ -77,7 +77,7 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
     return await collections.find(query, document, limit=limit).to_list(num_document)
 
 
-async def get_stats(guild, database: str, chapter: int = None, connect=connect):
+async def get_stats(guild, database: str, chapter: int = None, connect=connection):
     collections = connect[database][str(guild.id)]
 
     pipeline = [
@@ -126,11 +126,11 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connect):
     return result[0].values() if result else []
 
 
-async def update(guild_id, database, columns: list, values: list, match: dict, connect=connect):
+async def update(guild_id, database, columns: list, values: list, match: dict, connect=connection):
     collection = connect[database][str(guild_id)]
     update_str = {"$set": dict(zip(columns, values))}
     await collection.update_one(match, update_str)
 
-async def delete_document(guild_id:str, database:str, match:dict, connect=connect):
+async def delete_document(guild_id:str, database:str, match:dict, connect=connection):
     collection = connect[database][str(guild_id)]
     await collection.delete_one(match)

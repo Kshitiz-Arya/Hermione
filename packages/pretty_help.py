@@ -111,7 +111,7 @@ class Paginator:
         self._add_command_fields(embed, page_title, commands_list)
 
     def _add_command_fields(self, embed: discord.Embed, page_title: str,
-                            commands: List[commands.Command]):
+                            bot_commands: List[commands.Command]):
         """
         Adds command fields to Category/Cog and Command Group pages
 
@@ -120,7 +120,7 @@ class Paginator:
             page_title (str): The title of the page
             commands (List[commands.Command]): The list of commands for the fields
         """
-        for command in commands:
+        for command in bot_commands:
             if not self._check_embed(
                     embed,
                     self.ending_note,
@@ -292,8 +292,8 @@ class PrettyHelp(HelpCommand):
 
         super().__init__(**options)
 
-    async def prepare_help_command(self, ctx: commands.Context,
-                                   command: commands.Command):
+    async def prepare_help_command(self, ctx,
+                                   command):
         if ctx.guild is not None:
             perms = ctx.channel.permissions_for(ctx.guild.me)
             if not perms.embed_links:
@@ -343,7 +343,7 @@ class PrettyHelp(HelpCommand):
                 try:
                     mapping[cmd.cog].append(cmd)
                 except KeyError:
-                    breakpoint()
+                    pass
             # self.paginator.add_cog(self.no_category, mapping.pop(None))
             sorted_map = sorted(
                 mapping.items(),

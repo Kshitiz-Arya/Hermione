@@ -749,42 +749,42 @@ class Mods(commands.Cog):
     #     await ctx.send(f"Total Messages Recovered :- {counter}",
     #                    delete_after=100)
 
-    @commands.command()
-    @in_channel()
-    @is_author()
-    async def export(self, ctx: commands.Context, chapter: int):
-        """This cahpter is used to get all edits and suggestion in .xlsx format
+    # @commands.command()
+    # @in_channel()
+    # @is_author()
+    # async def export(self, ctx: commands.Context, chapter: int):
+    #     """This cahpter is used to get all edits and suggestion in .xlsx format
 
-        Args:
-            chapter :- Chapter number for which edit are requested
+    #     Args:
+    #         chapter :- Chapter number for which edit are requested
 
-        Format:
-            >export chapter-number
+    #     Format:
+    #         >export chapter-number
 
-        Example:
-            >export 1 :- Requested edits and suggestions for chapter 1
-        """
-        guild = ctx.guild
-        conn = db.create_connection(guild, "editorial")
-        bio = BytesIO()
+    #     Example:
+    #         >export 1 :- Requested edits and suggestions for chapter 1
+    #     """
+    #     guild = ctx.guild
+    #     conn = db.create_connection(guild, "editorial")
+    #     bio = BytesIO()
 
-        script = (
-            f"SELECT * FROM edit WHERE chapter = {chapter} Order By rankLine, rankChar"
-        )
-        df = pd.read_sql_query(script, conn)
-        writer = pd.ExcelWriter(bio, engine="openpyxl")
+    #     script = (
+    #         f"SELECT * FROM edit WHERE chapter = {chapter} Order By rankLine, rankChar"
+    #     )
+    #     df = pd.read_sql_query(script, conn)
+    #     writer = pd.ExcelWriter(bio, engine="openpyxl")
 
-        df.to_excel(writer, sheet_name=f"Edits - Chapter {chapter}")
-        writer.save()
-        bio.seek(0)
-        # excel_file = bio.read()
-        # print(excel_file.__sizeof__())
-        await ctx.send(
-            f"Here is all the edits in chapter {chapter}",
-            file=discord.File(bio, f"Chapter-{chapter}.xlsx"),
-        )
-        if conn:
-            conn.close()
+    #     df.to_excel(writer, sheet_name=f"Edits - Chapter {chapter}")
+    #     writer.save()
+    #     bio.seek(0)
+    #     # excel_file = bio.read()
+    #     # print(excel_file.__sizeof__())
+    #     await ctx.send(
+    #         f"Here is all the edits in chapter {chapter}",
+    #         file=discord.File(bio, f"Chapter-{chapter}.xlsx"),
+    #     )
+    #     if conn:
+    #         conn.close()
 
     @commands.command(aliases=["changeColor"])
     @in_channel()
