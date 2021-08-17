@@ -55,7 +55,6 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
     await collection.insert_one(update_statement)
 
 
-
 # todo Rename this function to get_document
 async def get_document(guild_id, database, query, return_column, connect=connection):
     # This function just return one doucment
