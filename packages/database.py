@@ -130,6 +130,7 @@ async def update(guild_id, database, columns: list, values: list, match: dict, c
     update_str = {"$set": dict(zip(columns, values))}
     await collection.update_one(match, update_str)
 
-async def delete_document(guild_id:str, database:str, match:dict, connect=connection):
+
+async def delete_document(guild_id: str, database: str, match: dict, connect=connection):
     collection = connect[database][str(guild_id)]
     await collection.delete_one(match)
