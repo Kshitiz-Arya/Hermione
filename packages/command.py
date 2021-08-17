@@ -4,7 +4,6 @@ from packages.menu import DefaultMenu
 from typing import Optional
 
 import discord
-from discord.embeds import EmptyEmbed
 from discord.ext import commands
 from discord.ext.commands.converter import TextChannelConverter
 
