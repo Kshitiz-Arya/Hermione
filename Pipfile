@@ -6,11 +6,11 @@ skip_lock = true
 
 [packages]
 "discord.py" = "==1.7.3"
-dpytools = "*"
 pandas = "*"
 pillow = "*"
 motor = "*"
 pymongo = {extras = ["srv"], version = "*"}
+aiohttp = "*"
 
 [dev-packages]
 dpytools = "*"
