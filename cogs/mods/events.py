@@ -146,13 +146,13 @@ class Events(commands.Cog):
             # Look into making this a seperate function
             edit_status = list(emojis.keys())[list(
                 emojis.values()).index(emoji)]
-            row = await db.get_document(guild.id, "editorial", {'edit_msg_id': edit_id}, ['_id', 'org_channel_id'])
+            row = await db.get_document(guild.id, "editorial", {'edit_msg_id': edit_id}, ['_id'])
 
             if row is None:
                 return
 
             # ids are received in bson.Int64 format, which needs to be converted back to int
-            old_id, org_channel = [num.real for num in row.values()]
+            old_id = row['edit_msg_id'].real
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)
@@ -216,12 +216,12 @@ class Events(commands.Cog):
                 and user in authors):
             # Look into making this a seperate function
 
-            row = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_id}, ['_id', 'org_channel_id'])
+            row = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_id}, ['_id'])
 
             if row is None:
                 return
 
-            org_id, org_channel = row.values()
+            org_id = row['_id'].real
 
             stats_msg = stats_msgs[channels.index(channel)]
             Editorial_Channel = self.client.get_channel(channel)

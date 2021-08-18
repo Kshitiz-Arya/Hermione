@@ -116,9 +116,8 @@ class DefaultMenu(PrettyMenu):
 
                     def check(payload: discord.RawReactionActionEvent):
 
-                        if (payload.user_id != bot.user.id
+                        return (payload.user_id != bot.user.id
                                 and message.id == payload.message_id):
-                            return True
 
                     payload: discord.RawReactionActionEvent = await bot.wait_for(
                         "raw_reaction_add",

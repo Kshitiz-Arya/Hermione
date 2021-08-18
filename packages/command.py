@@ -167,7 +167,7 @@ def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
         if books[b]['start'] <= int(chapter) <= books[b]['end']:
             return b
 
-    return
+    return None
 
 
 def ranking(guild: discord.Guild, chapter: int, org):
