@@ -307,7 +307,7 @@ class PrettyHelp(HelpCommand):
 
         self.paginator.clear()
         self.paginator.ending_note = self.get_ending_note()
-        await super().prepare_help_command(ctx, command)
+        await super(PrettyHelp, self).prepare_help_command(ctx, command)
 
     def get_ending_note(self):
         """Returns help command's ending note. This is mainly useful to override for i18n purposes."""
