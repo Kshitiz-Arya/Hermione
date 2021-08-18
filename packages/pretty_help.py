@@ -292,8 +292,7 @@ class PrettyHelp(HelpCommand):
 
         super().__init__(**options)
 
-    async def prepare_help_command(self, ctx,
-                                   command):
+    async def prepare_help_command(self, ctx, command=None):
         if ctx.guild is not None:
             perms = ctx.channel.permissions_for(ctx.guild.me)
             if not perms.embed_links:
