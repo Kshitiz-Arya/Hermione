@@ -2,3 +2,11 @@
 cogs/database/__pycache__/database.cpython-38.pyc
 .ropeproject/config.py
 Storage/
+*.log
+workspace.code-workspace
+*.json
+.env
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/objectdb
+Testing/
+.vscode/

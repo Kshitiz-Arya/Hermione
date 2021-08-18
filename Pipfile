@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+skip_lock = true
+
+[packages]
+"discord.py" = "==1.7.3"
+dpytools = "*"
+pandas = "*"
+pillow = "*"
+motor = "*"
+pymongo = {extras = ["srv"], version = "*"}
+
+[dev-packages]
+dpytools = "*"
+ipykernel = "*"
+
+[requires]
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true
+
+[scripts]
+hermione = "python main.py"
