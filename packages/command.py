@@ -29,25 +29,6 @@ class EditConverter(commands.Converter):
         self.reason = None
 
     async def convert(self, ctx, argument):
-        """Extract original sentence, suggested sentence and reason from edit request.
-
-        Args:
-            ctx (Context): Context object.
-            argument (str): Edit request.
-
-        Returns:
-            dict: Dictionary containing original sentence, suggested sentence and reason.
-        """
-        self.original_sentence = argument.split('|')[0]
-        self.suggested_sentence = argument.split('|')[1]
-        self.reason = argument.split('|')[2]
-        return {
-            'original_sentence': self.original_sentence,
-            'suggested_sentence': self.suggested_sentence,
-            'reason': self.reason
-        }
-
-    async def convert(self, ctx, argument):
         delimiter = '>>'
         try:
             # splitting the edit request into definable parts
