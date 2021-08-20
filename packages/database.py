@@ -192,4 +192,4 @@ async def get_voting_count(guild_id: str, database: str, message_id: int, connec
         }
     ]).to_list(None)
 
-    return voting_count[0] if voting_count else {'_id': message_id, 'yes': 0, 'no':0 , 'not_sure': 0}
+    return voting_count[0] if voting_count else {'_id': message_id, 'yes': 0, 'no': 0, 'not_sure': 0}

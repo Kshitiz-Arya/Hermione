@@ -1090,7 +1090,6 @@ class Mods(commands.Cog):
             info.set_footer(text="Provided to you by Hermione")
             await ctx.send(embed=info, file=colour_img)
 
-
     @commands.command()
     @in_channel()
     @is_author()
@@ -1103,43 +1102,43 @@ class Mods(commands.Cog):
         Returns:
             [None]
         """
-        
+
         emdeb = {
-      "type": "rich",
-      "title": 'Dodging Prision & Stealing Witches',
-      "description": "",
-      "color": 0x00FFFF,
-      "fields": [
-        {
-          "name": 'Original Text',
-          "value": 'This is a Test'
-        },
-        {
-          "name": 'Suggested Text',
-          "value": 'This is not a test'
-        },
-        {
-          "name": 'Reason',
-          "value": 'For Fun'
-        },
-        {
-          "name": '​',
-          "value": '**Proposed change was found in the chapter at line 45!**'
+            "type": "rich",
+            "title": 'Dodging Prision & Stealing Witches',
+            "description": "",
+            "color": 0x00FFFF,
+            "fields": [
+                {
+                    "name": 'Original Text',
+                    "value": 'This is a Test'
+                },
+                {
+                    "name": 'Suggested Text',
+                    "value": 'This is not a test'
+                },
+                {
+                    "name": 'Reason',
+                    "value": 'For Fun'
+                },
+                {
+                    "name": '​',
+                    "value": '**Proposed change was found in the chapter at line 45!**'
+                }
+            ],
+            "image": {
+                "url": 'https://i.ibb.co/0cDG6m2/output.png',
+                "height": 50,
+                "width": 100
+            },
+            "author": {
+                "name": 'Kshitiz',
+                "icon_url": 'https://i.ibb.co/wSMMgnX/9f543e755f0b5bfd9dcbf3777bbd1f79.jpg'
+            },
+            "footer": {
+                "text": "Author's Vote - Not Voted Yet"
+            }
         }
-      ],
-      "image": {
-        "url": 'https://i.ibb.co/0cDG6m2/output.png',
-        "height": 50,
-        "width": 100
-      },
-      "author": {
-        "name": 'Kshitiz',
-        "icon_url": 'https://i.ibb.co/wSMMgnX/9f543e755f0b5bfd9dcbf3777bbd1f79.jpg'
-      },
-      "footer": {
-        "text": "Author's Vote - Not Voted Yet"
-      }
-    }
         em = discord.Embed.from_dict(emdeb)
         msg = await ctx.send(embed=em, view=(view := PersistentView(self.client)))
         print(hash(ctx.author))
@@ -1148,6 +1147,7 @@ class Mods(commands.Cog):
     @commands.command()
     async def persistent(self, ctx):
         await ctx.send(ctx.bot.persistent_views)
+
 
 def draw(guild: discord.Guild, colours: tuple):
     """Generate a palette image with all the colours passed as tuple
