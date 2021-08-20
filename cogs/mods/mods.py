@@ -4,7 +4,7 @@ from io import BytesIO, StringIO
 
 import packages.database as db
 import discord
-from packages.command import EmbedList, Book, ranking, read, save, in_channel, is_author
+from packages.command import EmbedList, Book, ranking, read, save, in_channel, is_author, PersistentView
 from discord.ext import commands
 from discord.ext.commands.converter import (ColorConverter, MemberConverter,
                                             TextChannelConverter)
@@ -1090,6 +1090,64 @@ class Mods(commands.Cog):
             info.set_footer(text="Provided to you by Hermione")
             await ctx.send(embed=info, file=colour_img)
 
+
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def view(self, ctx: commands.Context):
+        """Test the persistent view
+
+        Args:
+            None
+
+        Returns:
+            [None]
+        """
+        
+        emdeb = {
+      "type": "rich",
+      "title": 'Dodging Prision & Stealing Witches',
+      "description": "",
+      "color": 0x00FFFF,
+      "fields": [
+        {
+          "name": 'Original Text',
+          "value": 'This is a Test'
+        },
+        {
+          "name": 'Suggested Text',
+          "value": 'This is not a test'
+        },
+        {
+          "name": 'Reason',
+          "value": 'For Fun'
+        },
+        {
+          "name": '​',
+          "value": '**Proposed change was found in the chapter at line 45!**'
+        }
+      ],
+      "image": {
+        "url": 'https://i.ibb.co/CH3Wc59/Screenshot-from-2021-08-20-00-49-15.png',
+        "height": 50,
+        "width": 100
+      },
+      "author": {
+        "name": 'Kshitiz',
+        "icon_url": 'https://i.ibb.co/wSMMgnX/9f543e755f0b5bfd9dcbf3777bbd1f79.jpg'
+      },
+      "footer": {
+        "text": "Author's Vote - Not Voted Yet"
+      }
+    }
+        em = discord.Embed.from_dict(emdeb)
+        msg = await ctx.send(embed=em, view=(view := PersistentView()))
+        print(hash(ctx.author))
+        ctx.bot.add_view(view=view, message_id=msg.id)
+
+    @commands.command()
+    async def persistent(self, ctx):
+        await ctx.send(ctx.bot.persistent_views)
 
 def draw(guild: discord.Guild, colours: tuple):
     """Generate a palette image with all the colours passed as tuple

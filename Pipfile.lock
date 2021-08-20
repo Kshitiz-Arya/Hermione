@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "10c4218bc9341d41031258c9a7cde84105108944b7519918dfedb5668390565c"
+            "sha256": "e3d7c696af40341eda3278b1a65ba7492e9952ebb6ffaa0059cdf2ad7ac499f9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -84,13 +84,14 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==4.0.0"
         },
+        "discord-py": {
+            "editable": true,
+            "git": "https://github.com/Rapptz/discord.py",
+            "ref": "489e5f3288efb9b9e6649447209e1ac1746ccb32"
+        },
         "discord.py": {
-            "hashes": [
-                "sha256:462cd0fe307aef8b29cbfa8dd613e548ae4b2cb581d46da9ac0d46fb6ea19408",
-                "sha256:c6f64db136de0e18e090f6752ea68bdd4ab0a61b82dfe7acecefa22d6477bb0c"
-            ],
-            "index": "pypi",
-            "version": "==1.7.3"
+            "editable": true,
+            "git": "https://github.com/Rapptz/discord.py"
         },
         "dnspython": {
             "hashes": [
@@ -592,12 +593,8 @@
             "version": "==5.0.9"
         },
         "discord.py": {
-            "hashes": [
-                "sha256:462cd0fe307aef8b29cbfa8dd613e548ae4b2cb581d46da9ac0d46fb6ea19408",
-                "sha256:c6f64db136de0e18e090f6752ea68bdd4ab0a61b82dfe7acecefa22d6477bb0c"
-            ],
-            "index": "pypi",
-            "version": "==1.7.3"
+            "editable": true,
+            "git": "https://github.com/Rapptz/discord.py"
         },
         "dpytools": {
             "hashes": [
@@ -664,11 +661,11 @@
         },
         "jupyter-core": {
             "hashes": [
-                "sha256:79025cb3225efcd36847d0840f3fc672c0abd7afd0de83ba8a1d3837619122b4",
-                "sha256:8c6c0cac5c1b563622ad49321d5ec47017bd18b94facb381c6973a0486395f8e"
+                "sha256:a05c0993fe0558af6bee05d7525fc52326952f3c66a8bb4cc10cae97e2499be3",
+                "sha256:a2b8ffc26d5b39a1bf7afab05a988b82d367b1f64836af2f428ebc8f4009744d"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==4.7.1"
+            "version": "==4.8.0b0"
         },
         "matplotlib-inline": {
             "hashes": [

@@ -5,6 +5,7 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
+from discord.emoji import PartialEmoji
 from discord.ext.commands.converter import TextChannelConverter
 
 import packages.database as db
@@ -147,6 +148,60 @@ class EmbedList:
         pages = self.pages
         destination = self.ctx
         await self.menu.send_pages(self.ctx, destination, pages)
+
+
+class PersistentView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(emoji="<:aye:877951041985982504>", style=discord.ButtonStyle.green, custom_id='persistent_view:green')
+    async def green(self, button: discord.ui.Button, interaction: discord.Interaction):
+
+        final, guild, channel, edit_msg, org_msg_id, stats_msg_id, author_name, author_avatar, color, emoji = await self.preprocessing(interaction)
+
+        if final:
+            embed_dict = edit_msg.embeds[0].to_dict()
+            embed_dict['color'] = color['Accepted']
+            embed_dict['footer']['text'] = f"{author_name} Voted - {'Accepted'} {emoji['Accepted']}"
+            embed_dict['footer']['icon_url'] = author_avatar
+
+            updated_embed = discord.Embed.from_dict(embed_dict)
+            await interaction.edit_original_message.edit(embed=updated_embed)
+            await db.update(guild.id, "editorial", ['status'], ['Accepted'], {'_id': org_msg_id})
+
+
+
+    @discord.ui.button(emoji="<:nay:877951041834995742>", style=discord.ButtonStyle.red, custom_id='persistent_view:red')
+    async def red(self, button: discord.ui.Button, interaction: discord.Interaction):
+        # button.emoji = ':x:'
+        await interaction.response.send_message('This is red.', ephemeral=True)
+
+    @discord.ui.button(emoji="<:james_book:877951041293910056>", style=discord.ButtonStyle.grey, custom_id='persistent_view:grey')
+    async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message('This is grey.', ephemeral=True)
+
+    async def preprocessing(self, interaction: discord.Interaction):
+        edit_msg = interaction.message
+        guild = interaction.guild
+        user = interaction.user
+        channel = interaction.channel
+
+        config = read('config', guild)
+        server_config = config['mods']
+        authors_list = server_config.get('authors', [])
+        
+        if user.id not in authors_list:
+            return False
+        
+        documnets = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_msg.id}, ['chapter'])
+        
+        org_msg_id, chapter = documnets.values()
+        stats_msg_id = server_config['allowedEdits'].get(chapter, None)[1]
+        author_name = user.nick or user.name
+        author_avatar = str(user.avatar_url)
+        
+        return [True, guild, channel, edit_msg, org_msg_id, stats_msg_id, author_name, author_avatar, server_config['colour'], server_config['emojis']]
+
 
 
 def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
