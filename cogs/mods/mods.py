@@ -1128,7 +1128,7 @@ class Mods(commands.Cog):
         }
       ],
       "image": {
-        "url": 'https://i.ibb.co/CH3Wc59/Screenshot-from-2021-08-20-00-49-15.png',
+        "url": 'https://i.ibb.co/0cDG6m2/output.png',
         "height": 50,
         "width": 100
       },
@@ -1141,7 +1141,7 @@ class Mods(commands.Cog):
       }
     }
         em = discord.Embed.from_dict(emdeb)
-        msg = await ctx.send(embed=em, view=(view := PersistentView()))
+        msg = await ctx.send(embed=em, view=(view := PersistentView(self.client)))
         print(hash(ctx.author))
         ctx.bot.add_view(view=view, message_id=msg.id)
 

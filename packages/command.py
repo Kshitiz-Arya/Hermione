@@ -1,17 +1,51 @@
 import json
 from datetime import datetime
+
+from discord import channel
 from packages.menu import DefaultMenu
 from typing import Optional
 
 import discord
 from discord.ext import commands
-from discord.emoji import PartialEmoji
 from discord.ext.commands.converter import TextChannelConverter
+from matplotlib import pyplot as plt
+from io import BytesIO
 
 import packages.database as db
 
 
 class EditConverter(commands.Converter):
+    """Extract original sentence, suggested sentence and reason from edit request.
+
+    Attributes:
+        original_sentence (str): Original sentence.
+        suggested_sentence (str): Suggested sentence.
+        reason (str): Reason for the edit.
+    """
+
+    def __init__(self):
+        self.original_sentence = None
+        self.suggested_sentence = None
+        self.reason = None
+
+    async def convert(self, ctx, argument):
+        """Extract original sentence, suggested sentence and reason from edit request.
+
+        Args:
+            ctx (Context): Context object.
+            argument (str): Edit request.
+
+        Returns:
+            dict: Dictionary containing original sentence, suggested sentence and reason.
+        """
+        self.original_sentence = argument.split('|')[0]
+        self.suggested_sentence = argument.split('|')[1]
+        self.reason = argument.split('|')[2]
+        return {
+            'original_sentence': self.original_sentence,
+            'suggested_sentence': self.suggested_sentence,
+            'reason': self.reason
+        }
     async def convert(self, ctx, argument):
         delimiter = '>>'
         try:
@@ -151,36 +185,60 @@ class EmbedList:
 
 
 class PersistentView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, client: discord.Client, *args, **kwargs):
+        self.client = client
         super().__init__(timeout=None)
 
     @discord.ui.button(emoji="<:aye:877951041985982504>", style=discord.ButtonStyle.green, custom_id='persistent_view:green')
     async def green(self, button: discord.ui.Button, interaction: discord.Interaction):
 
-        final, guild, channel, edit_msg, org_msg_id, stats_msg_id, author_name, author_avatar, color, emoji = await self.preprocessing(interaction)
+        return_data = await self.preprocessing(interaction, 2)
+        await interaction.response.defer()
 
-        if final:
-            embed_dict = edit_msg.embeds[0].to_dict()
-            embed_dict['color'] = color['Accepted']
-            embed_dict['footer']['text'] = f"{author_name} Voted - {'Accepted'} {emoji['Accepted']}"
-            embed_dict['footer']['icon_url'] = author_avatar
-
-            updated_embed = discord.Embed.from_dict(embed_dict)
-            await interaction.edit_original_message.edit(embed=updated_embed)
-            await db.update(guild.id, "editorial", ['status'], ['Accepted'], {'_id': org_msg_id})
-
-
+        if return_data:
+            guild, channel, edit_msg, org_msg_id, stats_msg_id, chapter, author_name, author_avatar, color = return_data
+            await self.update_embed(guild, edit_msg, org_msg_id, 'Accepted', author_name, author_avatar, '\u2705', color)
+            await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
 
     @discord.ui.button(emoji="<:nay:877951041834995742>", style=discord.ButtonStyle.red, custom_id='persistent_view:red')
     async def red(self, button: discord.ui.Button, interaction: discord.Interaction):
-        # button.emoji = ':x:'
-        await interaction.response.send_message('This is red.', ephemeral=True)
+        return_data = await self.preprocessing(interaction, 0)
+        await interaction.response.defer()
+
+        if return_data:
+            guild, channel, edit_msg, org_msg_id, stats_msg_id, chapter, author_name, author_avatar, color = return_data
+            await self.update_embed(guild, edit_msg, org_msg_id, 'Rejected', author_name, author_avatar, '\u274c', color)
+            await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
 
     @discord.ui.button(emoji="<:james_book:877951041293910056>", style=discord.ButtonStyle.grey, custom_id='persistent_view:grey')
     async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.send_message('This is grey.', ephemeral=True)
+        return_data = await self.preprocessing(interaction, 1)
+        await interaction.response.defer()
 
-    async def preprocessing(self, interaction: discord.Interaction):
+        if return_data:
+            guild, channel, edit_msg, org_msg_id, stats_msg_id, chapter, author_name, author_avatar, color = return_data
+            await self.update_embed(guild, edit_msg, org_msg_id, 'Not Sure', author_name, author_avatar, '😐', color)
+            await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
+
+    async def preprocessing(self, interaction: discord.Interaction, vote: int):
+        """ Extract data from the interaction and return it
+        Args:
+            interaction (discord.Interaction): The interaction to extract data from
+            vote (int): The vote to be sent to the database
+
+        Returns:
+            tuple: Returns a tuple containing the following data:
+                    guild (discord.Guild): The guild the interaction was made in
+                    channel (discord.TextChannel): The channel the interaction was made in
+                    edit_msg (discord.Message): The message that was edited
+                    org_msg_id (int): The message ID of the original message
+                    stats_msg_id (int): The message ID of the stats message
+                    chapter (int): The chapter the interaction was made in
+                    author_name (str): The name of the author of the interaction
+                    author_avatar (str): The avatar of the author of the interaction
+                    color (str): The color of the author's avatar
+        """
+
         edit_msg = interaction.message
         guild = interaction.guild
         user = interaction.user
@@ -189,19 +247,94 @@ class PersistentView(discord.ui.View):
         config = read('config', guild)
         server_config = config['mods']
         authors_list = server_config.get('authors', [])
-        
+
         if user.id not in authors_list:
-            return False
-        
-        documnets = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_msg.id}, ['chapter'])
-        
-        org_msg_id, chapter = documnets.values()
+            vote = {str(hash(user)): vote}
+            await db.update(guild.id, 'editorial', ['votes'], [vote], {'edit_msg_id': edit_msg.id})
+            return None
+
+        document = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_msg.id}, ['chapter'])
+
+        org_msg_id, chapter = document.values()
         stats_msg_id = server_config['allowedEdits'].get(chapter, None)[1]
         author_name = user.nick or user.name
-        author_avatar = str(user.avatar_url)
-        
-        return [True, guild, channel, edit_msg, org_msg_id, stats_msg_id, author_name, author_avatar, server_config['colour'], server_config['emojis']]
+        author_avatar = str(user.avatar.url)
 
+        return [guild, channel, edit_msg, org_msg_id, stats_msg_id, chapter, author_name, author_avatar, server_config['colour']]
+
+    async def update_embed(self, guild, edit_msg, org_msg_id, status, author_name, author_avatar, status_emoji, color):
+        """ Update the embed to reflect the status of the edit
+        
+        Args:
+            guild (discord.Guild): The guild the message was posted in
+            edit_msg (discord.Message): The message that was edited
+            org_msg_id (str): The message ID of the original message
+            status (str): The status of the edit
+            author_name (str): The name of the user who made the edit
+            author_avatar (str): The avatar of the user who made the edit
+            status_emoji (str): The emoji to use for the status
+            color (str): The color of the embed
+        """
+
+        data = await self.get_voteing_graph(guild.id, edit_msg.id)
+        image_url = await self.get_image_url(guild.me, data['image']) if data else discord.Embed.Empty
+
+        yes, no, maybe = (0, 0, 0) if not data else data['votes'] # Yes, No, Maybe for the voting fields
+
+        embed_dict = edit_msg.embeds[0].to_dict()
+        embed_dict['color'] = color[status]
+        embed_dict['footer']['text'] = f"{author_name} Voted - {status} {status_emoji}"
+        embed_dict['footer']['icon_url'] = author_avatar
+
+        updated_embed = discord.Embed.from_dict(embed_dict)
+        updated_embed.set_image(url=image_url)
+
+        await edit_msg.edit(embed=updated_embed)
+        await db.update(guild.id, "editorial", ['status'], [status], {'_id': org_msg_id})
+
+    async def get_voteing_graph(self, guild_id, edit_msg_id):
+        # docstrinc
+        """ Returns the voting graph for the given edit_msg_id 
+        Args:
+            guild_id (int): The guild ID
+            edit_msg_id (int): The edit message ID
+
+        Returns:
+            dict: A dictionary containing the voting graph data
+        """
+        
+        voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id)
+        voting_count.pop('_id', None)
+        voting_count_list = [[key, value]
+                             for key, value in voting_count.items() if value != 0]
+
+        if not voting_count_list:
+            return None
+
+        votes = list(map(list, zip(*voting_count_list)))
+        plt.figure(facecolor='#23272a', figsize=[15, 15], dpi=100)
+        plt.pie(votes[1], labels=votes[0], autopct='%1.1f%%', labeldistance=0.6,
+                pctdistance=1.25, textprops={'color': '#ffffff', 'font': 'Humor Sans', 'size': 58})
+
+        img = BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        return {'image': discord.File(img, filename='voting_graph.png'), 'votes': voting_count.values()}
+
+    async def get_image_url(self, image: discord.File) -> str:
+        """Returns the URL of the image to be posted
+
+        Args:
+            image (discord.File): The image to be posted
+
+        Returns:
+            str: URL of the image to be posted
+        """
+        main_guild = self.client.get_guild(834496709119705149)
+        image_channel = main_guild.get_channel(878343416352751637)
+
+        msg = await image_channel.send(file=image)
+        return msg.attachments[0].url
 
 
 def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
@@ -226,6 +359,15 @@ def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
 
 
 def ranking(guild: discord.Guild, chapter: int, org):
+    """Returns the position of the sentence in the chapter
+    Args:
+        guild (discord.Guild): The guild the message was posted in
+        chapter (int): The chapter number
+        org (str): The original sentence
+    Returns:
+        list: A list containing the position of the sentence in the chapter
+    """
+
     # This code Rank each sentence according to their position in text file.
     try:
         chapter_file = open(
@@ -256,21 +398,47 @@ def ranking(guild: discord.Guild, chapter: int, org):
 
 
 def read(file, guild: discord.Guild):
+    """Reads the file and returns the data
+    Args:
+        file (str): The file to be read
+        guild (discord.Guild): The guild, who's file is to be read
+    Returns:
+        dict: A dictionary containing the data
+    """
+
     with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
         return json.load(f)
 
 
 def save(data, file, guild: discord.Guild) -> None:
+    """Saves the data to the file
+    Args:
+        data (dict): The data to be saved
+        file (str): The file to be saved
+        guild (discord.Guild): The guild, who's file is to be saved
+    """
+
     with open(f'Storage/{guild.id}/database/{file}.json', "w") as f:
         json.dump(data, f, indent=4)
 
 
 def get_prefix(guild: discord.Guild):
+    """Returns the prefix for the guild
+    Args:
+        guild (discord.Guild): The guild to get the prefix for
+    Returns:
+        str: The prefix for the guild
+    """
 
     return read('config', guild)['prefix']
 
 
 def in_channel():
+    """Returns the channel where the bot is supposed to interact with users
+    Returns:
+        str: The channel ID
+    """
+
     def predicate(ctx):
         guild = ctx.guild
         channels = read('config', guild)['mods']['channels']
@@ -284,6 +452,11 @@ def in_channel():
 
 
 def is_author():
+    """Returns the predicate to check if the user is a author/mod
+    Returns:
+        function: The predicate
+    """
+
     def predicate(ctx):
         guild = ctx.guild
 
@@ -305,11 +478,20 @@ async def update_stats(bot: discord.User,
                        guild: discord.Guild,
                        channel: TextChannelConverter,
                        msg_stats=None) -> None:
+    """Updates the stats of the chapter
+
+    Args:
+        bot (discord.User): The bot
+        chapter (int): The chapter number
+        guild (discord.Guild): The guild, where chapter's stat is to be updated
+        channel (discord.TextChannelConverter): The channel stat is to be updated
+        msg_stats (discord.Message): The stats message
+    """
 
     total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
 
-    bot_avatar = str(bot.avatar_url) if bool(bot.avatar_url) else 0
+    bot_avatar = bot.avatar.url
 
     info.add_field(name="Number of Editors", value=editors, inline=False)
     info.add_field(name="Accepted Edits", value=accepted, inline=True)

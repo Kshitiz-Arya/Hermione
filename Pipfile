@@ -11,6 +11,7 @@ pillow = "*"
 motor = "*"
 pymongo = {extras = ["srv"], version = "*"}
 aiohttp = "*"
+matplotlib = "*"
 
 [dev-packages]
 dpytools = "*"

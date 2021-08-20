@@ -4,7 +4,7 @@ from discord.ext import commands
 from datetime import datetime
 
 import packages.database as db
-from packages.command import Book, ranking, read, save, in_channel, EditConverter, update_stats
+from packages.command import Book, ranking, read, save, in_channel, EditConverter, update_stats, PersistentView
 from typing import Optional
 
 ###############################################################################
@@ -75,15 +75,13 @@ class Basic(commands.Cog):
                 aID = ctx.author.id
                 author_name = (ctx.author.name
                                if ctx.author.nick is None else ctx.author.nick)
-                avatar = str(ctx.author.avatar_url) if bool(
-                    ctx.author.avatar_url) else 0
+                avatar = ctx.author.avatar.url
 
             else:
                 mID = context.message.id
                 aID = context.author.id
                 author_name = context.author.name
-                avatar = str(context.author.avatar_url) if bool(
-                    context.author.avatar_url) else 0
+                avatar = context.author.avatar.url
 
             # if bool(self.client.user.avatar_url):
             #     bot_avatar = str(self.client.user.avatar_url)
@@ -111,9 +109,9 @@ class Basic(commands.Cog):
             embed.add_field(name="Reason", value=res, inline=False)
             embed.add_field(name="⠀", value=change_status, inline=False)
 
-            msg_send = await editorial_channel.send(embed=embed)
+            msg_send = await editorial_channel.send(embed=embed, view=PersistentView(self.client))
 
-            update_statement = {
+            insert_statement = {
                 '_id': mID,
                 'editor_id': aID,
                 'editor': author_name,
@@ -130,13 +128,13 @@ class Basic(commands.Cog):
                 'status': 'Not Voted Yet',
                 'type': 'edit'
             }
-            await db.insert(guild.id, "editorial", update_statement)
+            await db.insert(guild.id, "editorial", insert_statement)
 
             await update_stats(self.client.user, chapter, guild,
                                editorial_channel, msg_stats)
 
-            for emoji in emojis.values():
-                await msg_send.add_reaction(emoji)
+            # for emoji in emojis.values():
+            #     await msg_send.add_reaction(emoji)
 
             if not context:
                 await ctx.reply("Your edit has been accepted.",
