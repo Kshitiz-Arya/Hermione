@@ -32,6 +32,7 @@ def get_prefix(_, message):
 token = os.getenv('token')
 # menu = DefaultMenu(page_left="\U0001F44D", page_right="👎", remove=":classical_building:", active_time=5)
 
+
 class PersistentViewBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=get_prefix)
@@ -49,6 +50,7 @@ class PersistentViewBot(commands.Bot):
 
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
+
 
 client = PersistentViewBot()
 # client = commands.Bot(command_prefix=get_prefix,

@@ -46,6 +46,7 @@ class EditConverter(commands.Converter):
             'suggested_sentence': self.suggested_sentence,
             'reason': self.reason
         }
+
     async def convert(self, ctx, argument):
         delimiter = '>>'
         try:
@@ -264,7 +265,7 @@ class PersistentView(discord.ui.View):
 
     async def update_embed(self, guild, edit_msg, org_msg_id, status, author_name, author_avatar, status_emoji, color):
         """ Update the embed to reflect the status of the edit
-        
+
         Args:
             guild (discord.Guild): The guild the message was posted in
             edit_msg (discord.Message): The message that was edited
@@ -279,7 +280,8 @@ class PersistentView(discord.ui.View):
         data = await self.get_voteing_graph(guild.id, edit_msg.id)
         image_url = await self.get_image_url(guild.me, data['image']) if data else discord.Embed.Empty
 
-        yes, no, maybe = (0, 0, 0) if not data else data['votes'] # Yes, No, Maybe for the voting fields
+        # Yes, No, Maybe for the voting fields
+        yes, no, maybe = (0, 0, 0) if not data else data['votes']
 
         embed_dict = edit_msg.embeds[0].to_dict()
         embed_dict['color'] = color[status]
@@ -302,7 +304,7 @@ class PersistentView(discord.ui.View):
         Returns:
             dict: A dictionary containing the voting graph data
         """
-        
+
         voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id)
         voting_count.pop('_id', None)
         voting_count_list = [[key, value]
