@@ -259,7 +259,7 @@ class PersistentView(discord.ui.View):
         """
 
         data = await self.get_voteing_graph(guild.id, edit_msg.id)
-        image_url = await self.get_image_url(guild.me, data['image']) if data else discord.Embed.Empty
+        image_url = await self.get_image_url(data['image']) if data else ''
 
         # Yes, No, Maybe for the voting fields
         yes, no, maybe = (0, 0, 0) if not data else data['votes']
@@ -267,16 +267,23 @@ class PersistentView(discord.ui.View):
         embed_dict = edit_msg.embeds[0].to_dict()
         embed_dict['color'] = color[status]
         embed_dict['footer']['text'] = f"{author_name} Voted - {status} {status_emoji}"
+        embed_dict['image'] = {'url': image_url}
         embed_dict['footer']['icon_url'] = author_avatar
+        if len(embed_dict['fields']) < 7:
+            embed_dict['fields'].extend([{'name': 'Yes', 'value': yes, 'inline': True},
+                                         {'name': 'No', 'value': no,
+                                             'inline': True},
+                                         {'name': 'Maybe', 'value': maybe, 'inline': True}])
+        else:
+            embed_dict['fields'][4]['value'] = yes
+            embed_dict['fields'][5]['value'] = no
+            embed_dict['fields'][6]['value'] = maybe
 
         updated_embed = discord.Embed.from_dict(embed_dict)
-        updated_embed.set_image(url=image_url)
-
         await edit_msg.edit(embed=updated_embed)
         await db.update(guild.id, "editorial", ['status'], [status], {'_id': org_msg_id})
 
     async def get_voteing_graph(self, guild_id, edit_msg_id):
-        # docstrinc
         """ Returns the voting graph for the given edit_msg_id 
         Args:
             guild_id (int): The guild ID
@@ -288,17 +295,26 @@ class PersistentView(discord.ui.View):
 
         voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id)
         voting_count.pop('_id', None)
-        voting_count_list = [[key, value]
-                             for key, value in voting_count.items() if value != 0]
+        color = ['#59d32f', '#f46e11', '#5865f2']
+        voting_count_list = [[key, value, color]
+                             for key, value, color in zip(voting_count.keys(), voting_count.values(), color) if value != 0]
 
         if not voting_count_list:
             return None
 
-        votes = list(map(list, zip(*voting_count_list)))
-        plt.figure(facecolor='#23272a', figsize=[15, 15], dpi=100)
-        plt.pie(votes[1], labels=votes[0], autopct='%1.1f%%', labeldistance=0.6,
-                pctdistance=1.25, textprops={'color': '#ffffff', 'font': 'Humor Sans', 'size': 58})
+        votes = list(zip(*voting_count_list))
 
+        # Generating the pie chart
+        plt.figure(facecolor='#23272a', figsize=[15, 15], dpi=100)
+        plt.pie(votes[1], labels=votes[0], colors=votes[2], autopct='%1.1f%%', labeldistance=0.6,
+                pctdistance=1.25, textprops={'color': '#ffffff', 'font': 'Humor Sans', 'size': 58, 'weight': 'bold'})
+
+        # Adding a circle in the center to make it look like a donut
+        circle = plt.Circle((0, 0), 0.35, color='#23272a')
+        p = plt.gcf()
+        p.gca().add_artist(circle)
+
+        # Saving the image to a BytesIO object
         img = BytesIO()
         plt.savefig(img, format='png')
         img.seek(0)
@@ -473,14 +489,19 @@ async def update_stats(bot: discord.User,
 
     total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
+    total_reviewed = accepted + rejected + notsure
 
     bot_avatar = bot.avatar.url
 
-    info.add_field(name="Number of Editors", value=editors, inline=False)
-    info.add_field(name="Accepted Edits", value=accepted, inline=True)
-    info.add_field(name="Rejected Edits", value=rejected, inline=True)
-    info.add_field(name="Not Sure", value=notsure, inline=True)
-    info.add_field(name="Total Edits", value=total, inline=False)
+    info.add_field(name=":hash: Number of Editors",
+                   value=editors, inline=False)
+    info.add_field(name=":white_check_mark: Accepted Edits",
+                   value=accepted, inline=True)
+    info.add_field(name=":x: Rejected Edits", value=rejected, inline=True)
+    info.add_field(name=":shrug: Not Sure", value=notsure, inline=True)
+    info.add_field(name=":writing_hand: Edits Reviewed",
+                   value=total_reviewed, inline=True)
+    info.add_field(name=":mag: Total Edits", value=total, inline=True)
     info.set_author(name="Dodging Prision & Stealing Witches")
     info.set_thumbnail(url="https://i.ibb.co/L9Jm2rg/images-5.jpg")
     info.set_footer(
