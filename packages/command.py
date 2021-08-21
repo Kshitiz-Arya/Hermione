@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 
-from discord import channel
 from packages.menu import DefaultMenu
 from typing import Optional
 

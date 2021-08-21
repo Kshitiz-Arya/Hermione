@@ -59,7 +59,6 @@ class Basic(commands.Cog):
 
         config = read("config", guild)
         allowedEdits = config["mods"]["allowedEdits"]
-        emojis = config["mods"]["emojis"]
 
         if chapter in allowedEdits.keys():
             if len(org) < 2 or len(sug) < 2:
@@ -83,13 +82,7 @@ class Basic(commands.Cog):
                 author_name = context.author.name
                 avatar = context.author.avatar.url
 
-            # if bool(self.client.user.avatar_url):
-            #     bot_avatar = str(self.client.user.avatar_url)
-
             book = Book(chapter, guild)
-            # column = str(tuple(db.get_table(guild, "editorial",
-            # "edit"))).replace("'", "")
-
             editorial_channel_id, msg_stats = allowedEdits[chapter]
             editorial_channel = self.client.get_channel(editorial_channel_id)
 
@@ -132,9 +125,6 @@ class Basic(commands.Cog):
 
             await update_stats(self.client.user, chapter, guild,
                                editorial_channel, msg_stats)
-
-            # for emoji in emojis.values():
-            #     await msg_send.add_reaction(emoji)
 
             if not context:
                 await ctx.reply("Your edit has been accepted.",
@@ -180,7 +170,6 @@ class Basic(commands.Cog):
             editorial_channel = self.client.get_channel(editorial_channel_id)
 
             config = read("config", guild)
-            emojis = config["mods"]["emojis"]
             colour = config["mods"]["colour"]
             sug = discord.Embed(
                 color=colour["No Vote"],
@@ -193,7 +182,7 @@ class Basic(commands.Cog):
             sug.set_footer(
                 text="Author's Vote - Not Voted Yet | Provided by Hermione")
 
-            msg_send = await editorial_channel.send(embed=sug)
+            msg_send = await editorial_channel.send(embed=sug, view=PersistentView(self.client))
 
             update_statement = {
                 '_id': msg.id,
@@ -212,8 +201,6 @@ class Basic(commands.Cog):
 
             await update_stats(self.client.user, chapter, guild,
                                editorial_channel, msg_stats)
-            for emoji in emojis.values():
-                await msg_send.add_reaction(emoji)
 
         else:
             await ctx.send("Suggestions for this chapter has been turned off!",
