@@ -283,7 +283,7 @@ class PersistentView(discord.ui.View):
         await db.update(guild.id, "editorial", ['status'], [status], {'_id': org_msg_id})
 
     async def get_voteing_graph(self, guild_id, edit_msg_id):
-        """ Returns the voting graph for the given edit_msg_id 
+        """ Returns the voting graph for the given edit_msg_id
         Args:
             guild_id (int): The guild ID
             edit_msg_id (int): The edit message ID
