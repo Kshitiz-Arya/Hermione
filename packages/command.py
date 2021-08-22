@@ -171,7 +171,7 @@ class PersistentView(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(emoji="<:aye:877951041985982504>", style=discord.ButtonStyle.green, custom_id='persistent_view:green')
-    async def green(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcp: PYL-W0613
+    async def green(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
 
         return_data = await self.preprocessing(interaction, 2)
         await interaction.response.defer()
@@ -182,7 +182,7 @@ class PersistentView(discord.ui.View):
             await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
 
     @discord.ui.button(emoji="<:nay:877951041834995742>", style=discord.ButtonStyle.red, custom_id='persistent_view:red')
-    async def red(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcp: PYL-W0613
+    async def red(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
         return_data = await self.preprocessing(interaction, 0)
         await interaction.response.defer()
 
@@ -192,7 +192,7 @@ class PersistentView(discord.ui.View):
             await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
 
     @discord.ui.button(emoji="<:james_book:877951041293910056>", style=discord.ButtonStyle.grey, custom_id='persistent_view:grey')
-    async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcp: PYL-W0613
+    async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
         return_data = await self.preprocessing(interaction, 1)
         await interaction.response.defer()
 
