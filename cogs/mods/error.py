@@ -19,13 +19,17 @@ handler.setFormatter(
 logger.addHandler(handler)
 
 # skipcq: PY-D0003
-# To be removed in future versions 
+# To be removed in future versions
+
+
 def read(file):
     with open(f'{file}.json', 'r') as f:
         return json.load(f)
 
 # skipcq: PY-D0003
-# To be removed in future versions 
+# To be removed in future versions
+
+
 def save(data, file):
     with open(f'{file}.json', 'w') as f:
         json.dump(data, f, indent=4)

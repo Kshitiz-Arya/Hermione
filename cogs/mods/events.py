@@ -266,7 +266,7 @@ class Events(commands.Cog):
 
         Args:
             payload (discord.RawMessageUpdateEvent): The payload of the event
-        
+
         """
 
         data = payload.data
@@ -364,7 +364,7 @@ class Events(commands.Cog):
 
         Args:
             payload (discord.RawMessageDeleteEvent): The payload of the event
-        
+
         """
         msg_id = payload.message_id
         guild_id = payload.guild_id
