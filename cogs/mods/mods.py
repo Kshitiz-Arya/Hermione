@@ -1145,7 +1145,7 @@ class Mods(commands.Cog):
         ctx.bot.add_view(view=view, message_id=msg.id)
 
     @commands.command()
-    async def persistent(self, ctx):
+    async def persistent(self, ctx):    # To be removed later
         await ctx.send(ctx.bot.persistent_views)
 
 

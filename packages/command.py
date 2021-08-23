@@ -28,6 +28,7 @@ class EditConverter(commands.Converter):
         self.reason = None
 
     async def convert(self, ctx, argument):
+        """Convert argument to edit request."""
         delimiter = '>>'
         try:
             # splitting the edit request into definable parts
@@ -127,8 +128,7 @@ class EmbedList:
         self._pages.append(page)
 
     def _chunks(self, tuple_list):
-        """ Yield successive num-sized chunks from dicts.
-        """
+        """ Yield successive num-sized chunks from dicts."""
         num = self.size
         if num < 1:
             raise ValueError("Number of Embed fields can't be zero")
@@ -137,6 +137,7 @@ class EmbedList:
             yield tuple_list[i:i + num]
 
     def add_embed(self, dicts):
+        """ Add a list of embeds to the paginator"""
         for d in self._chunks(dicts):
             embed = self._new_page()
 
@@ -160,6 +161,7 @@ class EmbedList:
         return lst
 
     async def send_embeds(self):
+        """Sends the pages to the channel."""
         pages = self.pages
         destination = self.ctx
         await self.menu.send_pages(self.ctx, destination, pages)
@@ -172,6 +174,12 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:aye:877951041985982504>", style=discord.ButtonStyle.green, custom_id='persistent_view:green')
     async def green(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
+        """ This function is called when the green button is pressed.
+
+        Args:
+            button (discord.ui.Button): The button that was clicked
+            interaction (discord.Interaction): The interaction data for the button
+        """
 
         return_data = await self.preprocessing(interaction, 2)
         await interaction.response.defer()
@@ -183,6 +191,13 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:nay:877951041834995742>", style=discord.ButtonStyle.red, custom_id='persistent_view:red')
     async def red(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
+        """ This function is called when the red button is pressed.
+
+        Args:
+            button (discord.ui.Button): The button that was clicked
+            interaction (discord.Interaction): The interaction data for the button
+        """
+
         return_data = await self.preprocessing(interaction, 0)
         await interaction.response.defer()
 
@@ -193,6 +208,13 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:james_book:877951041293910056>", style=discord.ButtonStyle.grey, custom_id='persistent_view:grey')
     async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
+        """ This function is called when the grey button is pressed.
+
+        Args:
+            button (discord.ui.Button): The button that was clicked
+            interaction (discord.Interaction): The interaction data for the button
+        """
+
         return_data = await self.preprocessing(interaction, 1)
         await interaction.response.defer()
 
@@ -434,10 +456,21 @@ def get_prefix(guild: discord.Guild):
 def in_channel():
     """Returns the channel where the bot is supposed to interact with users
     Returns:
-        str: The channel ID
+        bool: True if the bot is supposed to interact with users in the channel
     """
 
     def predicate(ctx):
+        """Predicate to check if the bot is supposed to interact with users in the channel
+
+        Args:
+            ctx (command.Context): The context of the message
+
+        Raises:
+            commands.MissingPermissions: If the bot is not supposed to interact with users in the channel
+
+        Returns:
+            bool: True if the bot is supposed to interact with users in the channel else False
+        """
         guild = ctx.guild
         channels = read('config', guild)['mods']['channels']
         if ctx.channel.id in channels:
@@ -451,11 +484,23 @@ def in_channel():
 
 def is_author():
     """Returns the predicate to check if the user is a author/mod
+
     Returns:
-        function: The predicate
+        bool: True if the user is a author/mod
     """
 
     def predicate(ctx):
+        """Returns the predicate to check if the user is a author/mod
+
+        Args:
+            ctx (command.Context): The context of the command
+
+        Raises:
+            commands.MissingPermissions: If the user is not a author/mod
+
+        Returns:
+           bool: True if the user is a author/mod
+        """
         guild = ctx.guild
 
         authors = read('config', guild)['mods']['authors']

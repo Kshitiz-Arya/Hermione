@@ -100,6 +100,7 @@ class DefaultMenu(PrettyMenu):
         destination: discord.abc.Messageable,
         pages: List[discord.Embed],
     ):
+        """The function called by :class:`PrettyHelp` that will send pages"""
         total = len(pages)
         message: discord.Message = await destination.send(embed=pages[0])
 

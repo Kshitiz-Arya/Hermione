@@ -11,9 +11,8 @@ from .menu import DefaultMenu
 
 
 def command_help(docstring: str):
+    """ Returns the help string for a command. """
 
-    # docstring = "\n".join([line for line in docstring.split('\n') if line.strip()])
-    # docstring = "\n".join([s for s in docstring.splitlines() if s])
     docstring = docstring.replace('    ', '')
     discription, rest = docstring.split('Args:\n')
     args, rest = rest.split('Format:\n')
@@ -141,6 +140,8 @@ class Paginator:
 
     @staticmethod
     def __command_info(command: Union[commands.Command, commands.Group]):
+        """ Returns the command description and/or help string. """
+
         info = ""
         if command.description:
             info += command.description + "\n\n"
@@ -293,6 +294,15 @@ class PrettyHelp(HelpCommand):
         super().__init__(**options)
 
     async def prepare_help_command(self, ctx, command=None):
+        """ The method that prepares the help command.
+        This is called when the help command is invoked.
+
+        Args:
+            ctx (commands.Context): The invocation context
+            command (commands.Command): The command to get help for. If not specified,
+                the help command will list the bot's commands.
+        """
+
         if ctx.guild is not None:
             perms = ctx.channel.permissions_for(ctx.guild.me)
             if not perms.embed_links:
@@ -317,11 +327,15 @@ class PrettyHelp(HelpCommand):
         return note.format(ctx=self.context)
 
     async def send_pages(self):
+        """Sends the pages to the destination."""
+
         pages = self.paginator.pages
         destination = self.get_destination()
         await self.menu.send_pages(self.context, destination, pages)
 
     def get_destination(self):
+        """Returns the destination to send the pages to."""
+
         ctx = self.context
         if self.dm_help is True:
             return ctx.author
@@ -357,6 +371,8 @@ class PrettyHelp(HelpCommand):
         await self.send_pages()
 
     async def send_command_help(self, command: commands.Command):
+        """Sends the help for a single command."""
+
         channel = self.get_destination()
         async with channel.typing():
             filtered = await self.filter_commands([command])
@@ -367,6 +383,8 @@ class PrettyHelp(HelpCommand):
         await self.send_pages()
 
     async def send_group_help(self, group: commands.Group):
+        """Sends the help for a group."""
+
         async with self.get_destination().typing():
             filtered = await self.filter_commands(group.commands,
                                                   sort=self.sort_commands)
@@ -375,6 +393,8 @@ class PrettyHelp(HelpCommand):
         await self.send_pages()
 
     async def send_cog_help(self, cog: commands.Cog):
+        """Sends the help for a cog."""
+
         async with self.get_destination().typing():
             filtered = await self.filter_commands(cog.get_commands(),
                                                   sort=self.sort_commands)

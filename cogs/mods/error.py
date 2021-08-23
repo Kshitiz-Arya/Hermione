@@ -18,18 +18,26 @@ handler.setFormatter(
     logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-
+# skipcq: PY-D0003
+# To be removed in future versions 
 def read(file):
     with open(f'{file}.json', 'r') as f:
         return json.load(f)
 
-
+# skipcq: PY-D0003
+# To be removed in future versions 
 def save(data, file):
     with open(f'{file}.json', 'w') as f:
         json.dump(data, f, indent=4)
 
 
 async def send(self, ctx, error):
+    """ This function sends any error to a channel in the main server.
+
+    Args:
+        ctx (discord.Context): The context of the command.
+        error (Exception): The error that was raised.
+    """
     main_guild = self.client.get_guild(834496709119705149)
     err_channel = main_guild.get_channel(840150395748745217)
     trace = traceback.format_exception(type(error), error, error.__traceback__)
@@ -69,6 +77,13 @@ class Error_control(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        """ This function is called when any command errors occur.
+
+        Args:
+            ctx (discord.Context): The context of the command.
+            error (Exception): The error that was raised.
+        """
+
         command = ctx.command
 
         if isinstance(error, commands.CommandError):
