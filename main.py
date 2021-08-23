@@ -1,14 +1,14 @@
-from discord import client
-from cogs.mods.error import send
 import json
 import logging
 import os
 import sys
 
+from discord import client
 from discord.ext import commands
-from discord.ext.commands.core import check, is_owner
-from packages.pretty_help import PrettyHelp
+from discord.ext.commands.core import is_owner
+
 from packages.command import PersistentView
+from packages.pretty_help import PrettyHelp
 
 logger = logging.getLogger('discord')
 logger.setLevel(20)
