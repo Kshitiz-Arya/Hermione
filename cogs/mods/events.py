@@ -115,7 +115,6 @@ class Events(commands.Cog):
         shutil.rmtree(f"{guild.id}")
         os.chdir("..")
 
-
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload):
 
