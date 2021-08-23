@@ -87,7 +87,6 @@ class Error_control(commands.Cog):
             ctx (discord.Context): The context of the command.
             error (Exception): The error that was raised.
         """
-
         command = ctx.command
 
         if isinstance(error, commands.CommandError):

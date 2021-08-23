@@ -80,7 +80,6 @@ async def load(ctx, extension):
         ctx (discord.ext.commands.Context): The context of the command
         extension (str): The extension to load
     """
-
     for directory in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
@@ -100,7 +99,6 @@ async def unload(ctx, extension):
         ctx (discord.ext.commands.Context): The context of the command
         extension (str): The extension to unload
     """
-
     for directory in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
@@ -120,7 +118,6 @@ async def reload(ctx, extension):
         ctx (discord.ext.commands.Context): The context of the command
         extension (str): The extension to reload
     """
-
     for directory in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
@@ -153,7 +150,6 @@ async def on_message(meg):
     Args:
         meg (discord.Message): The message that was sent
     """
-
     if meg.guild:
         ctx = await client.get_context(meg)
         await client.invoke(ctx)
@@ -170,7 +166,6 @@ async def on_error(event, *args, **kwargs):
         args (list): The arguments of the event
         kwargs (dict): The keyword arguments of the event
     """
-
     logger.error(f'{event} with {args} and {kwargs}')
     # ! Implement Error Handling here
     ctx, error = args

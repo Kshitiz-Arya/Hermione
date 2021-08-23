@@ -13,7 +13,6 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
         update_statement (dict): The update statement to insert
         connect (optional): The connection to the database.
     """
-
     collection = connect[database][str(guild_id)]
 
     # Need to pass type of document with colunms
@@ -34,7 +33,6 @@ async def get_document(guild_id, database, query, return_column, connect=connect
     Returns:
         dict: The document from the database
     """
-
     collections = connect[database][str(guild_id)]
     document = {column: 1 for column in return_column}
 
@@ -56,7 +54,6 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
     Returns:
         list: A list of documents
     """
-
     collections = connect[database][guild.id]
     document = {column: 1 for column in return_column}
     num_document = await collections.count_documents(query)
@@ -72,7 +69,6 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connectio
         database (str): The database name
         chapter (int, optional): The chapter number to get the stats for. Defaults to None.
     """
-
     collections = connect[database][str(guild.id)]
 
     pipeline = [
@@ -154,7 +150,6 @@ async def get_voting_count(guild_id: str, database: str, message_id: int, connec
     Returns:
         dict: A dictionary with the count of voting for the message
     """
-
     collection = connect[database][str(guild_id)]
     voting_count = await collection.aggregate(pipeline=[
         {

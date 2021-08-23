@@ -180,7 +180,6 @@ class PersistentView(discord.ui.View):
             button (discord.ui.Button): The button that was clicked
             interaction (discord.Interaction): The interaction data for the button
         """
-
         return_data = await self.preprocessing(interaction, 2)
         await interaction.response.defer()
 
@@ -197,7 +196,6 @@ class PersistentView(discord.ui.View):
             button (discord.ui.Button): The button that was clicked
             interaction (discord.Interaction): The interaction data for the button
         """
-
         return_data = await self.preprocessing(interaction, 0)
         await interaction.response.defer()
 
@@ -214,7 +212,6 @@ class PersistentView(discord.ui.View):
             button (discord.ui.Button): The button that was clicked
             interaction (discord.Interaction): The interaction data for the button
         """
-
         return_data = await self.preprocessing(interaction, 1)
         await interaction.response.defer()
 
@@ -241,7 +238,6 @@ class PersistentView(discord.ui.View):
                     author_avatar (str): The avatar of the author of the interaction
                     color (str): The color of the author's avatar
         """
-
         edit_msg = interaction.message
         guild = interaction.guild
         user = interaction.user
@@ -278,7 +274,6 @@ class PersistentView(discord.ui.View):
             status_emoji (str): The emoji to use for the status
             color (str): The color of the embed
         """
-
         data = await self.get_voteing_graph(guild.id, edit_msg.id)
         image_url = await self.get_image_url(data['image']) if data else ''
 
@@ -313,7 +308,6 @@ class PersistentView(discord.ui.View):
         Returns:
             dict: A dictionary containing the voting graph data
         """
-
         voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id)
         voting_count.pop('_id', None)
         color = ['#59d32f', '#f46e11', '#5865f2']
@@ -387,7 +381,6 @@ def ranking(guild: discord.Guild, chapter: int, org):
     Returns:
         list: A list containing the position of the sentence in the chapter
     """
-
     # This code Rank each sentence according to their position in text file.
     try:
         chapter_file = open(
@@ -425,7 +418,6 @@ def read(file, guild: discord.Guild):
     Returns:
         dict: A dictionary containing the data
     """
-
     with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
         return json.load(f)
 
@@ -437,7 +429,6 @@ def save(data, file, guild: discord.Guild) -> None:
         file (str): The file to be saved
         guild (discord.Guild): The guild, who's file is to be saved
     """
-
     with open(f'Storage/{guild.id}/database/{file}.json', "w") as f:
         json.dump(data, f, indent=4)
 
@@ -449,7 +440,6 @@ def get_prefix(guild: discord.Guild):
     Returns:
         str: The prefix for the guild
     """
-
     return read('config', guild)['prefix']
 
 
@@ -530,7 +520,6 @@ async def update_stats(bot: discord.User,
         channel (discord.TextChannelConverter): The channel stat is to be updated
         msg_stats (discord.Message): The stats message
     """
-
     total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
     total_reviewed = accepted + rejected + notsure
