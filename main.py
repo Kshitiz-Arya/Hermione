@@ -95,7 +95,7 @@ async def load(ctx, extension):
 @is_owner()
 async def unload(ctx, extension):
     """ Unloads an extension
-     
+
     Args:
         ctx (discord.ext.commands.Context): The context of the command
         extension (str): The extension to unload
@@ -115,7 +115,7 @@ async def unload(ctx, extension):
 @is_owner()
 async def reload(ctx, extension):
     """ Reloads an extension
-    
+
     Args:
         ctx (discord.ext.commands.Context): The context of the command
         extension (str): The extension to reload

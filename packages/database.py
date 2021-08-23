@@ -30,7 +30,7 @@ async def get_document(guild_id, database, query, return_column, connect=connect
         query (dict): The query to find the document
         return_column (str): The column to return
         connect (optional): The connection to the database.
-    
+
     Returns:
         dict: The document from the database
     """
@@ -52,7 +52,7 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
         return_column (list): The columns to return
         limit (int): The limit of documents to return
         connect (optional): The connection to the database.
-    
+
     Returns:
         list: A list of documents
     """
