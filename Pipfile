@@ -5,12 +5,13 @@ name = "pypi"
 skip_lock = true
 
 [packages]
-"discord.py" = "==1.7.3"
+"discord.py" = {editable = true, git = "https://github.com/Rapptz/discord.py"}
 pandas = "*"
 pillow = "*"
 motor = "*"
 pymongo = {extras = ["srv"], version = "*"}
 aiohttp = "*"
+matplotlib = "*"
 
 [dev-packages]
 dpytools = "*"

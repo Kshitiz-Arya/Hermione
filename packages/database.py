@@ -127,10 +127,69 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connectio
 
 async def update(guild_id, database, columns: list, values: list, match: dict, connect=connection):
     collection = connect[database][str(guild_id)]
-    update_str = {"$set": dict(zip(columns, values))}
+    update_str = [{"$set": dict(zip(columns, values))}]
     await collection.update_one(match, update_str)
 
 
 async def delete_document(guild_id: str, database: str, match: dict, connect=connection):
     collection = connect[database][str(guild_id)]
     await collection.delete_one(match)
+
+
+async def get_voting_count(guild_id: str, database: str, message_id: int, connect=connection):
+    collection = connect[database][str(guild_id)]
+    voting_count = await collection.aggregate(pipeline=[
+        {
+            '$match': {
+                'edit_msg_id': message_id,
+            }
+        }, {
+            '$project': {
+                '_id': '$_id',
+                'vote': {
+                    '$objectToArray': '$votes'
+                }
+            }
+        }, {
+            '$unwind': '$vote'
+        }, {
+            '$group': {
+                '_id': '$_id',
+                'yes': {
+                    '$sum': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$vote.v', 2
+                                ]
+                            }, 1, 0
+                        ]
+                    }
+                },
+                'no': {
+                    '$sum': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$vote.v', 0
+                                ]
+                            }, 1, 0
+                        ]
+                    }
+                },
+                'not_sure': {
+                    '$sum': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$vote.v', 1
+                                ]
+                            }, 1, 0
+                        ]
+                    }
+                }
+            }
+        }
+    ]).to_list(None)
+
+    return voting_count[0] if voting_count else {'_id': message_id, 'yes': 0, 'no': 0, 'not_sure': 0}
