@@ -1102,7 +1102,6 @@ class Mods(commands.Cog):
         Returns:
             [None]
         """
-
         emdeb = {
             "type": "rich",
             "title": 'Dodging Prision & Stealing Witches',

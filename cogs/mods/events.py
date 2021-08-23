@@ -24,7 +24,6 @@ class Events(commands.Cog):
         Args:
             guild (discord.Guild): The guild that the bot joined
         """
-
         print(f"Joined {guild.name}")
 
         guild_owner = guild.owner_id
@@ -268,7 +267,6 @@ class Events(commands.Cog):
             payload (discord.RawMessageUpdateEvent): The payload of the event
 
         """
-
         data = payload.data
         guild_id = data["guild_id"]
         msg_id = data["id"]
