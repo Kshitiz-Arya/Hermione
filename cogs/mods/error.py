@@ -18,10 +18,16 @@ handler.setFormatter(
     logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
+# skipcq: PY-D0003
+# To be removed in future versions
+
 
 def read(file):
     with open(f'{file}.json', 'r') as f:
         return json.load(f)
+
+# skipcq: PY-D0003
+# To be removed in future versions
 
 
 def save(data, file):
@@ -30,6 +36,12 @@ def save(data, file):
 
 
 async def send(self, ctx, error):
+    """This function sends any error to a channel in the main server.
+
+    Args:
+        ctx (discord.Context): The context of the command.
+        error (Exception): The error that was raised.
+    """
     main_guild = self.client.get_guild(834496709119705149)
     err_channel = main_guild.get_channel(840150395748745217)
     trace = traceback.format_exception(type(error), error, error.__traceback__)
@@ -64,11 +76,19 @@ async def send(self, ctx, error):
 
 
 class Error_control(commands.Cog):
+    """This cog handles all errors that are raised by the bot."""
+
     def __init__(self, client):
         self.client = client
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        """This function is called when any command errors occur.
+
+        Args:
+            ctx (discord.Context): The context of the command.
+            error (Exception): The error that was raised.
+        """
         command = ctx.command
 
         if isinstance(error, commands.CommandError):
@@ -191,5 +211,6 @@ class Error_control(commands.Cog):
     #     print(error)
 
 
+# skipcq: PY-D0003
 def setup(client):
     client.add_cog(Error_control(client))

@@ -10,8 +10,10 @@ from random import random
 
 
 class Events(commands.Cog):
-    """
-    This cog has contains the all the events
+    """This cog handles all events that occur in the server
+
+    Args:
+        Cog (commands.Cog): The base class for all cogs
     """
 
     def __init__(self, client):
@@ -19,13 +21,18 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
+        """This event is called when the bot joins a guild
+
+        Args:
+            guild (discord.Guild): The guild that the bot joined
+        """
         print(f"Joined {guild.name}")
 
         guild_owner = guild.owner_id
 
         # print(type(guild.audit_logs(limit=1).next().action))
-        def check(event):
-            return event.target.id == self.client.user.id
+        def check(event):  # skipcq: PY-D0003
+            return event.target.id == self.client.user.id   # The fuck I did here?
 
         bot_entry = await guild.audit_logs(
             action=discord.AuditLogAction.bot_add).find(check)
@@ -110,6 +117,11 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
+        """This event is called when the bot leaves a guild
+
+        Args:
+            guild (discord.Guild): The guild that the bot left
+        """
         print(f"Left {guild.name}")
         os.chdir("Storage")
         shutil.rmtree(f"{guild.id}")
@@ -117,7 +129,12 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload):
+        """This event will be called if the editor modify his/her original editorial message
 
+        Args:
+            payload (discord.RawMessageUpdateEvent): The payload of the event
+
+        """
         data = payload.data
         guild_id = data["guild_id"]
         msg_id = data["id"]
@@ -208,6 +225,13 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
+        """This event will be called if the editor deletes his/her original editorial message.
+        If the edit request has been reviewed by the author(s) then the edit embed will be anonymized.
+
+        Args:
+            payload (discord.RawMessageDeleteEvent): The payload of the event
+
+        """
         msg_id = payload.message_id
         guild_id = payload.guild_id
         guild = self.client.get_guild(int(guild_id))
@@ -256,6 +280,6 @@ class Events(commands.Cog):
 #                         AREA FOR SETUP                                      #
 ###############################################################################
 
-
+# skipcq: PY-D0003
 def setup(client):
     client.add_cog(Events(client))

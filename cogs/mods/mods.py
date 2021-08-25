@@ -12,8 +12,10 @@ from PIL import Image, ImageDraw
 
 
 class Mods(commands.Cog):
-    """
-    This cog has all the Mod commands to manage Hermione - the bot.
+    """This cog contains commands for moderators to handle the bot.
+
+    Args:
+        Cog (commands.Cog): The base class for all cogs.
     """
 
     def __init__(self, client):
@@ -27,7 +29,7 @@ class Mods(commands.Cog):
                        book: int,
                        first_chapter: int,
                        last_chapter: int = None):
-        """ This command is used to add a new book.
+        """This command is used to add a new book.
 
         Args:
             book : Book Number
@@ -1090,64 +1092,6 @@ class Mods(commands.Cog):
             info.set_footer(text="Provided to you by Hermione")
             await ctx.send(embed=info, file=colour_img)
 
-    @commands.command()
-    @in_channel()
-    @is_author()
-    async def view(self, ctx: commands.Context):
-        """Test the persistent view
-
-        Args:
-            None
-
-        Returns:
-            [None]
-        """
-
-        emdeb = {
-            "type": "rich",
-            "title": 'Dodging Prision & Stealing Witches',
-            "description": "",
-            "color": 0x00FFFF,
-            "fields": [
-                {
-                    "name": 'Original Text',
-                    "value": 'This is a Test'
-                },
-                {
-                    "name": 'Suggested Text',
-                    "value": 'This is not a test'
-                },
-                {
-                    "name": 'Reason',
-                    "value": 'For Fun'
-                },
-                {
-                    "name": '​',
-                    "value": '**Proposed change was found in the chapter at line 45!**'
-                }
-            ],
-            "image": {
-                "url": 'https://i.ibb.co/0cDG6m2/output.png',
-                "height": 50,
-                "width": 100
-            },
-            "author": {
-                "name": 'Kshitiz',
-                "icon_url": 'https://i.ibb.co/wSMMgnX/9f543e755f0b5bfd9dcbf3777bbd1f79.jpg'
-            },
-            "footer": {
-                "text": "Author's Vote - Not Voted Yet"
-            }
-        }
-        em = discord.Embed.from_dict(emdeb)
-        msg = await ctx.send(embed=em, view=(view := PersistentView(self.client)))
-        print(hash(ctx.author))
-        ctx.bot.add_view(view=view, message_id=msg.id)
-
-    @commands.command()
-    async def persistent(self, ctx):
-        await ctx.send(ctx.bot.persistent_views)
-
 
 def draw(guild: discord.Guild, colours: tuple):
     """Generate a palette image with all the colours passed as tuple
@@ -1175,6 +1119,6 @@ def draw(guild: discord.Guild, colours: tuple):
 #                         AREA FOR SETUP                                      #
 ###############################################################################
 
-
+# skipcq: PY-D0003
 def setup(client):
     client.add_cog(Mods(client))

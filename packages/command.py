@@ -28,6 +28,7 @@ class EditConverter(commands.Converter):
         self.reason = None
 
     async def convert(self, ctx, argument):
+        """Convert argument to edit request."""
         delimiter = '>>'
         try:
             # splitting the edit request into definable parts
@@ -127,8 +128,7 @@ class EmbedList:
         self._pages.append(page)
 
     def _chunks(self, tuple_list):
-        """ Yield successive num-sized chunks from dicts.
-        """
+        """Yield successive num-sized chunks from dicts."""
         num = self.size
         if num < 1:
             raise ValueError("Number of Embed fields can't be zero")
@@ -137,6 +137,7 @@ class EmbedList:
             yield tuple_list[i:i + num]
 
     def add_embed(self, dicts):
+        """Add a list of embeds to the paginator"""
         for d in self._chunks(dicts):
             embed = self._new_page()
 
@@ -160,19 +161,27 @@ class EmbedList:
         return lst
 
     async def send_embeds(self):
+        """Sends the pages to the channel."""
         pages = self.pages
         destination = self.ctx
         await self.menu.send_pages(self.ctx, destination, pages)
 
 
 class PersistentView(discord.ui.View):
+    """This class is used to create a persistent button row for edit embeds."""
+
     def __init__(self, client: discord.Client, *args, **kwargs):
         self.client = client
         super().__init__(timeout=None)
 
     @discord.ui.button(emoji="<:aye:877951041985982504>", style=discord.ButtonStyle.green, custom_id='persistent_view:green')
     async def green(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
+        """This function is called when the green button is pressed.
 
+        Args:
+            button (discord.ui.Button): The button that was clicked
+            interaction (discord.Interaction): The interaction data for the button
+        """
         return_data = await self.preprocessing(interaction, 2)
         await interaction.response.defer()
 
@@ -183,6 +192,12 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:nay:877951041834995742>", style=discord.ButtonStyle.red, custom_id='persistent_view:red')
     async def red(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
+        """This function is called when the red button is pressed.
+
+        Args:
+            button (discord.ui.Button): The button that was clicked
+            interaction (discord.Interaction): The interaction data for the button
+        """
         return_data = await self.preprocessing(interaction, 0)
         await interaction.response.defer()
 
@@ -193,6 +208,12 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:james_book:877951041293910056>", style=discord.ButtonStyle.grey, custom_id='persistent_view:grey')
     async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
+        """This function is called when the grey button is pressed.
+
+        Args:
+            button (discord.ui.Button): The button that was clicked
+            interaction (discord.Interaction): The interaction data for the button
+        """
         return_data = await self.preprocessing(interaction, 1)
         await interaction.response.defer()
 
@@ -202,7 +223,7 @@ class PersistentView(discord.ui.View):
             await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
 
     async def preprocessing(self, interaction: discord.Interaction, vote: int):
-        """ Extract data from the interaction and return it
+        """Extract data from the interaction and return it
         Args:
             interaction (discord.Interaction): The interaction to extract data from
             vote (int): The vote to be sent to the database
@@ -219,7 +240,6 @@ class PersistentView(discord.ui.View):
                     author_avatar (str): The avatar of the author of the interaction
                     color (str): The color of the author's avatar
         """
-
         edit_msg = interaction.message
         guild = interaction.guild
         user = interaction.user
@@ -244,7 +264,7 @@ class PersistentView(discord.ui.View):
         return [guild, channel, edit_msg, org_msg_id, stats_msg_id, chapter, author_name, author_avatar, server_config['colour']]
 
     async def update_embed(self, guild, edit_msg, org_msg_id, status, author_name, author_avatar, status_emoji, color):
-        """ Update the embed to reflect the status of the edit
+        """Update the embed to reflect the status of the edit
 
         Args:
             guild (discord.Guild): The guild the message was posted in
@@ -256,7 +276,6 @@ class PersistentView(discord.ui.View):
             status_emoji (str): The emoji to use for the status
             color (str): The color of the embed
         """
-
         data = await self.get_voteing_graph(guild.id, edit_msg.id)
         image_url = await self.get_image_url(data['image']) if data else ''
 
@@ -283,7 +302,7 @@ class PersistentView(discord.ui.View):
         await db.update(guild.id, "editorial", ['status'], [status], {'_id': org_msg_id})
 
     async def get_voteing_graph(self, guild_id, edit_msg_id):
-        """ Returns the voting graph for the given edit_msg_id
+        """Returns the voting graph for the given edit_msg_id
         Args:
             guild_id (int): The guild ID
             edit_msg_id (int): The edit message ID
@@ -291,7 +310,6 @@ class PersistentView(discord.ui.View):
         Returns:
             dict: A dictionary containing the voting graph data
         """
-
         voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id)
         voting_count.pop('_id', None)
         color = ['#59d32f', '#f46e11', '#5865f2']
@@ -365,7 +383,6 @@ def ranking(guild: discord.Guild, chapter: int, org):
     Returns:
         list: A list containing the position of the sentence in the chapter
     """
-
     # This code Rank each sentence according to their position in text file.
     try:
         chapter_file = open(
@@ -403,7 +420,6 @@ def read(file, guild: discord.Guild):
     Returns:
         dict: A dictionary containing the data
     """
-
     with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
         return json.load(f)
 
@@ -415,7 +431,6 @@ def save(data, file, guild: discord.Guild) -> None:
         file (str): The file to be saved
         guild (discord.Guild): The guild, who's file is to be saved
     """
-
     with open(f'Storage/{guild.id}/database/{file}.json', "w") as f:
         json.dump(data, f, indent=4)
 
@@ -427,17 +442,27 @@ def get_prefix(guild: discord.Guild):
     Returns:
         str: The prefix for the guild
     """
-
     return read('config', guild)['prefix']
 
 
 def in_channel():
     """Returns the channel where the bot is supposed to interact with users
     Returns:
-        str: The channel ID
+        bool: True if the bot is supposed to interact with users in the channel
     """
 
     def predicate(ctx):
+        """Predicate to check if the bot is supposed to interact with users in the channel
+
+        Args:
+            ctx (command.Context): The context of the message
+
+        Raises:
+            commands.MissingPermissions: If the bot is not supposed to interact with users in the channel
+
+        Returns:
+            bool: True if the bot is supposed to interact with users in the channel else False
+        """
         guild = ctx.guild
         channels = read('config', guild)['mods']['channels']
         if ctx.channel.id in channels:
@@ -451,11 +476,23 @@ def in_channel():
 
 def is_author():
     """Returns the predicate to check if the user is a author/mod
+
     Returns:
-        function: The predicate
+        bool: True if the user is a author/mod
     """
 
     def predicate(ctx):
+        """Returns the predicate to check if the user is a author/mod
+
+        Args:
+            ctx (command.Context): The context of the command
+
+        Raises:
+            commands.MissingPermissions: If the user is not a author/mod
+
+        Returns:
+           bool: True if the user is a author/mod
+        """
         guild = ctx.guild
 
         authors = read('config', guild)['mods']['authors']
@@ -485,7 +522,6 @@ async def update_stats(bot: discord.User,
         channel (discord.TextChannelConverter): The channel stat is to be updated
         msg_stats (discord.Message): The stats message
     """
-
     total, editors, book, accepted, rejected, notsure = await db.get_stats(guild, 'editorial', chapter)
     info = discord.Embed(color=0x815BC8, timestamp=datetime.now())
     total_reviewed = accepted + rejected + notsure

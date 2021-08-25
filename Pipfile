@@ -16,6 +16,7 @@ matplotlib = "*"
 [dev-packages]
 dpytools = "*"
 ipykernel = "*"
+pdoc3 = "*"
 
 [requires]
 python_version = "3.9"
