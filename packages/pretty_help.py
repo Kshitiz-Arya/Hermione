@@ -338,6 +338,8 @@ class PrettyHelp(HelpCommand):
         return ctx.channel
 
     async def send_bot_help(self, mapping: dict):
+        """Handles the implementation of the bot command page in the help command.
+        This function is called when the help command is called with no arguments."""
         bot = self.context.bot
         channel = self.get_destination()
         async with channel.typing():
@@ -366,7 +368,7 @@ class PrettyHelp(HelpCommand):
         await self.send_pages()
 
     async def send_command_help(self, command: commands.Command):
-        """Sends the help for a single command."""
+        """Handles the implementation of the single command page in the help command."""
         channel = self.get_destination()
         async with channel.typing():
             filtered = await self.filter_commands([command])
@@ -377,7 +379,8 @@ class PrettyHelp(HelpCommand):
         await self.send_pages()
 
     async def send_group_help(self, group: commands.Group):
-        """Sends the help for a group."""
+        """Handles the implementation of the group page in the help command.
+        This function is called when the help command is called with a group as the argument."""
         async with self.get_destination().typing():
             filtered = await self.filter_commands(group.commands,
                                                   sort=self.sort_commands)
@@ -386,7 +389,8 @@ class PrettyHelp(HelpCommand):
         await self.send_pages()
 
     async def send_cog_help(self, cog: commands.Cog):
-        """Sends the help for a cog."""
+        """Handles the implementation of the cog page in the help command.
+        This function is called when the help command is called with a cog as the argument."""
         async with self.get_destination().typing():
             filtered = await self.filter_commands(cog.get_commands(),
                                                   sort=self.sort_commands)

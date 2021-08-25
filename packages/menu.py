@@ -65,9 +65,11 @@ class DefaultMenu(PrettyMenu):
 
     @staticmethod
     def custom(emoji):
+        """Get the custom emoji representation"""
         return f":{emoji.name}:{emoji.id}"
 
     def get(self, emoji):
+        """Get the index associated with the emoji"""
         if isinstance(emoji, str):
             return self._dict.get(emoji)
 
@@ -80,6 +82,7 @@ class DefaultMenu(PrettyMenu):
 
     @staticmethod
     def __match(emoji: str):
+        """Match the emoji to a unicode or custom emoji"""
         try:
             pattern = r":[a-zA-Z0-9]+:[0-9]+"
             return re.search(pattern=pattern, string=emoji)[0]
