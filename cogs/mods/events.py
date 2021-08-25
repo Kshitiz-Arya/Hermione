@@ -136,7 +136,7 @@ class Events(commands.Cog):
             payload (discord.RawMessageUpdateEvent): The payload of the event
 
         """
-  
+
         data = payload.data
         guild_id = data["guild_id"]
         msg_id = data["id"]
