@@ -19,7 +19,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        """ This event is called when the bot joins a guild
+        """This event is called when the bot joins a guild
 
         Args:
             guild (discord.Guild): The guild that the bot joined
@@ -261,7 +261,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload):
-        """ This event will be called if the editor modify his/her original editorial message
+        """This event will be called if the editor modify his/her original editorial message
 
         Args:
             payload (discord.RawMessageUpdateEvent): The payload of the event
@@ -357,7 +357,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
-        """ This event will be called if the editor deletes his/her original editorial message.
+        """This event will be called if the editor deletes his/her original editorial message.
         If the edit request has been reviewed by the author(s) then the edit embed will be anonymized.
 
         Args:

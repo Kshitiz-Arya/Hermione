@@ -36,7 +36,7 @@ def save(data, file):
 
 
 async def send(self, ctx, error):
-    """ This function sends any error to a channel in the main server.
+    """This function sends any error to a channel in the main server.
 
     Args:
         ctx (discord.Context): The context of the command.
@@ -81,7 +81,7 @@ class Error_control(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        """ This function is called when any command errors occur.
+        """This function is called when any command errors occur.
 
         Args:
             ctx (discord.Context): The context of the command.

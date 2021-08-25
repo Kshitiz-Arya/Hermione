@@ -5,7 +5,7 @@ connection = AsyncIOMotorClient(os.environ.get('connect'))
 
 
 async def insert(guild_id: str, database: str, update_statement: dict, connect: AsyncIOMotorClient = connection):
-    """ Insert a document into a database
+    """Insert a document into a database
 
     Args:
         guild_id (str): The guild id
@@ -21,7 +21,7 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
 
 # todo Rename this function to get_document
 async def get_document(guild_id, database, query, return_column, connect=connection):
-    """ Get a single document from a database
+    """Get a single document from a database
 
     Args:
         guild_id (str): The guild id
@@ -41,7 +41,7 @@ async def get_document(guild_id, database, query, return_column, connect=connect
 
 
 async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connection):
-    """ Get multiple documents from a database
+    """Get multiple documents from a database
 
     Args:
         guild (str): The guild id
@@ -62,7 +62,7 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
 
 
 async def get_stats(guild, database: str, chapter: int = None, connect=connection):
-    """ Get the stats for the database
+    """Get the stats for the database
 
     Args:
         guild (discord.Guild): The guild to get the stats for
@@ -118,7 +118,7 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connectio
 
 
 async def update(guild_id, database, columns: list, values: list, match: dict, connect=connection):
-    """ Update a document in a database
+    """Update a document in a database
 
     Args:
         guild_id (str): The guild id
@@ -139,7 +139,7 @@ async def delete_document(guild_id: str, database: str, match: dict, connect=con
 
 
 async def get_voting_count(guild_id: str, database: str, message_id: int, connect=connection):
-    """ Get the count of voting for a message
+    """Get the count of voting for a message
 
     Args:
         guild_id (str): The guild id

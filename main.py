@@ -74,7 +74,7 @@ async def restart(ctx):
 @client.command()
 @is_owner()
 async def load(ctx, extension):
-    """ Loads an extension
+    """Loads an extension
 
     Args:
         ctx (discord.ext.commands.Context): The context of the command
@@ -93,7 +93,7 @@ async def load(ctx, extension):
 @client.command()
 @is_owner()
 async def unload(ctx, extension):
-    """ Unloads an extension
+    """Unloads an extension
 
     Args:
         ctx (discord.ext.commands.Context): The context of the command
@@ -112,7 +112,7 @@ async def unload(ctx, extension):
 @client.command()
 @is_owner()
 async def reload(ctx, extension):
-    """ Reloads an extension
+    """Reloads an extension
 
     Args:
         ctx (discord.ext.commands.Context): The context of the command

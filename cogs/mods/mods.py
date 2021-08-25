@@ -27,7 +27,7 @@ class Mods(commands.Cog):
                        book: int,
                        first_chapter: int,
                        last_chapter: int = None):
-        """ This command is used to add a new book.
+        """This command is used to add a new book.
 
         Args:
             book : Book Number

@@ -11,7 +11,7 @@ from .menu import DefaultMenu
 
 
 def command_help(docstring: str):
-    """ Returns the help string for a command. """
+    """Returns the help string for a command."""
     docstring = docstring.replace('    ', '')
     discription, rest = docstring.split('Args:\n')
     args, rest = rest.split('Format:\n')
@@ -139,7 +139,7 @@ class Paginator:
 
     @staticmethod
     def __command_info(command: Union[commands.Command, commands.Group]):
-        """ Returns the command description and/or help string. """
+        """Returns the command description and/or help string."""
         info = ""
         if command.description:
             info += command.description + "\n\n"
@@ -292,7 +292,7 @@ class PrettyHelp(HelpCommand):
         super().__init__(**options)
 
     async def prepare_help_command(self, ctx, command=None):
-        """ The method that prepares the help command.
+        """The method that prepares the help command.
         This is called when the help command is invoked.
 
         Args:

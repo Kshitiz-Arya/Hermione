@@ -128,7 +128,7 @@ class EmbedList:
         self._pages.append(page)
 
     def _chunks(self, tuple_list):
-        """ Yield successive num-sized chunks from dicts."""
+        """Yield successive num-sized chunks from dicts."""
         num = self.size
         if num < 1:
             raise ValueError("Number of Embed fields can't be zero")
@@ -137,7 +137,7 @@ class EmbedList:
             yield tuple_list[i:i + num]
 
     def add_embed(self, dicts):
-        """ Add a list of embeds to the paginator"""
+        """Add a list of embeds to the paginator"""
         for d in self._chunks(dicts):
             embed = self._new_page()
 
@@ -174,7 +174,7 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:aye:877951041985982504>", style=discord.ButtonStyle.green, custom_id='persistent_view:green')
     async def green(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
-        """ This function is called when the green button is pressed.
+        """This function is called when the green button is pressed.
 
         Args:
             button (discord.ui.Button): The button that was clicked
@@ -190,7 +190,7 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:nay:877951041834995742>", style=discord.ButtonStyle.red, custom_id='persistent_view:red')
     async def red(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
-        """ This function is called when the red button is pressed.
+        """This function is called when the red button is pressed.
 
         Args:
             button (discord.ui.Button): The button that was clicked
@@ -206,7 +206,7 @@ class PersistentView(discord.ui.View):
 
     @discord.ui.button(emoji="<:james_book:877951041293910056>", style=discord.ButtonStyle.grey, custom_id='persistent_view:grey')
     async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):  # skipcq: PYL-W0613
-        """ This function is called when the grey button is pressed.
+        """This function is called when the grey button is pressed.
 
         Args:
             button (discord.ui.Button): The button that was clicked
@@ -221,7 +221,7 @@ class PersistentView(discord.ui.View):
             await update_stats(guild.me, chapter, guild, channel, stats_msg_id)
 
     async def preprocessing(self, interaction: discord.Interaction, vote: int):
-        """ Extract data from the interaction and return it
+        """Extract data from the interaction and return it
         Args:
             interaction (discord.Interaction): The interaction to extract data from
             vote (int): The vote to be sent to the database
@@ -262,7 +262,7 @@ class PersistentView(discord.ui.View):
         return [guild, channel, edit_msg, org_msg_id, stats_msg_id, chapter, author_name, author_avatar, server_config['colour']]
 
     async def update_embed(self, guild, edit_msg, org_msg_id, status, author_name, author_avatar, status_emoji, color):
-        """ Update the embed to reflect the status of the edit
+        """Update the embed to reflect the status of the edit
 
         Args:
             guild (discord.Guild): The guild the message was posted in
