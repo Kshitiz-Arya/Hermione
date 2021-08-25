@@ -31,7 +31,7 @@ class Events(commands.Cog):
         guild_owner = guild.owner_id
 
         # print(type(guild.audit_logs(limit=1).next().action))
-        def check(event): # skipcq: PY-D0003
+        def check(event):  # skipcq: PY-D0003
             return event.target.id == self.client.user.id   # The fuck I did here?
 
         bot_entry = await guild.audit_logs(
