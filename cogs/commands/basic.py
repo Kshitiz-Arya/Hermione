@@ -20,8 +20,10 @@ permissions.use_slash_commands = True
 
 
 class Basic(commands.Cog):
-    """
-    This cog has contains the command for submiting edits and suggestions
+    """This cog contains all the commands that are exposed to a normal user
+
+    Args:
+        Cog (commands.Cog): The base class for all cogs.
     """
 
     def __init__(self, client):
@@ -304,5 +306,6 @@ class Basic(commands.Cog):
 ###############################################################################
 
 
+# skipcq: PY-D0003
 def setup(client):
     client.add_cog(Basic(client))

@@ -7,7 +7,7 @@ from discord import client
 from discord.ext import commands
 from discord.ext.commands.core import is_owner
 
-from packages.command import PersistentView
+from packages.command import PersistentView, read
 from packages.pretty_help import PrettyHelp
 
 logger = logging.getLogger('discord')
@@ -20,25 +20,22 @@ handler.setFormatter(
 logger.addHandler(handler)
 
 
-def read(file, guild):
-    with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
-        return json.load(f)
-
-
 def get_prefix(_, message):
+    """This function gets the prefix."""
     return read('config', message.guild)['prefix']
 
 
 token = os.getenv('token')
-# menu = DefaultMenu(page_left="\U0001F44D", page_right="👎", remove=":classical_building:", active_time=5)
 
 
-class PersistentViewBot(commands.Bot):
+class Bot(commands.Bot):
+    """This class represents the main bot object."""
     def __init__(self):
         super().__init__(command_prefix=get_prefix)
         self.persistent_views_added = False
 
     async def on_ready(self):
+        """This method is called when the bot is ready."""
         if not self.persistent_views_added:
             self.add_view(PersistentView(self))
             self.persistent_views_added = True
@@ -47,10 +44,7 @@ class PersistentViewBot(commands.Bot):
         print('------')
 
 
-client = PersistentViewBot()
-# client = commands.Bot(command_prefix=get_prefix,
-#                       case_insensitive=True,
-#                       strip_after_prefix=True)
+client = Bot()
 client.help_command = PrettyHelp(color=0x635cbd, no_category='Owner Commands')
 
 ###############################################################################
@@ -61,14 +55,6 @@ if __name__ == '__main__':
     _root = os.getcwd()
     sys.path.append(f'{_root}/packages')
     print('Added packages folder to path')
-
-
-@client.command()
-@is_owner()
-async def restart(ctx):
-
-    await ctx.bot.close()
-    await ctx.bot.login(token, bot=True)
 
 
 @client.command()
@@ -136,12 +122,6 @@ for direct in os.listdir("./cogs"):
 ###############################################################################
 #                         AREA FOR EVENTS                                     #
 ###############################################################################
-
-
-# @client.event
-# async def on_ready():
-#     print('Hermione is ready for a new adventure!!!')
-
 
 @client.event
 async def on_message(meg):

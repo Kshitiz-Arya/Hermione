@@ -134,6 +134,15 @@ async def update(guild_id, database, columns: list, values: list, match: dict, c
 
 
 async def delete_document(guild_id: str, database: str, match: dict, connect=connection):
+    """Delete a document from a database
+
+    Args:
+        guild_id (str): The guild id
+        database (str): The database name
+        match (dict): The match query to find the document to delete
+        connect (optional): The connection to the database.
+    """
+
     collection = connect[database][str(guild_id)]
     await collection.delete_one(match)
 

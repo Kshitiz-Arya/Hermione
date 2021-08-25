@@ -11,9 +11,7 @@ from discord.ext.commands.errors import BotMissingPermissions
 
 
 class PrettyMenu(metaclass=ABCMeta):
-    """
-    A base class for menus used with PrettyHelp
-    """
+    """A base class for menus used with PrettyHelp"""
 
     async def send_pages(
         self,
@@ -25,18 +23,18 @@ class PrettyMenu(metaclass=ABCMeta):
 
 
 class DefaultMenu(PrettyMenu):
-    """The default navigation menu for PrettyHelp.
+    r"""The default navigation menu for PrettyHelp.
 
     Accepts standard emojis in multiple ways:
         - Emoji:: "👍"
-        - Unicode:: "\\U0001F44D"
-        - Unicode Name:: "\\N{THUMBS UP SIGN}"
+        - Unicode:: "\U0001F44D"
+        - Unicode Name:: "\N{THUMBS UP SIGN}"
 
     Using a custom emoji:
         - Discord emoji id:: ":custom_emoji:8675309"
 
-    Use `\\` to get the discord representation:
-        Example: '\\:custom_emoji:' in discord
+    Use `\` to get the discord representation:
+        Example: '\:custom_emoji:' in discord
 
     Args:
         active_time: :class: `int`

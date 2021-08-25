@@ -76,6 +76,7 @@ async def send(self, ctx, error):
 
 
 class Error_control(commands.Cog):
+    """This cog handles all errors that are raised by the bot."""
     def __init__(self, client):
         self.client = client
 
@@ -209,5 +210,6 @@ class Error_control(commands.Cog):
     #     print(error)
 
 
+# skipcq: PY-D0003
 def setup(client):
     client.add_cog(Error_control(client))
