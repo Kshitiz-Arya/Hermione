@@ -142,7 +142,6 @@ async def delete_document(guild_id: str, database: str, match: dict, connect=con
         match (dict): The match query to find the document to delete
         connect (optional): The connection to the database.
     """
-
     collection = connect[database][str(guild_id)]
     await collection.delete_one(match)
 
