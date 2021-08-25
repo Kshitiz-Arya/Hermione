@@ -169,6 +169,7 @@ class EmbedList:
 
 class PersistentView(discord.ui.View):
     """This class is used to create a persistent button row for edit embeds."""
+
     def __init__(self, client: discord.Client, *args, **kwargs):
         self.client = client
         super().__init__(timeout=None)

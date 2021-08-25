@@ -30,6 +30,7 @@ token = os.getenv('token')
 
 class Bot(commands.Bot):
     """This class represents the main bot object."""
+
     def __init__(self):
         super().__init__(command_prefix=get_prefix)
         self.persistent_views_added = False
@@ -122,6 +123,7 @@ for direct in os.listdir("./cogs"):
 ###############################################################################
 #                         AREA FOR EVENTS                                     #
 ###############################################################################
+
 
 @client.event
 async def on_message(meg):
