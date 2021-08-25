@@ -7,7 +7,7 @@ from discord import client
 from discord.ext import commands
 from discord.ext.commands.core import is_owner
 
-from packages.command import PersistentView
+from packages.command import PersistentView, read
 from packages.pretty_help import PrettyHelp
 
 logger = logging.getLogger('discord')
@@ -20,31 +20,24 @@ handler.setFormatter(
 logger.addHandler(handler)
 
 
-def read(file, guild):
-    with open(f'Storage/{guild.id}/database/{file}.json', "r") as f:
-        return json.load(f)
-
-
 def get_prefix(_, message):
+    """This function gets the prefix."""
     return read('config', message.guild)['prefix']
 
 
 token = os.getenv('token')
-# menu = DefaultMenu(page_left="\U0001F44D", page_right="👎", remove=":classical_building:", active_time=5)
 
 
-class PersistentViewBot(commands.Bot):
+class Bot(commands.Bot):
+    """This class represents the main bot object."""
+
     def __init__(self):
         super().__init__(command_prefix=get_prefix)
         self.persistent_views_added = False
 
     async def on_ready(self):
+        """This method is called when the bot is ready."""
         if not self.persistent_views_added:
-            # Register the persistent view for listening here.
-            # Note that this does not send the view to any message.
-            # In order to do this you need to first send a message with the View, which is shown below.
-            # If you have the message_id you can also pass it as a keyword argument, but for this example
-            # we don't have one.
             self.add_view(PersistentView(self))
             self.persistent_views_added = True
 
@@ -52,10 +45,7 @@ class PersistentViewBot(commands.Bot):
         print('------')
 
 
-client = PersistentViewBot()
-# client = commands.Bot(command_prefix=get_prefix,
-#                       case_insensitive=True,
-#                       strip_after_prefix=True)
+client = Bot()
 client.help_command = PrettyHelp(color=0x635cbd, no_category='Owner Commands')
 
 ###############################################################################
@@ -70,15 +60,13 @@ if __name__ == '__main__':
 
 @client.command()
 @is_owner()
-async def restart(ctx):
-
-    await ctx.bot.close()
-    await ctx.bot.login(token, bot=True)
-
-
-@client.command()
-@is_owner()
 async def load(ctx, extension):
+    """Loads an extension
+
+    Args:
+        ctx (discord.ext.commands.Context): The context of the command
+        extension (str): The extension to load
+    """
     for directory in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
@@ -92,6 +80,12 @@ async def load(ctx, extension):
 @client.command()
 @is_owner()
 async def unload(ctx, extension):
+    """Unloads an extension
+
+    Args:
+        ctx (discord.ext.commands.Context): The context of the command
+        extension (str): The extension to unload
+    """
     for directory in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
@@ -105,6 +99,12 @@ async def unload(ctx, extension):
 @client.command()
 @is_owner()
 async def reload(ctx, extension):
+    """Reloads an extension
+
+    Args:
+        ctx (discord.ext.commands.Context): The context of the command
+        extension (str): The extension to reload
+    """
     for directory in os.listdir('./cogs'):
         for filename in os.listdir(f'./cogs/{directory}'):
             if f'{extension}.py' in filename:
@@ -125,13 +125,13 @@ for direct in os.listdir("./cogs"):
 ###############################################################################
 
 
-# @client.event
-# async def on_ready():
-#     print('Hermione is ready for a new adventure!!!')
-
-
 @client.event
 async def on_message(meg):
+    """This event triggers when a message is sent in a server
+
+    Args:
+        meg (discord.Message): The message that was sent
+    """
     if meg.guild:
         ctx = await client.get_context(meg)
         await client.invoke(ctx)
@@ -141,6 +141,14 @@ async def on_message(meg):
 
 @client.event
 async def on_error(event, *args, **kwargs):
+    """This event triggers when an error occurs
+
+    Args:
+        event (str): The event that triggered the error
+        args (list): The arguments of the event
+        kwargs (dict): The keyword arguments of the event
+    """
+    logger.error(f'{event} with {args} and {kwargs}')
     # ! Implement Error Handling here
     ctx, error = args
     raise error

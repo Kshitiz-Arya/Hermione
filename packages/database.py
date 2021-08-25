@@ -4,51 +4,15 @@ from motor.motor_asyncio import AsyncIOMotorClient
 connection = AsyncIOMotorClient(os.environ.get('connect'))
 
 
-# def create_connection(guild, db_file):
-# create a database connection to a SQLite database #
-#     conn = None
-#     directory = os.getcwd()
-#     db_file = f"{directory}/Storage/{guild.id}/database/{db_file}.db"
-#     try:
-#         conn = sqlite3.connect(db_file)
-#         return conn
-
-#     except Error as e:
-#         raise e
-
-
-# def create_table(database, table, guild):
-#     try:
-#         connection = create_connection(guild, database).cursor()
-#         connection.execute(query(table))
-#     except Error as e:
-#         print(e)
-#     finally:
-#         if connection:
-#             connection.close()
-
-
-# def execute(guild, database, sql_query, values=None):
-#     try:
-#         connection = create_connection(guild, database)
-#         cursor = connection.cursor()
-#         if values is None:
-#             commit = cursor.execute(sql_query)
-#             connection.commit()
-#             return commit.fetchall()
-
-#         commit = cursor.execute(sql_query, values)
-#         connection.commit()
-#         return commit.fetchall()
-
-#     except Error as e:
-#         print(e)
-#     finally:
-#         if connection:
-#             connection.close()
-
-
 async def insert(guild_id: str, database: str, update_statement: dict, connect: AsyncIOMotorClient = connection):
+    """Insert a document into a database
+
+    Args:
+        guild_id (str): The guild id
+        database (str): The database name
+        update_statement (dict): The update statement to insert
+        connect (optional): The connection to the database.
+    """
     collection = connect[database][str(guild_id)]
 
     # Need to pass type of document with colunms
@@ -57,10 +21,18 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
 
 # todo Rename this function to get_document
 async def get_document(guild_id, database, query, return_column, connect=connection):
-    # This function just return one doucment
-    # Just pass an empty dict as query for getting all the columns
-    # This always returns _id
+    """Get a single document from a database
 
+    Args:
+        guild_id (str): The guild id
+        database (str): The database name
+        query (dict): The query to find the document
+        return_column (str): The column to return
+        connect (optional): The connection to the database.
+
+    Returns:
+        dict: The document from the database
+    """
     collections = connect[database][str(guild_id)]
     document = {column: 1 for column in return_column}
 
@@ -69,6 +41,19 @@ async def get_document(guild_id, database, query, return_column, connect=connect
 
 
 async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connection):
+    """Get multiple documents from a database
+
+    Args:
+        guild (str): The guild id
+        database (str): The database name
+        query (dict): The query to find the documents
+        return_column (list): The columns to return
+        limit (int): The limit of documents to return
+        connect (optional): The connection to the database.
+
+    Returns:
+        list: A list of documents
+    """
     collections = connect[database][guild.id]
     document = {column: 1 for column in return_column}
     num_document = await collections.count_documents(query)
@@ -77,6 +62,13 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
 
 
 async def get_stats(guild, database: str, chapter: int = None, connect=connection):
+    """Get the stats for the database
+
+    Args:
+        guild (discord.Guild): The guild to get the stats for
+        database (str): The database name
+        chapter (int, optional): The chapter number to get the stats for. Defaults to None.
+    """
     collections = connect[database][str(guild.id)]
 
     pipeline = [
@@ -126,17 +118,46 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connectio
 
 
 async def update(guild_id, database, columns: list, values: list, match: dict, connect=connection):
+    """Update a document in a database
+
+    Args:
+        guild_id (str): The guild id
+        database (str): The database name
+        columns (list): The columns to update
+        values (list): The new values for the columns
+        match (dict): The match to find the document to update
+        connect (optional): This represents the connection to the database.
+    """
     collection = connect[database][str(guild_id)]
     update_str = [{"$set": dict(zip(columns, values))}]
     await collection.update_one(match, update_str)
 
 
 async def delete_document(guild_id: str, database: str, match: dict, connect=connection):
+    """Delete a document from a database
+
+    Args:
+        guild_id (str): The guild id
+        database (str): The database name
+        match (dict): The match query to find the document to delete
+        connect (optional): The connection to the database.
+    """
     collection = connect[database][str(guild_id)]
     await collection.delete_one(match)
 
 
 async def get_voting_count(guild_id: str, database: str, message_id: int, connect=connection):
+    """Get the count of voting for a message
+
+    Args:
+        guild_id (str): The guild id
+        database (str): The database name
+        message_id (int): The message id which is being voted
+        connect (optional): The connection to the database.
+
+    Returns:
+        dict: A dictionary with the count of voting for the message
+    """
     collection = connect[database][str(guild_id)]
     voting_count = await collection.aggregate(pipeline=[
         {

@@ -11,9 +11,7 @@ from discord.ext.commands.errors import BotMissingPermissions
 
 
 class PrettyMenu(metaclass=ABCMeta):
-    """
-    A base class for menus used with PrettyHelp
-    """
+    """A base class for menus used with PrettyHelp"""
 
     async def send_pages(
         self,
@@ -25,18 +23,18 @@ class PrettyMenu(metaclass=ABCMeta):
 
 
 class DefaultMenu(PrettyMenu):
-    """The default navigation menu for PrettyHelp.
+    r"""The default navigation menu for PrettyHelp.
 
     Accepts standard emojis in multiple ways:
         - Emoji:: "👍"
-        - Unicode:: "\\U0001F44D"
-        - Unicode Name:: "\\N{THUMBS UP SIGN}"
+        - Unicode:: "\U0001F44D"
+        - Unicode Name:: "\N{THUMBS UP SIGN}"
 
     Using a custom emoji:
         - Discord emoji id:: ":custom_emoji:8675309"
 
-    Use `\\` to get the discord representation:
-        Example: '\\:custom_emoji:' in discord
+    Use `\` to get the discord representation:
+        Example: '\:custom_emoji:' in discord
 
     Args:
         active_time: :class: `int`
@@ -67,9 +65,11 @@ class DefaultMenu(PrettyMenu):
 
     @staticmethod
     def custom(emoji):
+        """Get the custom emoji representation"""
         return f":{emoji.name}:{emoji.id}"
 
     def get(self, emoji):
+        """Get the index associated with the emoji"""
         if isinstance(emoji, str):
             return self._dict.get(emoji)
 
@@ -82,6 +82,7 @@ class DefaultMenu(PrettyMenu):
 
     @staticmethod
     def __match(emoji: str):
+        """Match the emoji to a unicode or custom emoji"""
         try:
             pattern = r":[a-zA-Z0-9]+:[0-9]+"
             return re.search(pattern=pattern, string=emoji)[0]
@@ -100,6 +101,7 @@ class DefaultMenu(PrettyMenu):
         destination: discord.abc.Messageable,
         pages: List[discord.Embed],
     ):
+        """The function called by :class:`PrettyHelp` that will send pages"""
         total = len(pages)
         message: discord.Message = await destination.send(embed=pages[0])
 
