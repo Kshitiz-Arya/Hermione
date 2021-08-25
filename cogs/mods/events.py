@@ -52,9 +52,9 @@ class Events(commands.Cog):
                 },
                 "allowedEdits": {},
                 "emojis": {
-                    "accepted": "\u2705",
-                    "rejected": "\u274c",
-                    "notsure": "\ud83d\ude10",
+                    "Accepted": "\u2705",
+                    "Rejected": "\u274c",
+                    "Not Sure": "\ud83d\ude10",
                 },
                 "authors": [bot_entry.user.id, guild_owner],
                 "channels": [],
@@ -136,6 +136,7 @@ class Events(commands.Cog):
             payload (discord.RawMessageUpdateEvent): The payload of the event
 
         """
+  
         data = payload.data
         guild_id = data["guild_id"]
         msg_id = data["id"]
