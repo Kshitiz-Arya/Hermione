@@ -122,7 +122,6 @@ class Events(commands.Cog):
         Args:
             guild (discord.Guild): The guild that the bot left
         """
-
         print(f"Left {guild.name}")
         os.chdir("Storage")
         shutil.rmtree(f"{guild.id}")
@@ -136,7 +135,6 @@ class Events(commands.Cog):
             payload (discord.RawMessageUpdateEvent): The payload of the event
 
         """
-  
         data = payload.data
         guild_id = data["guild_id"]
         msg_id = data["id"]
