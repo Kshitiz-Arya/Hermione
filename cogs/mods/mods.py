@@ -1,15 +1,16 @@
 import os
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
+from pprint import pprint as pp
 
-import packages.database as db
 import discord
-from packages.command import EmbedList, Book, ranking, read, save, in_channel, is_author, PersistentView
+import packages.database as db
 from discord.ext import commands
 from discord.ext.commands.converter import (ColorConverter, MemberConverter,
                                             TextChannelConverter)
+from packages.command import (Book, EmbedList, PersistentView, in_channel,
+                              is_author, ranking, read, save)
 from PIL import Image, ImageDraw
-from pprint import pprint as pp
 
 
 class Mods(commands.Cog):
@@ -705,8 +706,9 @@ class Mods(commands.Cog):
         guild = ctx.guild
         channel = ctx.channel
         date = datetime.now() - timedelta(days=days)
+        prefix = ctx.clean_prefix
         message = channel.history(
-            after=date, oldest_first=True).filter(filter_commands)
+            after=date, oldest_first=True).filter(filter_commands, prefix)
 
         old_msg_ids_dicts = await db.get_documents(guild.id, "editorial", {"time": {"$gt": date}}, ['_id'])
         old_msg_ids = [x['_id'] for x in old_msg_ids_dicts]
@@ -756,22 +758,6 @@ class Mods(commands.Cog):
     #     )
     #     if conn:
     #         conn.close()
-
-
-def extract_edits(message: discord.Message, prefix='>') -> dict:
-    """Return a dict of the command type, chapter and edit/suggestion
-
-    Args:
-        message (discord.Message): [Represents a Discord message.]
-
-    Returns:
-        [dict]
-    """
-    # prefix = message.context.clean_prefix
-    command, chapter, args = message.content.split(maxsplit=2)
-    msg_id = message.id
-    # remove prefix from command using a string method
-    return {'agrs': args, 'chapter': chapter, 'id': msg_id, 'message': message, 'type': command.removeprefix(prefix)}
 
     @commands.command(aliases=["changeColor"])
     @in_channel()
@@ -1104,7 +1090,7 @@ def draw(guild: discord.Guild, colours: tuple):
     img.save(f'Storage/{guild.id}/images/colour.png', 'PNG', dpi=(300, 300))
 
 
-def filter_commands(message: discord.Message, prefix='>') -> bool:
+def filter_commands(message: discord.Message, prefix) -> bool:
     """Return true if the message is a valid command
 
     Args:

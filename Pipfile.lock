@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "73110096d1dc85b1e3ce7e30f99a825fb6126d3fc7cc73fc62e67015a554e179"
+            "sha256": "eb24a845e5a1b7895b857b6f03282acf953172013542f64ae2c4d4586a7e6b1e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -93,12 +93,12 @@
         },
         "discord-py": {
             "editable": true,
-            "git": "https://github.com/Rapptz/discord.py",
-            "ref": "29b808d33f02aa1519703f58823de091dc2fe370"
+            "git": "https://github.com/Kshitiz-Arya/discord.py/",
+            "ref": "45d498c1b76deaf3b394d17ccf56112fa691d160"
         },
         "discord.py": {
             "editable": true,
-            "git": "https://github.com/Rapptz/discord.py"
+            "git": "https://github.com/Kshitiz-Arya/discord.py/"
         },
         "dnspython": {
             "hashes": [
@@ -569,11 +569,11 @@
         },
         "typing-extensions": {
             "hashes": [
-                "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497",
-                "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342",
-                "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"
+                "sha256:045dd532231acfa03628df5e0c66dba64e2cc8fc8b844538d4ad6d5dd6cb82dc",
+                "sha256:83af6730a045fda60f46510f7f1f094776d90321caa4d97d20ef38871bef4bd3",
+                "sha256:8bbffbd37fbeb9747a0241fdfde5ae99d4531ad1d1a41ccaea62100e15a5814c"
             ],
-            "version": "==3.10.0.0"
+            "version": "==3.10.0.1"
         },
         "yarl": {
             "hashes": [
@@ -766,7 +766,7 @@
         },
         "discord.py": {
             "editable": true,
-            "git": "https://github.com/Rapptz/discord.py"
+            "git": "https://github.com/Kshitiz-Arya/discord.py/"
         },
         "dpytools": {
             "hashes": [
@@ -809,11 +809,11 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:0cff04bb042800129348701f7bd68a430a844e8fb193979c08f6c99f28bb735e",
-                "sha256:892743b65c21ed72b806a3a602cca408520b3200b89d1924f4b3d2cdb3692362"
+                "sha256:58b55ebfdfa260dad10d509702dc2857cb25ad82609506b070cf2d7b7df5af13",
+                "sha256:75b5e060a3417cf64f138e0bb78e58512742c57dc29db5a5058a2b1f0c10df02"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==7.26.0"
+            "version": "==7.27.0"
         },
         "ipython-genutils": {
             "hashes": [
@@ -832,11 +832,11 @@
         },
         "jupyter-client": {
             "hashes": [
-                "sha256:07b9566979546004c089afe7c9bf9e96224ec5f8421fe0ae460759fa593c6b1d",
-                "sha256:48822a93d9d75daa5fde235c35cf7a92fc979384735962501d4eb60b197fb43a"
+                "sha256:0c6cabd07e003a2e9692394bf1ae794188ad17d2e250ed747232d7a473aa772c",
+                "sha256:37a30c13d3655b819add61c830594090af7fca40cd2d74f41cad9e2e12118501"
             ],
             "markers": "python_full_version >= '3.6.1'",
-            "version": "==7.0.1"
+            "version": "==7.0.2"
         },
         "jupyter-core": {
             "hashes": [
@@ -1198,11 +1198,11 @@
         },
         "typing-extensions": {
             "hashes": [
-                "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497",
-                "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342",
-                "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"
+                "sha256:045dd532231acfa03628df5e0c66dba64e2cc8fc8b844538d4ad6d5dd6cb82dc",
+                "sha256:83af6730a045fda60f46510f7f1f094776d90321caa4d97d20ef38871bef4bd3",
+                "sha256:8bbffbd37fbeb9747a0241fdfde5ae99d4531ad1d1a41ccaea62100e15a5814c"
             ],
-            "version": "==3.10.0.0"
+            "version": "==3.10.0.1"
         },
         "wcwidth": {
             "hashes": [
