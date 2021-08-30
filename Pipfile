@@ -12,11 +12,13 @@ motor = "*"
 pymongo = {extras = ["srv"], version = "*"}
 aiohttp = "*"
 matplotlib = "*"
+dpytest = "*"
 
 [dev-packages]
 dpytools = "*"
 ipykernel = "*"
 pdoc3 = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.9"

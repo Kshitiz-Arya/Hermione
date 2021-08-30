@@ -40,7 +40,7 @@ async def get_document(guild_id, database, query, return_column, connect=connect
     return return_doucment
 
 
-async def get_documents(guild, database, query: dict, return_column: list, limit=0, connect=connection):
+async def get_documents(guild_id, database, query: dict, return_column: list, limit=0, connect=connection):
     """Get multiple documents from a database
 
     Args:
@@ -54,11 +54,10 @@ async def get_documents(guild, database, query: dict, return_column: list, limit
     Returns:
         list: A list of documents
     """
-    collections = connect[database][guild.id]
+    collections = connect[database][str(guild_id)]
     document = {column: 1 for column in return_column}
-    num_document = await collections.count_documents(query)
 
-    return await collections.find(query, document, limit=limit).to_list(num_document)
+    return await collections.find(query, document, limit=limit).to_list(None)
 
 
 async def get_stats(guild, database: str, chapter: int = None, connect=connection):
