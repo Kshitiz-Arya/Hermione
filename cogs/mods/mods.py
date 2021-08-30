@@ -757,6 +757,21 @@ class Mods(commands.Cog):
     #     if conn:
     #         conn.close()
 
+def extract_edits(message: discord.Message, prefix='>') -> dict:
+    """Return a dict of the command type, chapter and edit/suggestion
+
+    Args:
+        message (discord.Message): [Represents a Discord message.]
+
+    Returns:
+        [dict]
+    """
+    # prefix = message.context.clean_prefix
+    command, chapter, args = message.content.split(maxsplit=2)
+    msg_id = message.id
+    # remove prefix from command using a string method
+    return {'agrs': args, 'chapter': chapter, 'id': msg_id, 'message': message, 'type': command.removeprefix(prefix)}
+
     @commands.command(aliases=["changeColor"])
     @in_channel()
     @is_author()
@@ -1100,28 +1115,10 @@ def filter_commands(message: discord.Message, prefix='>') -> bool:
     # prefix = message.context.clean_prefix
     return message.content.startswith(prefix+'edit ') or message.content.startswith(prefix+'suggest ')
 
-
-def extract_edits(message: discord.Message, prefix='>') -> dict:
-    """Return a dict of the command type, chapter and edit/suggestion
-
-    Args:
-        message (discord.Message): [Represents a Discord message.]
-
-    Returns:
-        [dict]
-    """
-    # prefix = message.context.clean_prefix
-    command, chapter, args = message.content.split(maxsplit=2)
-    msg_id = message.id
-    # remove prefix from command using a string method
-    return {'agrs': args, 'chapter': chapter, 'id': msg_id, 'message': message, 'type': command.removeprefix(prefix)}
-
 ###############################################################################
 #                         AREA FOR SETUP                                      #
 ###############################################################################
 
 # skipcq: PY-D0003
-
-
 def setup(client):
     client.add_cog(Mods(client))
