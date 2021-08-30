@@ -35,8 +35,7 @@ class Basic(commands.Cog):
                    ctx: commands.Context,
                    chapter,
                    *,
-                   edit: EditConverter,
-                   context=0) -> Optional[bool]:
+                   edit: EditConverter) -> Optional[bool]:
         """This command takes editorial request from the editors and post it in the assigned channel.
 
         Args:
@@ -134,7 +133,6 @@ class Basic(commands.Cog):
         else:
             await ctx.reply("Editing is currently disabled for this chapter.",
                             delete_after=10)
-            return False
 
     @in_channel()
     @commands.command()
