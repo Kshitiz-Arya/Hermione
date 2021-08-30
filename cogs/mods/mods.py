@@ -757,6 +757,7 @@ class Mods(commands.Cog):
     #     if conn:
     #         conn.close()
 
+
 def extract_edits(message: discord.Message, prefix='>') -> dict:
     """Return a dict of the command type, chapter and edit/suggestion
 
@@ -1120,5 +1121,7 @@ def filter_commands(message: discord.Message, prefix='>') -> bool:
 ###############################################################################
 
 # skipcq: PY-D0003
+
+
 def setup(client):
     client.add_cog(Mods(client))
