@@ -130,8 +130,7 @@ class Basic(commands.Cog):
                             delete_after=10,
                             mention_author=False)
             return True
-        else:
-            await ctx.reply("Editing is currently disabled for this chapter.",
+        await ctx.reply("Editing is currently disabled for this chapter.",
                             delete_after=10)
 
     @in_channel()
