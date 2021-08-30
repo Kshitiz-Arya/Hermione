@@ -35,8 +35,7 @@ class Basic(commands.Cog):
                    ctx: commands.Context,
                    chapter,
                    *,
-                   edit: EditConverter,
-                   context=0) -> Optional[bool]:
+                   edit: EditConverter) -> Optional[bool]:
         """This command takes editorial request from the editors and post it in the assigned channel.
 
         Args:
@@ -71,20 +70,18 @@ class Basic(commands.Cog):
                 return
 
             channel_id = ctx.channel.id
-            if context == 0:
-                mID = ctx.message.id
-                aID = ctx.author.id
-                author_name = (ctx.author.name
-                               if ctx.author.nick is None else ctx.author.nick)
-                avatar = ctx.author.avatar.url
+            mID = ctx.message.id
+            aID = ctx.author.id
+            avatar = ctx.author.avatar.url
 
-            else:
-                mID = context.message.id
-                aID = context.author.id
-                author_name = context.author.name
-                avatar = context.author.avatar.url
+            try:
+                author_name = ctx.author.name if (
+                    nick := ctx.author.nick) is None else nick
+            except AttributeError:
+                author_name = ctx.author.name
 
             book = Book(chapter, guild)
+            current_time = datetime.now()
             editorial_channel_id, msg_stats = allowedEdits[chapter]
             editorial_channel = self.client.get_channel(editorial_channel_id)
 
@@ -121,6 +118,7 @@ class Basic(commands.Cog):
                 'org_channel_id': channel_id,
                 'edit_channel_id': editorial_channel_id,
                 'status': 'Not Voted Yet',
+                'time': current_time,
                 'type': 'edit'
             }
             await db.insert(guild.id, "editorial", insert_statement)
@@ -128,14 +126,12 @@ class Basic(commands.Cog):
             await update_stats(self.client.user, chapter, guild,
                                editorial_channel, msg_stats)
 
-            if not context:
-                await ctx.reply("Your edit has been accepted.",
-                                delete_after=10,
-                                mention_author=False)
+            await ctx.reply("Your edit has been accepted.",
+                            delete_after=10,
+                            mention_author=False)
             return True
-        if not context:
-            await ctx.reply("Editing is currently disabled for this chapter.",
-                            delete_after=10)
+        await ctx.reply("Editing is currently disabled for this chapter.",
+                        delete_after=10)
 
     @in_channel()
     @commands.command()

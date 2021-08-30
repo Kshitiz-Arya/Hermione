@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import sys
@@ -126,14 +125,14 @@ for direct in os.listdir("./cogs"):
 
 
 @client.event
-async def on_message(meg):
+async def on_message(msg):
     """This event triggers when a message is sent in a server
 
     Args:
         meg (discord.Message): The message that was sent
     """
-    if meg.guild:
-        ctx = await client.get_context(meg)
+    if msg.guild:
+        ctx = await client.get_context(msg)
         await client.invoke(ctx)
     else:
         pass

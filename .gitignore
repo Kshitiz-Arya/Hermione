@@ -2,7 +2,7 @@
 .idea/
 .vscode/
 Storage/
-Testing/
+testing/
 logs/
 workspace.code-workspace
 .env

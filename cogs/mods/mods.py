@@ -1,13 +1,15 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO, StringIO
+from pprint import pprint as pp
 
-import packages.database as db
 import discord
-from packages.command import EmbedList, Book, ranking, read, save, in_channel, is_author, PersistentView
+import packages.database as db
 from discord.ext import commands
 from discord.ext.commands.converter import (ColorConverter, MemberConverter,
                                             TextChannelConverter)
+from packages.command import (Book, EmbedList, PersistentView, in_channel,
+                              is_author, ranking, read, save)
 from PIL import Image, ImageDraw
 
 
@@ -685,67 +687,40 @@ class Mods(commands.Cog):
         else:
             await ctx.send("Channel is not in the list!", delete_after=10)
 
-    # @commands.command()
-    # @in_channel()
-    # @is_author()
-    # async def checkEdits(self, ctx: commands.Context, number: int, chap=0):
-    #     """This command is used to pickup any edit or suggestion, which bot may have missed due to any reason.
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def checkEdits(self, ctx: commands.Context, days: int) -> None:
+        """This command is used to pickup any edit or suggestion, which bot may have missed due to any reason.
 
-    #     Args:
-    #         No-of-days :- Number of previous days to look for edits in message history
-    #         chapter (optional) :- chapter number for which edit to look for
+        Args:
+            No-of-days :- Number of previous days to look for edits in message history
 
-    #     Format:
-    #         >checkEdits days chapter (optional)
+        Format:
+            >checkEdits days chapter(optional)
 
-    #     Example:
-    #         >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
-    #         >checkEdits 2 3 :- Hermione will look for edits of chapter 3 in last 2 days of message history
-    #     """
-    #     # ! It is not picking up edits as expected
-    #     # ! Look after Line 480
-    #     # ! Erroring out when there is no edit in database
-    #     # todo Check is Chapter is in allowed edit list before interating thorugh msg
+        Example:
+            >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
+        """
+        count = 0
+        guild = ctx.guild
+        channel = ctx.channel
+        date = datetime.now() - timedelta(days=days)
+        prefix = ctx.clean_prefix
+        message = channel.history(
+            after=date, oldest_first=True).filter(filter_commands, prefix)
 
-    #     guild = ctx.guild
-    #     channel = ctx.channel
-    #     date = datetime.now() - timedelta(days=number)
-    #     prefix = read('config', guild)['prefix']
+        old_msg_ids_dicts = await db.get_documents(guild.id, "editorial", {"time": {"$gt": date}}, ['_id'])
+        old_msg_ids = [x['_id'] for x in old_msg_ids_dicts]
 
-    #     messages = await channel.history(after=date,
-    #                                      oldest_first=False).flatten()
+        async for msg in message:
+            if msg.id not in old_msg_ids:
+                context = await self.client.get_context(msg)
+                status = await self.client.invoke(context)
 
-    #     sql = f"select Message_ID from edit Order by Message_ID desc limit {len(messages)}"
-    #     msg_ids = chain(db.execute(guild, "editorial", sql))
+                count += 1 if status else 0
 
-    #     counter = 0
-    #     for message in messages:
-    #         msg = message.content
-
-    #         command = f'{prefix}edit '
-    #         if command in msg:  # Replace with startwith
-
-    #             if str(message.id) not in msg_ids:
-    #                 try:
-    #                     size = len(command)
-    #                     chapter, edits = msg[size:].split(maxsplit=1)
-    #                     edits = await EditConverter.convert(self, ctx, edits)
-    #                 except ValueError:
-    #                     print('NO')
-
-    #                 if chapter == str(chap) or chap == 0:
-    #                     context = await self.client.get_context(message)
-    #                     result = await ctx.invoke(
-    #                         self.client.get_command("edit"),
-    #                         chapter=chapter,
-    #                         edit=edits,
-    #                         context=context,
-    #                     )
-
-    #         else:
-    #             print(msg, f'{prefix}edit' in msg)
-    #     await ctx.send(f"Total Messages Recovered :- {counter}",
-    #                    delete_after=100)
+        await ctx.send(f"Total number of messages picked up : {count}", delete_after=10)
 
     # @commands.command()
     # @in_channel()
@@ -1115,10 +1090,24 @@ def draw(guild: discord.Guild, colours: tuple):
     img.save(f'Storage/{guild.id}/images/colour.png', 'PNG', dpi=(300, 300))
 
 
+def filter_commands(message: discord.Message, prefix) -> bool:
+    """Return true if the message is a valid command
+
+    Args:
+        message (discord.Message): [Represents a Discord message.]
+
+    Returns:
+        [bool]
+    """
+    # prefix = message.context.clean_prefix
+    return message.content.startswith(prefix+'edit ') or message.content.startswith(prefix+'suggest ')
+
 ###############################################################################
 #                         AREA FOR SETUP                                      #
 ###############################################################################
 
 # skipcq: PY-D0003
+
+
 def setup(client):
     client.add_cog(Mods(client))
