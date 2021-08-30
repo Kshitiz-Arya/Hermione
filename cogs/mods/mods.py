@@ -701,7 +701,6 @@ class Mods(commands.Cog):
         Example:
             >checkEdits 2 :- Hermione will look for edits in last 2 days of message history
         """
-
         count = 0
         guild = ctx.guild
         channel = ctx.channel
