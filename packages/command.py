@@ -256,6 +256,9 @@ class PersistentView(discord.ui.View):
 
         document = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_msg.id}, ['chapter'])
 
+        if not document:
+            return None
+
         org_msg_id, chapter = document.values()
         stats_msg_id = server_config['allowedEdits'].get(chapter, None)[1]
         author_name = user.nick or user.name

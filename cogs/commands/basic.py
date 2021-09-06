@@ -72,14 +72,8 @@ class Basic(commands.Cog):
             channel_id = ctx.channel.id
             mID = ctx.message.id
             aID = ctx.author.id
-            avatar = ctx.author.avatar.url
-
-            try:
-                author_name = ctx.author.name if (
-                    nick := ctx.author.nick) is None else nick
-            except AttributeError:
-                author_name = ctx.author.name
-
+            avatar = ctx.author.display_avatar.url
+            author_name = ctx.author.display_name
             book = Book(chapter, guild)
             current_time = datetime.now()
             editorial_channel_id, msg_stats = allowedEdits[chapter]
@@ -88,9 +82,9 @@ class Basic(commands.Cog):
             # Sending the embed to distineted channel
             link = ctx.message.jump_url
 
-            colour = read("config", guild)["mods"]["colour"]
+            colour = config["mods"]["colour"]
             embed = discord.Embed(
-                color=colour["No Vote"],
+                color=colour["Not Voted Yet"],
                 description=f"[Message Link]({link})",
                 timestamp=datetime.now(),
             )
@@ -170,7 +164,7 @@ class Basic(commands.Cog):
             config = read("config", guild)
             colour = config["mods"]["colour"]
             sug = discord.Embed(
-                color=colour["No Vote"],
+                color=colour["Not Voted Yet"],
                 description=f"[Message Link]({link})",
                 timestamp=datetime.now(),
             )
