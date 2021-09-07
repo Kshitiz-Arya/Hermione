@@ -851,7 +851,7 @@ class Mods(commands.Cog):
     @in_channel()
     @is_author()
     async def migrate(self, ctx: commands.Context, chapter: str,
-                       channel: TextChannelConverter):
+                      channel: TextChannelConverter):
         """This command is used to migrate all the edits of a given chapter from one channel to another. This command is useful when older channel is either unusable or has been deleted.
 
         Args:
@@ -882,13 +882,12 @@ class Mods(commands.Cog):
             jump_link = f"https://discord.com/channels/{guild.id}/{org_channel_id}/{org_msg_id}"
             change_status = ranking(guild, chapter, original)[2]
 
-
             if editor_id:
                 editor = await guild.fetch_member(editor_id)
                 editor_avatar = editor.display_avatar.url
             else:
                 editor_avatar = '"https://cdn.discordapp.com/embed/avatars/0.png"'
-            
+
             embed = discord.Embed(
                 color=config['mods']['colour'][status],
                 description=f"[Message Link]({jump_link})",
@@ -897,7 +896,8 @@ class Mods(commands.Cog):
             embed.set_author(name=editor_name, icon_url=editor_avatar)
             embed.set_footer(text=f"Author's Vote - {status}")
             embed.add_field(name="Original Text", value=original, inline=False)
-            embed.add_field(name="Sugested Text", value=suggested, inline=False)
+            embed.add_field(name="Sugested Text",
+                            value=suggested, inline=False)
             embed.add_field(name="Reason", value=reason, inline=False)
             embed.add_field(name="⠀", value=change_status, inline=False)
 
@@ -915,7 +915,6 @@ class Mods(commands.Cog):
             await db.update(guild.id, 'editorial', ['edit_msg_id', 'edit_channel_id'], [msg_sent.id, channel.id], {'_id': org_msg_id})
 
         await ctx.reply(f'Successfully migrated {len(documents)} edits to {channel.mention}', mention_author=False)
-
 
     @commands.command()
     @in_channel()
