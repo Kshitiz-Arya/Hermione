@@ -867,6 +867,8 @@ class Mods(commands.Cog):
             >migrate 1 842349594825457533 :- Populating the edits of chapter 1 to channel with provided id. Here channel id is provided
         """
         guild = ctx.guild
+        buttons = PersistentView(self.client)
+        image_url = ''
         stats_msg = await update_stats(self.client.user, chapter, guild, channel)
 
         config = read("config", guild)
@@ -874,11 +876,12 @@ class Mods(commands.Cog):
         config['mods']['channels'].append(channel.id)
         save(config, "config", guild)
 
-        documents = await db.get_documents(guild.id, 'editorial', {'chapter': chapter, 'type': 'edit'}, ['_id', 'editor', 'editor_id', 'original', 'suggested', 'reason', 'status', 'org_channel_id', 'time', 'votes'])
+        documents = await db.get_documents(guild.id, 'editorial', {'chapter': chapter, 'type': 'edit'}, ['_id', 'edit_msg_id', 'editor', 'editor_id', 'original', 'suggested', 'reason', 'status', 'org_channel_id', 'time'])
         for doc in documents:
-            org_msg_id, editor_id, editor_name, original, suggested, reason, org_channel_id, status, time = doc.values()
+            org_msg_id, editor_id, editor_name, original, suggested, reason, edit_msg_id, org_channel_id, status, time = doc.values()
             jump_link = f"https://discord.com/channels/{guild.id}/{org_channel_id}/{org_msg_id}"
             change_status = ranking(guild, chapter, original)[2]
+
 
             if editor_id:
                 editor = await guild.fetch_member(editor_id)
@@ -898,7 +901,17 @@ class Mods(commands.Cog):
             embed.add_field(name="Reason", value=reason, inline=False)
             embed.add_field(name="⠀", value=change_status, inline=False)
 
-            msg_sent = await channel.send(embed=embed, view=PersistentView(self.client))
+            if status != 'Not Voted Yet':
+                data = await buttons.get_voteing_graph(guild.id, edit_msg_id)
+                image_url = await buttons.get_image_url(data['image']) if data else ''
+                yes, no, maybe = (0, 0, 0) if not data else data['votes']
+
+                embed.set_image(url=image_url)
+                embed.add_field(name="Yes", value=yes, inline=True)
+                embed.add_field(name="No", value=no, inline=True)
+                embed.add_field(name="Maybe", value=maybe, inline=True)
+
+            msg_sent = await channel.send(embed=embed, view=buttons)
             await db.update(guild.id, 'editorial', ['edit_msg_id', 'edit_channel_id'], [msg_sent.id, channel.id], {'_id': org_msg_id})
 
         await ctx.reply(f'Successfully migrated {len(documents)} edits to {channel.mention}', mention_author=False)
