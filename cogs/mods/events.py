@@ -48,7 +48,7 @@ class Events(commands.Cog):
                     "Accepted": 65280,
                     "Rejected": 16711680,
                     "Not Sure": 16776960,
-                    "No Vote": 65535,
+                    "Not Voted Yet": 65535,
                 },
                 "allowedEdits": {},
                 "emojis": {
@@ -216,7 +216,7 @@ class Events(commands.Cog):
             await db.update(guild, "editorial", ['suggested'],
                             [suggestion], {"_id": msg_id})
 
-        updated_embed_dict["color"] = colour["No Vote"]
+        updated_embed_dict["color"] = colour["Not Voted Yet"]
         updated_embed = discord.Embed.from_dict(updated_embed_dict)
 
         await msg.edit(embed=updated_embed)

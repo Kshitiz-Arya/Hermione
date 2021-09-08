@@ -256,6 +256,9 @@ class PersistentView(discord.ui.View):
 
         document = await db.get_document(guild.id, 'editorial', {'edit_msg_id': edit_msg.id}, ['chapter'])
 
+        if not document:
+            return None
+
         org_msg_id, chapter = document.values()
         stats_msg_id = server_config['allowedEdits'].get(chapter, None)[1]
         author_name = user.nick or user.name
@@ -278,7 +281,6 @@ class PersistentView(discord.ui.View):
         """
         data = await self.get_voteing_graph(guild.id, edit_msg.id)
         image_url = await self.get_image_url(data['image']) if data else ''
-
         # Yes, No, Maybe for the voting fields
         yes, no, maybe = (0, 0, 0) if not data else data['votes']
 
@@ -408,7 +410,7 @@ def ranking(guild: discord.Guild, chapter: int, org):
         return [None, None, change_status]
 
     except FileNotFoundError:
-        change_status = "**Chapter has not yet been uploaded!**"
+        change_status = "**Chapter is yet to be uploaded!**"
         return [None, None, change_status]
 
 

@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ext.commands.converter import (ColorConverter, MemberConverter,
                                             TextChannelConverter)
 from packages.command import (Book, EmbedList, PersistentView, in_channel,
-                              is_author, ranking, read, save)
+                              is_author, ranking, read, save, update_stats)
 from PIL import Image, ImageDraw
 
 
@@ -290,7 +290,7 @@ class Mods(commands.Cog):
                 url="https://i.postimg.cc/xCBrj9JK/LeadVonE.jpg")
             info.set_footer(
                 text=f"{footer_text} Provided By Hermione",
-                icon_url=self.client.user.avatar_url,
+                icon_url=self.client.user.display_avatar,
             )
 
             msg = await channel.send(embed=info)
@@ -787,7 +787,7 @@ class Mods(commands.Cog):
             "Accepted": accepted.value,
             "Rejected": rejected.value,
             "Not Sure": notsure.value,
-            "No Vote": noVote.value,
+            "Not Voted Yet": noVote.value,
         }
 
         save(config, "config", guild)
@@ -847,124 +847,74 @@ class Mods(commands.Cog):
                 description=f"Latency: `{latency_ms}ms`\nHeartbeat: `{heartbeat_ms}ms`"),
         )
 
-    # @commands.command()
-    # @in_channel()
-    # @is_author()
-    # async def populate(self, ctx: commands.Context, chapter: int,
-    #                    channel: TextChannelConverter):
-    #     """This command is used to populate a channel with all the edits of a given chapter. This command is useful when older channel is either deleted or unusable.
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def migrate(self, ctx: commands.Context, chapter: str,
+                      channel: TextChannelConverter):
+        """This command is used to migrate all the edits of a given chapter from one channel to another. This command is useful when older channel is either unusable or has been deleted.
 
-    #     Args:
-    #         chapter :- Chapter for which edits are to be posted
-    #         channel :- Channel where edits are to be posted. This can be channel mention, id or name
+        Args:
+            chapter :- Chapter for which edits are to be migrated
+            channel :- Channel where edits are to be posted. This can be channel mention, id or name
 
-    #     Format:
-    #         >populate chapter-name channel-mention/id/name
+        Format:
+            >migrate chapter-name channel-mention/id/name
 
-    #     Example:
-    #         >populate 1 #edit :- Populating the edits of chapter 1 to channel edit. Here channel is mentioned
-    #         >populate 1 edit :- Populating the edits of chapter 1 to channel edit. Here channel name is provided
-    #         >populate 1 842349594825457533 :- Populating the edits of chapter 1 to channel with provided id. Here channel id is provided
-    #     """
-    #     guild = ctx.guild
-    #     bot = self.client.user
-    #     count = 0
-    #     msg = await ctx.send(
-    #         f"Do you want {channel.name} to be new home for all the edits from chapter {chapter}?",
-    #         delete_after=40)
+        Example:
+            >migrate 1 #edit :- Populating the edits of chapter 1 to channel edit. Here channel is mentioned
+            >migrate 1 edit :- Populating the edits of chapter 1 to channel edit. Here channel name is provided
+            >migrate 1 842349594825457533 :- Populating the edits of chapter 1 to channel with provided id. Here channel id is provided
+        """
+        guild = ctx.guild
+        buttons = PersistentView(self.client)
+        image_url = ''
+        stats_msg = await update_stats(self.client.user, chapter, guild, channel)
 
-    #     choise = await confirm(ctx, msg, lock=True)
-    #     stats_msg = await update_stats(bot, chapter, guild, channel)
+        config = read("config", guild)
+        config['mods']['allowedEdits'][chapter] = [channel.id, stats_msg.id]
+        config['mods']['channels'].append(channel.id)
+        save(config, "config", guild)
 
-    #     config = read('config', guild)
-    #     if choise:
-    #         config['mods']['allowedEdits'][str(chapter)] = [
-    #             channel.id, stats_msg.id
-    #         ]
-    #         config['mods']['channels'].append(channel.id)
-    #         save(config, 'config', guild)
+        documents = await db.get_documents(guild.id, 'editorial', {'chapter': chapter, 'type': 'edit'}, ['_id', 'edit_msg_id', 'editor', 'editor_id', 'original', 'suggested', 'reason', 'status', 'org_channel_id', 'time'])
+        for doc in documents:
+            org_msg_id, editor_id, editor_name, original, suggested, reason, edit_msg_id, org_channel_id, status, time = doc.values()
+            jump_link = f"https://discord.com/channels/{guild.id}/{org_channel_id}/{org_msg_id}"
+            change_status = ranking(guild, chapter, original)[2]
 
-    #     sql = 'SELECT * FROM edit where Chapter = ? ORDER BY RankLine, RankChar'
-    #     results = db.execute(guild, 'editorial', sql, str(chapter))
+            if editor_id:
+                editor = await guild.fetch_member(editor_id)
+                editor_avatar = editor.display_avatar.url
+            else:
+                editor_avatar = '"https://cdn.discordapp.com/embed/avatars/0.png"'
 
-    #     if not results:
-    #         await ctx.send(
-    #             'Aborting the mission! There are not edits in this chapter.',
-    #             delete_after=20)
+            embed = discord.Embed(
+                color=config['mods']['colour'][status],
+                description=f"[Message Link]({jump_link})",
+                timestamp=time,
+            )
+            embed.set_author(name=editor_name, icon_url=editor_avatar)
+            embed.set_footer(text=f"Author's Vote - {status}")
+            embed.add_field(name="Original Text", value=original, inline=False)
+            embed.add_field(name="Sugested Text",
+                            value=suggested, inline=False)
+            embed.add_field(name="Reason", value=reason, inline=False)
+            embed.add_field(name="⠀", value=change_status, inline=False)
 
-    #     for row in results:
-    #         mID, aID, aName, book, chapter, org, sug, res, rLine, rChar, oChannel, accepted, rejected, notSure = row
+            if status != 'Not Voted Yet':
+                data = await buttons.get_voteing_graph(guild.id, edit_msg_id)
+                image_url = await buttons.get_image_url(data['image']) if data else ''
+                yes, no, maybe = (0, 0, 0) if not data else data['votes']
 
-    #         votes = {
-    #             'accepted': accepted,
-    #             'rejected': rejected,
-    #             'notsure': notSure
-    #         }
-    #         oChannel = guild.get_channel(int(oChannel))
+                embed.set_image(url=image_url)
+                embed.add_field(name="Yes", value=yes, inline=True)
+                embed.add_field(name="No", value=no, inline=True)
+                embed.add_field(name="Maybe", value=maybe, inline=True)
 
-    #         try:
-    #             msg = await oChannel.fetch_message(int(mID))
-    #             jLink = msg.jump_url
-    #             author = msg.author
-    #             aName = author.name or author.nick
-    #             avatar = str(author.avatar_url)
+            msg_sent = await channel.send(embed=embed, view=buttons)
+            await db.update(guild.id, 'editorial', ['edit_msg_id', 'edit_channel_id'], [msg_sent.id, channel.id], {'_id': org_msg_id})
 
-    #         except discord.errors.NotFound:
-    #             jLink, aName, avatar = None, 'Anonymous', "https://cdn.discordapp.com/embed/avatars/0.png"
-
-    #         rankRow, rankChar, change_status = ranking(guild, chapter, org)
-
-    #         colour = config["mods"]["colour"]
-    #         emojis = config['mods']['emojis']
-
-    #         try:
-    #             vote = next(
-    #                 (vote for vote, val in votes.items() if val == "1"),
-    #                 'No Vote')
-    #         except StopIteration:
-    #             continue
-
-    #         embed = discord.Embed(
-    #             color=colour[vote],
-    #             description=f"[Message Link]({jLink})",
-    #             timestamp=datetime.now(),
-    #         )
-
-    #         vote = 'Not Voted Yet' if vote == 'No Vote' else vote
-
-    #         embed.set_author(name=aName, icon_url=avatar)
-    #         embed.set_footer(text=f"Author's Vote - {vote.title() }",
-    #                          icon_url=str(self.client.user.avatar_url))
-
-    #         try:
-    #             if org is not None:
-    #                 embed.add_field(name="Original Text",
-    #                                 value=org or '⠀',
-    #                                 inline=False)
-    #                 embed.add_field(name="Sugested Text",
-    #                                 value=sug,
-    #                                 inline=False)
-    #                 embed.add_field(name="Reason", value=res, inline=False)
-    #                 embed.add_field(name="⠀",
-    #                                 value=change_status,
-    #                                 inline=False)
-    #             else:
-    #                 embed.add_field(name='Suggestion', value=sug)
-
-    #             msg_send = await channel.send(embed=embed)
-    #             count += 1
-    #         except:
-    #             print(org, sug, res)
-    #             print(type(org))
-
-    #         # column = "('Old_ID', 'New_ID', 'Org_channel')"  #! Update history if message is found
-    #         # values = (mID, msg_send.id, channel_id)
-    #         # db.insert(guild, "editorial", "history", column, values)
-
-    #         for emoji in emojis.values():
-    #             await msg_send.add_reaction(emoji)
-
-    #     await ctx.send(f'Total Edits populated :- {count}', delete_after=30)
+        await ctx.reply(f'Successfully migrated {len(documents)} edits to {channel.mention}', mention_author=False)
 
     @commands.command()
     @in_channel()
