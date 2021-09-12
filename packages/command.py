@@ -312,8 +312,8 @@ class PersistentView(discord.ui.View):
         Returns:
             dict: A dictionary containing the voting graph data
         """
-        voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id)
-        voting_count.pop('_id', None)
+        voting_count = await db.get_voting_count(guild_id, 'editorial', edit_msg_id=edit_msg_id)
+        (voting_count := voting_count[0]).pop('_id', None)
         color = ['#59d32f', '#f46e11', '#5865f2']
         voting_count_list = [[key, value, color]
                              for key, value, color in zip(voting_count.keys(), voting_count.values(), color) if value != 0]

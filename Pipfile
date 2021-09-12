@@ -13,6 +13,7 @@ pymongo = {extras = ["srv"], version = "*"}
 aiohttp = "*"
 matplotlib = "*"
 dpytest = "*"
+openpyxl = "*"
 
 [dev-packages]
 dpytools = "*"
