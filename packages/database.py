@@ -158,7 +158,7 @@ async def get_voting_count(guild_id: str, database: str, connect=connection, **k
         dict: A dictionary with the count of voting for the message
     """
     collection = connect[database][str(guild_id)]
-    pipeline=[
+    pipeline = [
         {
             '$project': {
                 '_id': '$_id',

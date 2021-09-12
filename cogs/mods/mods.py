@@ -740,7 +740,8 @@ class Mods(commands.Cog):
         guild = ctx.guild
         bio = BytesIO()
 
-        return_keys = ['editor', 'original', 'suggested', 'reason', 'rank_row', 'rank_col', 'status', 'type', 'time']
+        return_keys = ['editor', 'original', 'suggested', 'reason',
+                       'rank_row', 'rank_col', 'status', 'type', 'time']
         documents = await db.get_documents(guild.id, "editorial", {"chapter": chapter}, return_keys)
         votes = await db.get_voting_count(guild.id, 'editorial', chapter=chapter)
 
@@ -757,7 +758,6 @@ class Mods(commands.Cog):
             file=discord.File(bio, f"Chapter-{chapter}.xlsx"),
             mention_author=False
         )
-
 
     @commands.command(aliases=["changeColor"])
     @in_channel()
