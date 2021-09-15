@@ -745,6 +745,10 @@ class Mods(commands.Cog):
         documents = await db.get_documents(guild.id, "editorial", {"chapter": chapter}, return_keys)
         votes = await db.get_voting_count(guild.id, 'editorial', chapter=chapter)
 
+        if not documents:
+            await ctx.reply("No edits found for this chapter!", delete_after=10)
+            return None
+
         # Merge documents and votes and create a excel file from it
         df = pd.DataFrame(documents)
         v = pd.DataFrame(votes)
