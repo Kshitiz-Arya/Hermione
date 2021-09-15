@@ -1,10 +1,10 @@
 import os
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
-from pprint import pprint as pp
 
 import discord
 import packages.database as db
+import pandas as pd
 from discord.ext import commands
 from discord.ext.commands.converter import (ColorConverter, MemberConverter,
                                             TextChannelConverter)
@@ -722,42 +722,46 @@ class Mods(commands.Cog):
 
         await ctx.send(f"Total number of messages picked up : {count}", delete_after=10)
 
-    # @commands.command()
-    # @in_channel()
-    # @is_author()
-    # async def export(self, ctx: commands.Context, chapter: int):
-    #     """This cahpter is used to get all edits and suggestion in .xlsx format
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def export(self, ctx: commands.Context, chapter: str):
+        """This cahpter is used to get all edits and suggestion in .xlsx format
 
-    #     Args:
-    #         chapter :- Chapter number for which edit are requested
+        Args:
+            chapter :- Chapter number for which edit are requested
 
-    #     Format:
-    #         >export chapter-number
+        Format:
+            >export chapter-number
 
-    #     Example:
-    #         >export 1 :- Requested edits and suggestions for chapter 1
-    #     """
-    #     guild = ctx.guild
-    #     conn = db.create_connection(guild, "editorial")
-    #     bio = BytesIO()
+        Example:
+            >export 1 :- Requested edits and suggestions for chapter 1
+        """
+        guild = ctx.guild
+        bio = BytesIO()
 
-    #     script = (
-    #         f"SELECT * FROM edit WHERE chapter = {chapter} Order By rankLine, rankChar"
-    #     )
-    #     df = pd.read_sql_query(script, conn)
-    #     writer = pd.ExcelWriter(bio, engine="openpyxl")
+        return_keys = ['editor', 'original', 'suggested', 'reason',
+                       'rank_row', 'rank_col', 'status', 'type', 'time']
+        documents = await db.get_documents(guild.id, "editorial", {"chapter": chapter}, return_keys)
+        votes = await db.get_voting_count(guild.id, 'editorial', chapter=chapter)
 
-    #     df.to_excel(writer, sheet_name=f"Edits - Chapter {chapter}")
-    #     writer.save()
-    #     bio.seek(0)
-    #     # excel_file = bio.read()
-    #     # print(excel_file.__sizeof__())
-    #     await ctx.send(
-    #         f"Here is all the edits in chapter {chapter}",
-    #         file=discord.File(bio, f"Chapter-{chapter}.xlsx"),
-    #     )
-    #     if conn:
-    #         conn.close()
+        if not documents:
+            await ctx.reply("No edits found for this chapter!", delete_after=10)
+            return None
+
+        # Merge documents and votes and create a excel file from it
+        df = pd.DataFrame(documents)
+        v = pd.DataFrame(votes)
+        df = df.merge(v, on='_id', how='outer')
+        df.fillna(0, inplace=True)
+        df.to_excel(bio, index=False)
+
+        bio.seek(0)
+        await ctx.reply(
+            f"Here is all the edits in chapter {chapter}",
+            file=discord.File(bio, f"Chapter-{chapter}.xlsx"),
+            mention_author=False
+        )
 
     @commands.command(aliases=["changeColor"])
     @in_channel()

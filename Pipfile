@@ -13,12 +13,14 @@ pymongo = {extras = ["srv"], version = "*"}
 aiohttp = "*"
 matplotlib = "*"
 dpytest = "*"
+openpyxl = "*"
 
 [dev-packages]
 dpytools = "*"
 ipykernel = "*"
 pdoc3 = "*"
 pytest = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.9"

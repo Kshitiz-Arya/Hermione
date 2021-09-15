@@ -145,7 +145,7 @@ async def delete_document(guild_id: str, database: str, match: dict, connect=con
     await collection.delete_one(match)
 
 
-async def get_voting_count(guild_id: str, database: str, message_id: int, connect=connection):
+async def get_voting_count(guild_id: str, database: str, connect=connection, **kwargs):
     """Get the count of voting for a message
 
     Args:
@@ -158,12 +158,8 @@ async def get_voting_count(guild_id: str, database: str, message_id: int, connec
         dict: A dictionary with the count of voting for the message
     """
     collection = connect[database][str(guild_id)]
-    voting_count = await collection.aggregate(pipeline=[
+    pipeline = [
         {
-            '$match': {
-                'edit_msg_id': message_id,
-            }
-        }, {
             '$project': {
                 '_id': '$_id',
                 'vote': {
@@ -210,6 +206,12 @@ async def get_voting_count(guild_id: str, database: str, message_id: int, connec
                 }
             }
         }
-    ]).to_list(None)
+    ]
 
-    return voting_count[0] if voting_count else {'_id': message_id, 'yes': 0, 'no': 0, 'not_sure': 0}
+    match = {'$match': kwargs}
+
+    # if message_id is not none, instert match to pipeline at index 0
+    if kwargs:
+        pipeline.insert(0, match)
+    voting_count = await collection.aggregate(pipeline=pipeline).to_list(None)
+    return voting_count if voting_count else [{'yes': 0, 'no': 0, 'not_sure': 0}]
