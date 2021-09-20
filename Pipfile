@@ -14,6 +14,7 @@ aiohttp = "*"
 matplotlib = "*"
 dpytest = "*"
 openpyxl = "*"
+diff-match-patch = "==20200713"
 
 [dev-packages]
 dpytools = "*"

@@ -1,7 +1,9 @@
 import os
+import re
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 
+import diff_match_patch
 import discord
 import packages.database as db
 import pandas as pd
@@ -1020,6 +1022,49 @@ class Mods(commands.Cog):
             info.set_image(url='attachment://colour.png')
             info.set_footer(text="Provided to you by Hermione")
             await ctx.send(embed=info, file=colour_img)
+
+    @commands.command()
+    @in_channel()
+    @is_author()
+    async def get_chapter(self, ctx, chapter):
+        """This command return the edited document of a specific chapter
+
+        Args:
+            chapter (int): The chapter number
+        Format:
+            >get_chapter <chapter>
+
+        Example:
+            >get_chapter 1 :- Return the edited document of chapter 1
+        """
+        guild = ctx.guild
+        dmp = diff_match_patch.diff_match_patch()
+        sio = StringIO()
+
+        async with ctx.typing():
+            edits = await db.get_documents(guild.id, 'editorial', {'chapter': str(chapter)}, ['original', "suggested"])
+            with open(f'Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r') as f:
+                chapter_doc = f.readlines()
+            edited_chapter_doc = chapter_doc.copy()
+
+            for edit in edits:
+                org = edit['original']
+                sug = edit['suggested']
+
+                for i, line in enumerate(chapter_doc):
+                    if org in line:
+                        break
+                else:
+                    pass
+                patch = dmp.patch_make(org, sug)
+                edited_chapter_doc[i], _ = dmp.patch_apply(patch, line)
+
+            # return the document
+            sio.writelines(edited_chapter_doc)
+            sio.seek(0)
+            attach = discord.File(
+                sio, filename=f'Chapter-{chapter}-edited.txt')
+            await ctx.send("Here is your document!!!", file=attach)
 
 
 def draw(guild: discord.Guild, colours: tuple):
