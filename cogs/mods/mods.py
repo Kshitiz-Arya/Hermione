@@ -133,7 +133,7 @@ class Mods(commands.Cog):
                     # raise BadArgument
                     return
                 content = await file.read()
-                await db.update(guild.id, 'stories', ['content'], [content.decode()],{'_id': chapter}, upsert=True)
+                await db.update(guild.id, 'stories', ['content'], [content.decode()], {'_id': chapter}, upsert=True)
                 await ctx.send("Received the file.", delete_after=20)
 
                 try:
@@ -167,7 +167,6 @@ class Mods(commands.Cog):
                         "value"] = change_status
                     updated_embed = discord.Embed.from_dict(
                         updated_embed_dict)
-
 
                     await message.edit(embed=updated_embed)
 
@@ -1003,7 +1002,7 @@ class Mods(commands.Cog):
     @commands.command()
     @in_channel()
     @is_author()
-    async def get_chapter(self, ctx, chapter:int):
+    async def get_chapter(self, ctx, chapter: int):
         """This command return the edited document of a specific chapter
 
         Args:
@@ -1032,7 +1031,7 @@ class Mods(commands.Cog):
             discared_edits = []
 
             for edit in edits:
-                line_number:int = None
+                line_number: int = None
                 org, sug = edit['original'], edit['suggested']
 
                 for i, line in enumerate(chapter_lines):
@@ -1044,7 +1043,8 @@ class Mods(commands.Cog):
                     continue
 
                 patch = dmp.patch_make(org, sug)
-                edited_chapter_doc[line_number], _ = dmp.patch_apply(patch, line)
+                edited_chapter_doc[line_number], _ = dmp.patch_apply(
+                    patch, line)
 
             # return the document
             sio.writelines(edited_chapter_doc)
