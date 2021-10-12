@@ -10,7 +10,6 @@ pandas = "*"
 pillow = "*"
 motor = "*"
 pymongo = {extras = ["srv"], version = "*"}
-aiohttp = "*"
 matplotlib = "*"
 dpytest = "*"
 openpyxl = "*"
@@ -24,7 +23,7 @@ pytest = "*"
 autopep8 = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
 
 [pipenv]
 allow_prereleases = true

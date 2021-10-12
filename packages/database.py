@@ -20,7 +20,7 @@ async def insert(guild_id: str, database: str, update_statement: dict, connect: 
 
 
 # todo Rename this function to get_document
-async def get_document(guild_id, database, query, return_column, connect=connection):
+async def get_document(guild_id:str, database:str, query:dict, return_column:list, connect=connection):
     """Get a single document from a database
 
     Args:
@@ -40,7 +40,7 @@ async def get_document(guild_id, database, query, return_column, connect=connect
     return return_doucment
 
 
-async def get_documents(guild_id, database, query: dict, return_column: list, limit=0, connect=connection):
+async def get_documents(guild_id, database:str, query: dict, return_column: list, limit:int=0, connect=connection):
     """Get multiple documents from a database
 
     Args:
@@ -116,7 +116,7 @@ async def get_stats(guild, database: str, chapter: int = None, connect=connectio
     return result[0].values() if result else []
 
 
-async def update(guild_id, database, columns: list, values: list, match: dict, connect=connection):
+async def update(guild_id, database, columns: list, values: list, match: dict, upsert:bool=False, connect=connection):
     """Update a document in a database
 
     Args:
@@ -129,7 +129,7 @@ async def update(guild_id, database, columns: list, values: list, match: dict, c
     """
     collection = connect[database][str(guild_id)]
     update_str = [{"$set": dict(zip(columns, values))}]
-    await collection.update_one(match, update_str)
+    await collection.update_one(match, update_str, upsert=upsert)
 
 
 async def delete_document(guild_id: str, database: str, match: dict, connect=connection):

@@ -182,7 +182,7 @@ class Events(commands.Cog):
                 except ValueError:
                     return None
 
-            rank_row, rank_col, change_status = ranking(guild, chapter, org)
+            rank_row, rank_col, change_status = await ranking(guild, chapter, org)
 
             updated_embed_dict["fields"][0]["value"] = org
             updated_embed_dict["fields"][1]["value"] = sug

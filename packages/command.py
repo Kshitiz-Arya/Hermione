@@ -376,7 +376,7 @@ def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
     return None
 
 
-def ranking(guild: discord.Guild, chapter: int, org):
+async def ranking(guild: discord.Guild, chapter: int, org:str):
     """Returns the position of the sentence in the chapter
     Args:
         guild (discord.Guild): The guild the message was posted in
@@ -386,32 +386,32 @@ def ranking(guild: discord.Guild, chapter: int, org):
         list: A list containing the position of the sentence in the chapter
     """
     # This code Rank each sentence according to their position in text file.
-    try:
-        chapter_file = open(
-            f'./Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r')
-        #   This is the phrase which we have to search.
-        if '\n' in org:  # This is driver code
-            org = org.splitlines()
+    chapter_doc = await db.get_document(guild.id, 'stories', {'_id': chapter}, ['content'])
 
-            for count, i in enumerate(chapter_file, 1):
-                if org[0] in i:
-                    byte = i.find(org[0])
-                    change_status = f"**Proposed change was found in the chapter at line {count}!**"
-                    return [count, byte, change_status]
-
-        else:
-            for count, i in enumerate(chapter_file, 1):
-                if org in i:
-                    byte = i.find(org)
-                    change_status = f"**Proposed change was found in the chapter at line {count}!**"
-                    return [count, byte, change_status]
-
-        change_status = "**Proposed change was not found in the chapter!**"
-        return [None, None, change_status]
-
-    except FileNotFoundError:
+    if not chapter_doc:
         change_status = "**Chapter is yet to be uploaded!**"
         return [None, None, change_status]
+
+    chapter_content = chapter_doc['content'].splitlines(keepends=True)
+    #   This is the phrase which we have to search.
+    if '\n' in org:
+        org = org.splitlines()
+
+        for count, i in enumerate(chapter_content, 1):
+            if org[0] in i:
+                byte = i.find(org[0])
+                change_status = f"**Proposed change was found in the chapter at line {count}!**"
+                return [count, byte, change_status]
+
+    else:
+        for count, i in enumerate(chapter_content, 1):
+            if org in i:
+                byte = i.find(org)
+                change_status = f"**Proposed change was found in the chapter at line {count}!**"
+                return [count, byte, change_status]
+
+    change_status = "**Proposed change was not found in the chapter!**"
+    return [None, None, change_status]
 
 
 def read(file, guild: discord.Guild):

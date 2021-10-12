@@ -56,7 +56,7 @@ class Basic(commands.Cog):
             return
         guild = ctx.guild
 
-        rankRow, rankChar, change_status = ranking(guild, chapter, org)
+        rankRow, rankChar, change_status = await ranking(guild, chapter, org)
 
         config = read("config", guild)
         allowedEdits = config["mods"]["allowedEdits"]

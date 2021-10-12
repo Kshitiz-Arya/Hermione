@@ -5,6 +5,7 @@ from io import BytesIO, StringIO
 
 import diff_match_patch
 import discord
+from discord.ext.commands.errors import NotOwner
 import packages.database as db
 import pandas as pd
 from discord.ext import commands
@@ -131,9 +132,8 @@ class Mods(commands.Cog):
                         delete_after=20)
                     # raise BadArgument
                     return
-                path = os.getcwd(
-                ) + f"/Storage/{guild.id}/books/Chapter-{chapter}.txt"
-                await file.save(path)
+                content = await file.read()
+                await db.update(guild.id, 'stories', ['content'], [content.decode()],{'_id': chapter}, upsert=True)
                 await ctx.send("Received the file.", delete_after=20)
 
                 try:
@@ -157,40 +157,17 @@ class Mods(commands.Cog):
                     if edit_type == "Suggestion":
                         continue
 
-                    try:
-                        rank = ranking(guild, chapter, org)
-                        if isinstance(rank, FileNotFoundError):
-                            raise FileNotFoundError
-                        rankRow, _ = rank
-                        change_status = f"**Proposed change was found in the chapter at line {rankRow}!**"
+                    rankRow, _, change_status = await ranking(guild, chapter, org)
 
-                    except FileNotFoundError:
-                        rankRow = None
-                        change_status = "**Chapter is yet to be uploaded!**"
+                    reason_name = updated_embed_dict["fields"][2]['name']
+                    if reason_name != 'Reason':
+                        continue
 
-                    except TypeError:
-                        rankRow = None
-                        change_status = (
-                            "**Proposed change was not found in the chapter!**"
-                        )
+                    updated_embed_dict["fields"][3][
+                        "value"] = change_status
+                    updated_embed = discord.Embed.from_dict(
+                        updated_embed_dict)
 
-                    try:
-                        reason_name = updated_embed_dict["fields"][2]['name']
-                        if reason_name != 'Reason':
-                            continue
-
-                        updated_embed_dict["fields"][3][
-                            "value"] = change_status
-                        updated_embed = discord.Embed.from_dict(
-                            updated_embed_dict)
-
-                    except IndexError:
-                        # ! This can be remove once we exit the current guild. This is here mostly for backward compatiblity
-                        updated_embed_dict["fields"].append({
-                            "name": "⠀",
-                            "value": change_status,
-                            "inline": False,
-                        })
 
                     await message.edit(embed=updated_embed)
 
@@ -886,7 +863,7 @@ class Mods(commands.Cog):
         for doc in documents:
             org_msg_id, editor_id, editor_name, original, suggested, reason, edit_msg_id, org_channel_id, status, time = doc.values()
             jump_link = f"https://discord.com/channels/{guild.id}/{org_channel_id}/{org_msg_id}"
-            change_status = ranking(guild, chapter, original)[2]
+            change_status = await ranking(guild, chapter, original)[2]
 
             if editor_id:
                 editor = await guild.fetch_member(editor_id)
@@ -1026,7 +1003,7 @@ class Mods(commands.Cog):
     @commands.command()
     @in_channel()
     @is_author()
-    async def get_chapter(self, ctx, chapter):
+    async def get_chapter(self, ctx, chapter:int):
         """This command return the edited document of a specific chapter
 
         Args:
@@ -1040,31 +1017,49 @@ class Mods(commands.Cog):
         guild = ctx.guild
         dmp = diff_match_patch.diff_match_patch()
         sio = StringIO()
+        bio = BytesIO()
 
         async with ctx.typing():
-            edits = await db.get_documents(guild.id, 'editorial', {'chapter': str(chapter)}, ['original', "suggested"])
-            with open(f'Storage/{guild.id}/books/Chapter-{chapter}.txt', 'r') as f:
-                chapter_doc = f.readlines()
-            edited_chapter_doc = chapter_doc.copy()
+            edits = await db.get_documents(guild.id, 'editorial', {'chapter': str(chapter), 'type': 'edit'}, ['original', "suggested"])
+            chapter_doc = await db.get_document(guild.id, 'stories', {'_id': chapter}, ['content'])
+
+            if not chapter_doc:
+                await ctx.send(f"**File for Chapter {chapter} was not found**", delete_after=10)
+                return None
+
+            chapter_lines = chapter_doc['content'].splitlines(keepends=True)
+            edited_chapter_doc = chapter_lines.copy()
+            discared_edits = []
 
             for edit in edits:
-                org = edit['original']
-                sug = edit['suggested']
+                line_number:int = None
+                org, sug = edit['original'], edit['suggested']
 
-                for i, line in enumerate(chapter_doc):
+                for i, line in enumerate(chapter_lines):
                     if org in line:
+                        line_number = i
                         break
-                else:
-                    pass
+                if not line_number:
+                    discared_edits.append(edit)
+                    continue
+
                 patch = dmp.patch_make(org, sug)
-                edited_chapter_doc[i], _ = dmp.patch_apply(patch, line)
+                edited_chapter_doc[line_number], _ = dmp.patch_apply(patch, line)
 
             # return the document
             sio.writelines(edited_chapter_doc)
+            discared_edits_df = pd.DataFrame(discared_edits)
+            discared_edits_df.to_excel(bio, index=False)
+
             sio.seek(0)
-            attach = discord.File(
+            bio.seek(0)
+
+            chapter_attatch = discord.File(
                 sio, filename=f'Chapter-{chapter}-edited.txt')
-            await ctx.send("Here is your document!!!", file=attach)
+            discared_edits_attatch = discord.File(
+                bio, filename=f'Discared-edits-{chapter}.xlsx')
+
+            await ctx.send("Here is your document!!!", files=[chapter_attatch, discared_edits_attatch])
 
 
 def draw(guild: discord.Guild, colours: tuple):
