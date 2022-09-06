@@ -376,7 +376,7 @@ def Book(chapter: int, guild: discord.Guild) -> Optional[int]:
     return None
 
 
-async def ranking(guild: discord.Guild, chapter: int, org:str):
+async def ranking(guild: discord.Guild, chapter: int, org: str):
     """Returns the position of the sentence in the chapter
     Args:
         guild (discord.Guild): The guild the message was posted in
